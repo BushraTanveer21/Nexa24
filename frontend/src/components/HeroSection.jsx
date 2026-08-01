@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import bgVideo from '../assets/Final_Video_Lavender_Pure_White_BG.mp4';
+import bgVideo from '../assets/tree_fast.mp4';
+import bgPoster from '../assets/tree_poster.jpg';
 
 export default function HeroSection() {
   const videoRef = useRef(null);
@@ -20,6 +21,7 @@ export default function HeroSection() {
       <div className="hero-video-layer" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, backgroundColor: '#ffffff', overflow: 'hidden' }}>
         <video 
           ref={videoRef}
+          poster={bgPoster}
           autoPlay 
           loop 
           muted 
@@ -38,7 +40,7 @@ export default function HeroSection() {
           }}
         >
           <source src={bgVideo} type="video/mp4" />
-          <source src="/Final_Video_Lavender_Tree.mp4" type="video/mp4" />
+          <source src="/tree_fast.mp4" type="video/mp4" />
         </video>
       </div>
       <div className="hero-content-wrapper" style={{ position: 'relative', zIndex: 10, width: '100%', display: 'flex', padding: '50px 0' }}>
