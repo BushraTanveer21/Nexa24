@@ -62,9 +62,9 @@ const ContactSection = () => {
               <select name="service" value={formData.service} onChange={handleChange} required>
                 <option value="" disabled hidden>Select a Service</option>
                 <option value="Remote Patient Monitoring">Remote Patient Monitoring</option>
-                <option value="Clinical Documentation Support">Clinical Documentation Support</option>
+                <option value="Clinical Documentation Support">Clinical Documentation</option>
                 <option value="Medical Billing & RCM">Medical Billing & RCM</option>
-                <option value="Virtual Assistant & Admin Support">Virtual Assistant & Admin Support</option>
+                <option value="Virtual Assistant & Admin Support">VA & Admin Support</option>
                 <option value="Telehealth Support">Telehealth Support</option>
               </select>
             </div>

@@ -3,12 +3,30 @@ import React from 'react';
 const Advantage = () => {
   return (
     <section className="advantage-exact container" id="solutions" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Right Corner Decorative Watercolor Leaves */}
+      <img 
+        src="/watercolor_leaves.png" 
+        alt="Decorative Watercolor Leaves Right" 
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          width: '330px',
+          height: 'auto',
+          opacity: 0.88,
+          pointerEvents: 'none',
+          zIndex: 0,
+          mixBlendMode: 'multiply',
+          transform: 'scaleX(-1)'
+        }}
+      />
+
       <div className="advantage-header-exact" style={{ position: 'relative', zIndex: 1 }}>
         <div className="eyebrow-exact">WHY CHOOSE NEX24</div>
         <h2>Why Choose <span className="purple-text">NEX24.</span></h2>
       </div>
       
-      <div className="advantage-grid-exact">
+      <div className="advantage-grid-exact" style={{ position: 'relative', zIndex: 1 }}>
         <div className="advantage-cards-exact">
           <div className="adv-card-exact">
             <div className="adv-icon-exact">
@@ -47,7 +65,7 @@ const Advantage = () => {
             </div>
           </div>
         </div>
-        <div className="advantage-image-exact">
+        <div className="advantage-image-exact" style={{ position: 'relative', zIndex: 1 }}>
           <img src="/doctor.png" alt="Doctor" />
         </div>
       </div>

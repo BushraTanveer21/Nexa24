@@ -521,6 +521,15 @@ html {
   border-radius: 8px;
   font-size: 14px;
   background: #FFFFFF;
+  font-family: inherit;
+  color: var(--text-dark-exact);
+}
+.contact-form-exact select {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  appearance: auto; /* ensure native chevron is visible but box doesn't break */
 }
 .contact-form-exact label {
   display: block;
@@ -1443,18 +1452,18 @@ html {
 @media (max-width: 768px) {
   .decorative-leaf-about,
   .decorative-leaf-contact {
-    width: 150px !important;
-    max-width: 180px !important;
+    width: 220px !important;
+    max-width: 250px !important;
     opacity: 0.9 !important;
   }
   .decorative-leaf-services {
-    width: 140px !important;
-    max-width: 170px !important;
+    width: 200px !important;
+    max-width: 230px !important;
     opacity: 0.9 !important;
   }
   .decorative-leaf-global {
-    width: 140px !important;
-    max-width: 170px !important;
+    width: 200px !important;
+    max-width: 230px !important;
     opacity: 0.9 !important;
   }
 }
@@ -1462,18 +1471,18 @@ html {
 @media (max-width: 480px) {
   .decorative-leaf-about,
   .decorative-leaf-contact {
-    width: 130px !important;
-    max-width: 150px !important;
+    width: 180px !important;
+    max-width: 200px !important;
     opacity: 0.9 !important;
   }
   .decorative-leaf-services {
-    width: 120px !important;
-    max-width: 140px !important;
+    width: 160px !important;
+    max-width: 180px !important;
     opacity: 0.9 !important;
   }
   .decorative-leaf-global {
-    width: 120px !important;
-    max-width: 140px !important;
+    width: 160px !important;
+    max-width: 180px !important;
     opacity: 0.9 !important;
   }
 }

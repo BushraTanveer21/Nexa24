@@ -2,12 +2,29 @@ import React from 'react';
 
 const CoreValues = () => {
   return (
-    <section className="how-it-works-exact container">
-      <div className="how-header-exact">
+    <section className="how-it-works-exact container" style={{ position: 'relative', overflow: 'hidden' }}>
+      {/* Left Corner Decorative Watercolor Leaves */}
+      <img 
+        src="/watercolor_leaves.png" 
+        alt="Decorative Watercolor Leaves Left" 
+        className="decorative-watercolor-leaf"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '330px',
+          height: 'auto',
+          opacity: 0.88,
+          pointerEvents: 'none',
+          zIndex: 0,
+          mixBlendMode: 'multiply'
+        }}
+      />
+      <div className="how-header-exact" style={{ position: 'relative', zIndex: 1 }}>
         <div className="eyebrow-exact">HOW IT WORKS</div>
         <h2>Simple Steps, <span className="purple-text">Powerful Impact.</span></h2>
       </div>
-      <div className="how-grid-exact">
+      <div className="how-grid-exact" style={{ position: 'relative', zIndex: 1 }}>
         <div className="how-step-exact">
           <div className="how-icon-exact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
           <div className="how-arrow-exact"></div>
