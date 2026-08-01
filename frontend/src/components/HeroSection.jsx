@@ -1,17 +1,30 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+import bgVideo from '../assets/Final_Video_Lavender_Pure_White_BG.mp4';
 
 export default function HeroSection() {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = true;
+      videoRef.current.play().catch((err) => {
+        console.log('Video autoplay prevented:', err);
+      });
+    }
+  }, []);
+
   return (
     <div className="hero-section-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#ffffff', color: '#111827', fontFamily: 'sans-serif', minHeight: '620px', display: 'flex', alignItems: 'center' }}>
       
       {/* Background Video Layer */}
       <div className="hero-video-layer" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, backgroundColor: '#ffffff', overflow: 'hidden' }}>
         <video 
-          key="/Final_Video_Lavender_Tree.mp4"
+          ref={videoRef}
           autoPlay 
           loop 
           muted 
           playsInline 
+          preload="auto"
           className="hero-video-element"
           style={{ 
             width: '100%', 
@@ -24,6 +37,7 @@ export default function HeroSection() {
             filter: 'brightness(1.06) contrast(1.05)'
           }}
         >
+          <source src={bgVideo} type="video/mp4" />
           <source src="/Final_Video_Lavender_Tree.mp4" type="video/mp4" />
         </video>
       </div>
