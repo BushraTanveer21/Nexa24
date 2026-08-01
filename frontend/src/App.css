@@ -1,0 +1,1480 @@
+
+/* =========================================
+   EXACT MOCKUP STYLES
+   ========================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+:root {
+  --primary-exact: #4C1D95; /* Deep purple */
+  --primary-light: #6D28D9;
+  --bg-exact: #F9FAFB;
+  --text-dark-exact: #111827;
+  --text-muted-exact: #4B5563;
+  --white: #FFFFFF;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  color: var(--text-dark-exact);
+  background: var(--white);
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+html {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.purple-text {
+  color: var(--primary-exact);
+}
+
+/* HEADER EXACT */
+.header-exact {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 5%;
+  background: var(--white);
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.header-right-exact {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  color: var(--text-dark-exact);
+  line-height: 1;
+  padding: 4px;
+}
+
+.mobile-nav-btn {
+  display: none !important;
+}
+
+.logo-exact a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--text-dark-exact);
+}
+
+.logo-icon-exact {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--primary-exact);
+  color: var(--primary-exact);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+}
+
+.nav-links-exact {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.nav-links-exact a, .nav-dropdown {
+  text-decoration: none;
+  color: var(--text-dark-exact);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.nav-links-exact a.active {
+  color: var(--primary-exact);
+  border-bottom: 2px solid var(--primary-exact);
+  padding-bottom: 4px;
+}
+
+.nav-dropdown span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-get-started-exact, .btn-purple-exact {
+  background: var(--primary-exact);
+  color: var(--white);
+  padding: 10px 24px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* HERO EXACT */
+.hero-exact {
+  padding: 60px 5% 0;
+  background: transparent;
+}
+
+.hero-container-exact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.hero-text-exact {
+  flex: 1;
+  max-width: 500px;
+}
+
+.eyebrow-exact {
+  display: inline-block;
+  background: #F3E8FF;
+  color: var(--primary-exact);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.hero-text-exact h1 {
+  font-size: 48px;
+  line-height: 1.1;
+  font-weight: 800;
+  margin-bottom: 20px;
+}
+
+.hero-desc-exact {
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--text-muted-exact);
+  margin-bottom: 32px;
+}
+
+.hero-buttons-exact {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.btn-white-exact {
+  background: var(--white);
+  color: var(--text-dark-exact);
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  border: 1px solid #D1D5DB;
+  cursor: pointer;
+}
+
+.trusted-by-exact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.avatars-group-exact img {
+  height: 32px;
+}
+
+.hero-image-exact {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hero-image-exact img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* STATS EXACT */
+.stats-exact {
+  background: #F3E8FF;
+  padding: 40px 5%;
+}
+
+.stats-grid-exact {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.stat-item-exact {
+  border-left: 1px solid #D8B4E2;
+  padding-left: 20px;
+}
+.stat-item-exact:first-child { border-left: none; padding-left: 0; }
+
+.stat-icon-exact {
+  color: var(--primary-exact);
+  margin-bottom: 16px;
+}
+.stat-icon-exact svg { width: 24px; height: 24px; }
+
+.stat-item-exact h4 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.stat-item-exact p {
+  font-size: 14px;
+  color: var(--text-muted-exact);
+  line-height: 1.5;
+}
+
+/* SERVICES EXACT */
+.services-exact {
+  padding: 80px 5%;
+  background: transparent;
+}
+
+.services-split-exact {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 40px;
+}
+
+.services-left-exact h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+.services-left-exact p {
+  color: var(--text-muted-exact);
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.services-right-exact {
+  flex: 1;
+  max-width: 500px;
+}
+
+.service-item-exact {
+  display: flex;
+  align-items: center;
+  background: #F9FAFB;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  gap: 16px;
+}
+
+.service-icon-exact {
+  background: #E5E7EB;
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-exact);
+}
+.service-icon-exact svg { width: 18px; height: 18px; }
+
+.service-item-exact h3 {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.service-arrow-exact {
+  color: var(--text-muted-exact);
+}
+
+/* ADVANTAGE EXACT */
+.advantage-exact {
+  padding: 80px 5%;
+  background: #F3E8FF;
+}
+
+.advantage-header-exact {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.advantage-header-exact h2 {
+  font-size: 36px;
+}
+
+.advantage-grid-exact {
+  display: flex;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 40px;
+  align-items: center;
+}
+
+.advantage-cards-exact {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.adv-card-exact {
+  background: var(--white);
+  padding: 24px;
+  border-radius: 12px;
+}
+
+.adv-icon-exact {
+  color: var(--primary-exact);
+  margin-bottom: 12px;
+}
+.adv-icon-exact svg { width: 24px; height: 24px; }
+
+.adv-card-exact h4 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+.adv-card-exact p {
+  font-size: 13px;
+  color: var(--text-muted-exact);
+}
+
+.advantage-image-exact {
+  width: 400px;
+  height: 400px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #E5E7EB;
+}
+.advantage-image-exact img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* HOW IT WORKS EXACT */
+.how-it-works-exact {
+  padding: 80px 5%;
+  background: #F3E8FF;
+  text-align: center;
+}
+
+.how-header-exact h2 {
+  font-size: 36px;
+  margin-bottom: 60px;
+}
+
+.how-grid-exact {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.how-step-exact {
+  flex: 1;
+  position: relative;
+  z-index: 2;
+}
+
+.how-icon-exact {
+  width: 60px;
+  height: 60px;
+  background: var(--white);
+  border: 1px solid #D1D5DB;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-exact);
+}
+.how-icon-exact svg { width: 24px; height: 24px; }
+
+.how-arrow-exact {
+  position: absolute;
+  top: 30px;
+  right: -50%;
+  width: 100%;
+  height: 1px;
+  background: #D1D5DB;
+  z-index: -1;
+}
+
+.how-step-exact h4 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.how-step-exact p {
+  font-size: 13px;
+  color: var(--text-muted-exact);
+}
+
+/* CONTACT EXACT */
+.contact-exact {
+  padding: 80px 5%;
+  background: transparent;
+}
+
+.contact-grid-exact {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 40px;
+}
+
+.contact-left-exact {
+  flex: 1;
+}
+
+.contact-left-exact h2 {
+  font-size: 36px;
+  margin-bottom: 16px;
+}
+.contact-left-exact p {
+  color: var(--text-muted-exact);
+  font-size: 15px;
+  margin-bottom: 30px;
+}
+
+.contact-checkmarks-exact {
+  list-style: none;
+  padding: 0;
+}
+.contact-checkmarks-exact li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.check-icon-exact {
+  width: 20px;
+  height: 20px;
+  background: #F3E8FF;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-exact);
+}
+.check-icon-exact svg { width: 12px; height: 12px; }
+
+.contact-right-exact {
+  flex: 1;
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+  padding: 30px;
+}
+
+.contact-form-exact .form-row-exact {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.form-group-exact {
+  flex: 1;
+}
+.form-group-exact.full-width {
+  margin-bottom: 24px;
+}
+
+.contact-form-exact input, .contact-form-exact select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #FFFFFF;
+}
+.contact-form-exact label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--text-dark-exact);
+}
+
+.form-submit-btn {
+  width: 100%;
+  justify-content: center;
+  padding: 14px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+.privacy-text-exact {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted-exact);
+}
+
+/* FOOTER EXACT */
+.footer-exact {
+  background: #F3E8FF;
+  padding: 60px 5% 20px;
+  border-top: 1px solid #D8B4E2;
+}
+
+.footer-grid-exact {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto 60px;
+  gap: 20px;
+}
+
+.footer-col-1-exact {
+  max-width: 300px;
+}
+
+.footer-brand-exact {
+  margin-bottom: 20px;
+}
+
+.footer-col-1-exact p {
+  font-size: 13px;
+  color: var(--text-muted-exact);
+  line-height: 1.6;
+}
+
+.footer-col-exact h5 {
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-dark-exact);
+}
+
+.footer-col-exact a, .footer-col-exact p {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted-exact);
+  text-decoration: none;
+  margin-bottom: 12px;
+}
+
+.footer-contact-exact p {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.footer-contact-exact p svg {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.footer-bottom-exact {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-top: 20px;
+  border-top: 1px solid #D8B4E2;
+  font-size: 13px;
+  color: var(--text-muted-exact);
+}
+
+.social-icons-exact {
+  display: flex;
+  gap: 16px;
+}
+
+.social-icons-exact a {
+  color: var(--text-dark-exact);
+}
+.social-icons-exact a svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* =========================================
+   ANIMATED FALLING LEAVES
+   ========================================= */
+
+.animated-tree-container {
+  position: relative;
+  overflow: hidden; /* optional, to prevent leaves from appearing outside */
+}
+
+.animated-tree-img {
+  position: relative;
+  z-index: 1;
+  animation: tree-sway 6s ease-in-out infinite alternate;
+}
+
+@keyframes tree-sway {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(1deg); }
+}
+
+.falling-leaf {
+  position: absolute;
+  top: -10%;
+  width: 18px;
+  height: 18px;
+  color: #9333EA; /* Light purple for leaves */
+  z-index: 2;
+  opacity: 0;
+  animation: fall linear infinite;
+  pointer-events: none;
+}
+
+@keyframes fall {
+  0% {
+    top: 5%;
+    transform: translateX(0) rotate(0deg);
+    opacity: 1;
+  }
+  20% {
+    transform: translateX(-15px) rotate(45deg);
+  }
+  40% {
+    transform: translateX(10px) rotate(90deg);
+  }
+  60% {
+    transform: translateX(-10px) rotate(135deg);
+  }
+  80% {
+    transform: translateX(15px) rotate(180deg);
+  }
+  100% {
+    top: 95%;
+    transform: translateX(0) rotate(225deg);
+    opacity: 0;
+  }
+}
+
+/* Individual leaf positioning and timing */
+.leaf-1 { left: 10%; animation-duration: 4s; animation-delay: 0s; }
+.leaf-2 { left: 20%; animation-duration: 5s; animation-delay: 1s; color: #7C3AED; width: 14px; height: 14px; }
+.leaf-3 { left: 30%; animation-duration: 3.5s; animation-delay: 2s; }
+.leaf-4 { left: 40%; animation-duration: 6s; animation-delay: 0.5s; color: #A855F7; width: 22px; height: 22px; }
+.leaf-5 { left: 50%; animation-duration: 4.5s; animation-delay: 1.5s; }
+.leaf-6 { left: 60%; animation-duration: 5.5s; animation-delay: 3s; color: #7C3AED; }
+.leaf-7 { left: 70%; animation-duration: 4s; animation-delay: 0.8s; }
+.leaf-8 { left: 80%; animation-duration: 6.5s; animation-delay: 2.5s; color: #A855F7; width: 16px; height: 16px; }
+.leaf-9 { left: 15%; animation-duration: 5s; animation-delay: 4s; }
+.leaf-10 { left: 35%; animation-duration: 4.2s; animation-delay: 3.2s; color: #9333EA; }
+.leaf-11 { left: 55%; animation-duration: 5.8s; animation-delay: 1.2s; }
+.leaf-12 { left: 75%; animation-duration: 3.8s; animation-delay: 4.5s; color: #7C3AED; width: 20px; height: 20px; }
+.leaf-13 { left: 85%; animation-duration: 4.7s; animation-delay: 2.2s; }
+.leaf-14 { left: 45%; animation-duration: 6.2s; animation-delay: 0.3s; }
+.leaf-15 { left: 65%; animation-duration: 4.1s; animation-delay: 3.7s; color: #A855F7; }
+
+
+/* Visually crop the tree from the full page screenshot */
+.animated-tree-img {
+  width: 500px;
+  height: 550px;
+  object-fit: none;
+  object-position: right top; 
+}
+
+/* Isolated tree animation */
+.isolated-tree-img {
+  width: 100%;
+  height: auto;
+  position: relative;
+  z-index: 1;
+  animation: tree-sway 6s ease-in-out infinite alternate;
+}
+
+/* Fix for blended and not blurred isolated tree */
+.isolated-tree-img {
+  max-width: 600px !important; /* Prevent stretching and blurring */
+  width: auto !important;
+  height: auto !important;
+  mix-blend-mode: multiply; /* Blends the white background seamlessly */
+}
+
+/* Improved Swaying Animation */
+.isolated-tree-img {
+  max-width: 600px !important;
+  width: 100% !important;
+  height: auto !important;
+  mix-blend-mode: multiply;
+  transform-origin: bottom center !important; /* Ground the trunk */
+  animation: tree-sway-realistic 4s ease-in-out infinite alternate !important;
+}
+
+@keyframes tree-sway-realistic {
+  0% { transform: rotate(-2deg) skewX(1deg); }
+  100% { transform: rotate(2deg) skewX(-1deg); }
+}
+
+.hero-image-exact {
+  align-items: flex-end !important; /* Align the tree exactly to the bottom line */
+}
+
+/* Blend tree perfectly to hide edges */
+.isolated-tree-img {
+  max-width: 600px !important;
+  width: 100% !important;
+  height: auto !important;
+  mix-blend-mode: darken !important; /* Forces white to become completely transparent */
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%) !important;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 50%, rgba(0,0,0,0) 70%) !important;
+  transform-origin: bottom center !important; 
+  animation: tree-sway-realistic 6s ease-in-out infinite alternate !important;
+}
+
+@keyframes tree-sway-realistic {
+  0% { transform: rotate(-1.5deg); }
+  100% { transform: rotate(1.5deg); }
+}
+
+.hero-image-exact {
+  align-items: center !important; 
+}
+
+/* =========================================
+   REALISTIC FALLING LEAVES (3D)
+   ========================================= */
+
+.real-tree-container {
+  position: relative;
+}
+
+.leaves-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.real-leaf {
+  position: absolute;
+  top: -10%;
+  opacity: 0;
+  animation: realistic-fall linear infinite;
+  transform-origin: center;
+}
+
+/* Layer variations for Depth of Field */
+.leaf-layer-1 { width: 10px; height: 10px; color: #D8B4E2; filter: blur(2px); z-index: 4; }
+.leaf-layer-2 { width: 16px; height: 16px; color: #9333EA; filter: blur(0.5px); z-index: 6; }
+.leaf-layer-3 { width: 22px; height: 22px; color: #C084FC; z-index: 7; }
+
+/* 3D Spin and Drift */
+@keyframes realistic-fall {
+  0% {
+    top: 5%;
+    transform: translateX(0) rotate3d(1, 1, 0, 0deg);
+    opacity: 0;
+  }
+  15% { opacity: 0.9; }
+  25% { transform: translateX(-30px) rotate3d(1, 1, 0, 90deg); }
+  50% { transform: translateX(25px) rotate3d(1, 1, 0, 180deg); }
+  75% { transform: translateX(-20px) rotate3d(1, 1, 0, 270deg); }
+  85% { opacity: 0.9; }
+  100% {
+    top: 95%;
+    transform: translateX(30px) rotate3d(1, 1, 0, 360deg);
+    opacity: 0;
+  }
+}
+
+.leaf-pos-0 { 
+  left: 31%; 
+  animation-duration: 7.1s; 
+  animation-delay: 3.9s; 
+}
+
+.leaf-pos-1 { 
+  left: 60%; 
+  animation-duration: 11.0s; 
+  animation-delay: 6.2s; 
+}
+
+.leaf-pos-2 { 
+  left: 17%; 
+  animation-duration: 7.8s; 
+  animation-delay: 4.1s; 
+}
+
+.leaf-pos-3 { 
+  left: 89%; 
+  animation-duration: 10.7s; 
+  animation-delay: 6.1s; 
+}
+
+.leaf-pos-4 { 
+  left: 61%; 
+  animation-duration: 7.0s; 
+  animation-delay: 4.8s; 
+}
+
+.leaf-pos-5 { 
+  left: 14%; 
+  animation-duration: 8.2s; 
+  animation-delay: 6.7s; 
+}
+
+.leaf-pos-6 { 
+  left: 28%; 
+  animation-duration: 10.7s; 
+  animation-delay: 5.1s; 
+}
+
+.leaf-pos-7 { 
+  left: 52%; 
+  animation-duration: 9.8s; 
+  animation-delay: 4.0s; 
+}
+
+.leaf-pos-8 { 
+  left: 77%; 
+  animation-duration: 11.4s; 
+  animation-delay: 3.1s; 
+}
+
+.leaf-pos-9 { 
+  left: 61%; 
+  animation-duration: 11.4s; 
+  animation-delay: 9.7s; 
+}
+
+.leaf-pos-10 { 
+  left: 88%; 
+  animation-duration: 6.6s; 
+  animation-delay: 6.0s; 
+}
+
+.leaf-pos-11 { 
+  left: 20%; 
+  animation-duration: 8.6s; 
+  animation-delay: 5.0s; 
+}
+
+.leaf-pos-12 { 
+  left: 74%; 
+  animation-duration: 7.3s; 
+  animation-delay: 2.0s; 
+}
+
+.leaf-pos-13 { 
+  left: 74%; 
+  animation-duration: 8.8s; 
+  animation-delay: 9.0s; 
+}
+
+.leaf-pos-14 { 
+  left: 50%; 
+  animation-duration: 8.9s; 
+  animation-delay: 8.7s; 
+}
+
+.leaf-pos-15 { 
+  left: 83%; 
+  animation-duration: 6.3s; 
+  animation-delay: 5.6s; 
+}
+
+.leaf-pos-16 { 
+  left: 31%; 
+  animation-duration: 8.5s; 
+  animation-delay: 3.9s; 
+}
+
+.leaf-pos-17 { 
+  left: 83%; 
+  animation-duration: 11.8s; 
+  animation-delay: 5.2s; 
+}
+
+.leaf-pos-18 { 
+  left: 25%; 
+  animation-duration: 9.8s; 
+  animation-delay: 7.2s; 
+}
+
+.leaf-pos-19 { 
+  left: 86%; 
+  animation-duration: 11.6s; 
+  animation-delay: 7.9s; 
+}
+
+.leaf-pos-20 { 
+  left: 16%; 
+  animation-duration: 6.8s; 
+  animation-delay: 2.1s; 
+}
+
+.leaf-pos-21 { 
+  left: 12%; 
+  animation-duration: 10.0s; 
+  animation-delay: 4.2s; 
+}
+
+.leaf-pos-22 { 
+  left: 41%; 
+  animation-duration: 7.3s; 
+  animation-delay: 7.4s; 
+}
+
+.leaf-pos-23 { 
+  left: 35%; 
+  animation-duration: 10.9s; 
+  animation-delay: 8.1s; 
+}
+
+.leaf-pos-24 { 
+  left: 54%; 
+  animation-duration: 10.4s; 
+  animation-delay: 7.4s; 
+}
+
+/* Remove masking to prevent blurry edges and prevent stretching */
+.isolated-tree-img {
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  width: auto !important;
+  max-width: 100% !important;
+}
+
+/* =========================================
+   ANIMATED SVG TREE
+   ========================================= */
+
+.animated-svg-tree-container {
+  position: relative;
+  width: 500px;
+  height: 500px;
+}
+
+.tree-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tree-trunk {
+  /* No animation on the trunk itself, keeps it rooted */
+}
+
+.tree-branch {
+  transform-origin: 0px -150px; /* Pivot from the trunk joint */
+}
+
+/* Branch specific animations */
+.branch-left {
+  animation: branch-sway-left 7s ease-in-out infinite alternate;
+}
+.branch-right {
+  animation: branch-sway-right 6.5s ease-in-out infinite alternate;
+}
+.branch-center {
+  animation: branch-sway-center 8s ease-in-out infinite alternate;
+}
+
+@keyframes branch-sway-left {
+  0% { transform: rotate(-2deg); }
+  100% { transform: rotate(3deg); }
+}
+
+@keyframes branch-sway-right {
+  0% { transform: rotate(1deg); }
+  100% { transform: rotate(-3deg); }
+}
+
+@keyframes branch-sway-center {
+  0% { transform: rotate(-1.5deg); }
+  100% { transform: rotate(2deg); }
+}
+
+/* Falling Leaves Wrapper */
+.falling-leaves-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.svg-falling-leaf {
+  position: absolute;
+  top: -10%;
+  opacity: 0;
+  animation: svg-leaf-fall linear infinite;
+}
+
+@keyframes svg-leaf-fall {
+  0% {
+    top: 10%;
+    opacity: 0;
+    margin-left: 0;
+  }
+  10% {
+    opacity: 0.8;
+  }
+  50% {
+    margin-left: 30px;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    top: 90%;
+    opacity: 0;
+    margin-left: -30px;
+  }
+}
+
+/* Make the tree massive and perfectly blended */
+.hero-image-exact {
+  align-items: center !important;
+  position: relative;
+  overflow: visible !important;
+}
+
+.isolated-tree-img {
+  max-width: none !important;
+  width: 135% !important; /* Make it massive, stretching past its container */
+  height: auto !important;
+  margin-right: -20%; /* Bleed off the right edge of the page */
+  margin-top: -5%;
+  margin-bottom: -10%; /* Bleed downward into the next section slightly */
+  
+  /* Perfect blending */
+  mix-blend-mode: darken !important; 
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 75%) !important;
+  mask-image: radial-gradient(ellipse at center, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 75%) !important;
+  
+  /* Sway animation */
+  transform-origin: bottom center !important; 
+  animation: tree-sway-realistic 6s ease-in-out infinite alternate !important;
+}
+
+/* --- DARK THEME HERO OVERRIDES --- */
+
+.hero-exact {
+  background: #040206 !important;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-top: 80px;
+  overflow: hidden;
+}
+
+.hero-text-exact h1 {
+  color: #FFFFFF !important;
+}
+.hero-desc-exact {
+  color: #D1D5DB !important;
+}
+.btn-white-exact {
+  background: transparent !important;
+  color: #FFFFFF !important;
+  border-color: rgba(255,255,255,0.4) !important;
+}
+.trusted-by-exact {
+  color: #D1D5DB !important;
+}
+
+.hero-image-exact {
+  position: absolute !important;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 60%;
+  height: 100vh !important;
+  pointer-events: auto;
+  z-index: 0;
+}
+.hero-container-exact {
+  z-index: 10;
+  width: 100%;
+}
+.hero-text-exact {
+  position: relative;
+  z-index: 20;
+}
+
+/* =========================================
+   RESPONSIVE OVERRIDES
+   ========================================= */
+
+@media (max-width: 1024px) {
+  .hero-main-content {
+    max-width: 60% !important;
+  }
+  .hero-video-element {
+    object-position: 70% center !important;
+  }
+  .hero-main-content h1 {
+    font-size: 2.6rem !important;
+  }
+  .hero-main-content p {
+    font-size: 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Header */
+  .header-exact {
+    flex-wrap: wrap;
+    padding: 14px 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .logo-exact {
+    order: 1;
+  }
+  .header-right-exact {
+    order: 2;
+    margin-left: auto;
+  }
+  .desktop-only-btn {
+    display: none !important;
+  }
+  .mobile-menu-btn {
+    display: block !important;
+  }
+  .nav-links-exact {
+    order: 3;
+    display: none;
+    width: 100%;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #F3F4F6;
+    align-items: stretch;
+  }
+  .nav-links-exact.mobile-open {
+    display: flex;
+  }
+  .mobile-nav-btn {
+    display: inline-flex !important;
+    justify-content: center;
+    text-align: center;
+    margin-top: 8px;
+    width: 100%;
+    color: var(--white) !important;
+  }
+  
+  /* Hero Section Overrides */
+
+  /* Hero Section Responsive Mobile Layout */
+  .hero-section-container {
+    position: relative !important;
+    min-height: 640px !important;
+    display: flex !important;
+    align-items: flex-start !important;
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+  }
+  .hero-video-layer {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    margin-top: 0 !important;
+    order: unset !important;
+  }
+  .hero-video-element {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: 70% center !important;
+    filter: brightness(1.06) contrast(1.05) !important;
+    border-radius: 0 !important;
+  }
+  .hero-content-wrapper {
+    position: relative !important;
+    z-index: 10 !important;
+    min-height: auto !important;
+    padding: 30px 0 !important;
+    order: unset !important;
+  }
+  .hero-text-wrapper {
+    padding: 0 20px !important;
+  }
+  .hero-main-content {
+    padding: 0 !important;
+    gap: 16px !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 50% !important;
+  }
+  .hero-main-content h1 {
+    font-size: 2.05rem !important;
+    line-height: 1.25 !important;
+    color: #111827 !important;
+  }
+  .hero-main-content p {
+    font-size: 14.5px !important;
+    line-height: 1.6 !important;
+    color: #4B5563 !important;
+    max-width: 100% !important;
+  }
+  .hero-buttons-wrapper {
+    margin-top: 14px !important;
+    margin-bottom: 20px !important;
+    padding-bottom: 0 !important;
+  }
+
+  @media (max-width: 480px) {
+    .hero-section-container {
+      min-height: 600px !important;
+      align-items: flex-start !important;
+      padding-top: 30px !important;
+      padding-bottom: 30px !important;
+    }
+    .hero-video-element {
+      object-position: 72% center !important;
+    }
+    .hero-main-content h1 {
+      font-size: 1.8rem !important;
+    }
+    .hero-main-content p {
+      font-size: 14px !important;
+    }
+    .hero-main-content {
+      max-width: 75% !important;
+    }
+    .hero-buttons-wrapper {
+      margin-bottom: 20px !important;
+    }
+  }
+
+  /* Stats and Services Grids */
+  .stats-grid-exact {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .services-grid-exact {
+    grid-template-columns: 1fr;
+  }
+  .team-grid-exact {
+    grid-template-columns: 1fr;
+  }
+  .hero-container-exact {
+    flex-direction: column;
+    padding-top: 30px;
+  }
+  .hero-text-exact {
+    text-align: center;
+  }
+  .hero-buttons-exact {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-menu-btn {
+    display: none !important;
+  }
+}
+
+
+.hero-video-element {
+  object-fit: cover;
+  object-position: 70% center;
+  filter: brightness(1.06) contrast(1.05);
+}
+
+.hero-section-container { min-height: 100vh; }
+.hero-content-wrapper { min-height: 100vh; align-items: center; }
+
+@media (max-width: 768px) {
+  .hero-section-container { min-height: auto; }
+  .hero-content-wrapper { min-height: auto; align-items: flex-start; padding-top: 40px; padding-bottom: 60px; }
+
+  /* General structural stacking */
+  .services-split-exact, 
+  .advantage-grid-exact, 
+  .how-grid-exact, 
+  .contact-grid-exact,
+  .footer-grid-exact { 
+    flex-direction: column !important; 
+    gap: 40px !important; 
+  }
+
+  /* Grid specific stacking */
+  .advantage-cards-exact { 
+    grid-template-columns: 1fr !important; 
+    gap: 20px;
+  }
+  .stats-grid-exact { 
+    grid-template-columns: 1fr !important; 
+    gap: 30px; 
+  }
+  
+  /* Stats banner borders */
+  .stat-item-exact { 
+    border-left: none !important; 
+    padding-left: 0 !important; 
+    text-align: center;
+  }
+
+  /* Image adjustments */
+  .advantage-image-exact { 
+    width: 100% !important; 
+    height: auto !important; 
+    aspect-ratio: 1 !important; 
+  }
+
+  /* How it works */
+  .how-step-exact { 
+    text-align: center; 
+    margin-bottom: 30px; 
+  }
+  .how-arrow-exact { 
+    display: none !important; 
+  }
+
+  /* Form and footer */
+  .contact-form-exact .form-row-exact { 
+    flex-direction: column !important; 
+    gap: 16px !important; 
+  }
+  .footer-bottom-exact { 
+    flex-direction: column !important; 
+    gap: 16px; 
+    text-align: center; 
+  }
+}
+
+/* =========================================
+   DECORATIVE LEAVES RESPONSIVE SIZING
+   ========================================= */
+.decorative-leaf-about {
+  width: 250px;
+  max-width: 300px;
+}
+
+.decorative-leaf-contact {
+  width: 250px;
+  max-width: 300px;
+  transform: scaleY(-1);
+}
+
+.decorative-leaf-services {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 230px;
+  max-width: 280px;
+  opacity: 0.95;
+  pointer-events: none;
+  z-index: 0;
+  transform: rotate(180deg);
+}
+
+.decorative-leaf-global {
+  width: 230px;
+  max-width: 280px;
+  transform: scaleX(-1);
+}
+
+@media (max-width: 1024px) {
+  .decorative-leaf-about,
+  .decorative-leaf-contact {
+    width: 180px !important;
+    max-width: 220px !important;
+    opacity: 0.9 !important;
+  }
+  .decorative-leaf-services {
+    width: 170px !important;
+    max-width: 200px !important;
+    opacity: 0.9 !important;
+  }
+  .decorative-leaf-global {
+    width: 170px !important;
+    max-width: 200px !important;
+    opacity: 0.9 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .decorative-leaf-about,
+  .decorative-leaf-contact {
+    width: 150px !important;
+    max-width: 180px !important;
+    opacity: 0.9 !important;
+  }
+  .decorative-leaf-services {
+    width: 140px !important;
+    max-width: 170px !important;
+    opacity: 0.9 !important;
+  }
+  .decorative-leaf-global {
+    width: 140px !important;
+    max-width: 170px !important;
+    opacity: 0.9 !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .decorative-leaf-about,
+  .decorative-leaf-contact {
+    width: 130px !important;
+    max-width: 150px !important;
+    opacity: 0.9 !important;
+  }
+  .decorative-leaf-services {
+    width: 120px !important;
+    max-width: 140px !important;
+    opacity: 0.9 !important;
+  }
+  .decorative-leaf-global {
+    width: 120px !important;
+    max-width: 140px !important;
+    opacity: 0.9 !important;
+  }
+}
+

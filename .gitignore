@@ -1,0 +1,21 @@
+# Dependencies (ignore node_modules everywhere)
+node_modules/
+**/node_modules/
+
+# Environment files (NEVER commit secrets)
+.env
+.env.*
+*.env
+*.env.*
+
+# Build outputs & caches
+dist/
+build/
+.cache/
+.vite/
+
+# Logs & System files
+*.log
+logs/
+.DS_Store
+Thumbs.db
