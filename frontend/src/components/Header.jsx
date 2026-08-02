@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const closeMenu = () => setMenuOpen(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
-    <header className="header-exact">
+    <header className={`header-exact ${scrolled ? 'scrolled' : ''}`}>
       <div className="logo-exact">
         <Link to="/">
-          <img src="/Logo.jpeg" alt="NEXA24 Logo" style={{ height: '56px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+          <img src="/Logo.jpeg" alt="NEXA24 Logo" style={{ height: '40px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
         </Link>
       </div>
 
