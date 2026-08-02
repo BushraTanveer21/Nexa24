@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from 'react';
-import bgVideo from '../assets/tree_fast.mp4';
+import bgVideo from '../assets/final video.mp4';
 import bgPoster from '../assets/tree_poster.jpg';
 
 export default function HeroSection() {
@@ -40,7 +40,6 @@ export default function HeroSection() {
           }}
         >
           <source src={bgVideo} type="video/mp4" />
-          <source src="/tree_fast.mp4" type="video/mp4" />
         </video>
       </div>
       <div className="hero-content-wrapper" style={{ position: 'relative', zIndex: 10, width: '100%', display: 'flex', padding: '50px 0' }}>

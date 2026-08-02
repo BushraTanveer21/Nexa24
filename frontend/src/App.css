@@ -1163,7 +1163,7 @@ html {
     max-width: 60% !important;
   }
   .hero-video-element {
-    object-position: 70% center !important;
+    object-position: 65% center !important;
   }
   .hero-main-content h1 {
     font-size: 2.6rem !important;
@@ -1248,7 +1248,7 @@ html {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    object-position: 70% center !important;
+    object-position: 55% center !important;
     filter: brightness(1.06) contrast(1.05) !important;
     border-radius: 0 !important;
   }
@@ -1298,16 +1298,17 @@ html {
       padding-bottom: 30px !important;
     }
     .hero-video-element {
-      object-position: 72% center !important;
+      object-position: 50% center !important;
     }
     .hero-main-content h1 {
       font-size: 1.8rem !important;
     }
     .hero-main-content p {
       font-size: 14px !important;
+      max-width: 85% !important;
     }
     .hero-main-content {
-      max-width: 75% !important;
+      max-width: 60% !important;
     }
     .hero-buttons-wrapper {
       margin-bottom: 20px !important;
