@@ -36,7 +36,7 @@ export default function HeroSection() {
             position: 'absolute', 
             top: 0, 
             left: 0,
-            filter: 'brightness(1.06) contrast(1.05)'
+            filter: 'brightness(1.25) contrast(1.15)'
           }}
         >
           <source src={bgVideo} type="video/mp4" />

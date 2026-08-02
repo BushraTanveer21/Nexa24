@@ -1229,7 +1229,7 @@ html {
     min-height: 640px !important;
     display: flex !important;
     align-items: flex-start !important;
-    padding-top: 40px !important;
+    padding-top: 110px !important;
     padding-bottom: 40px !important;
   }
   .hero-video-layer {
@@ -1248,15 +1248,15 @@ html {
     width: 100% !important;
     height: 100% !important;
     object-fit: cover !important;
-    object-position: 55% center !important;
-    filter: brightness(1.06) contrast(1.05) !important;
+    object-position: 65% center !important;
+    filter: brightness(1.25) contrast(1.15) !important;
     border-radius: 0 !important;
   }
   .hero-content-wrapper {
     position: relative !important;
     z-index: 10 !important;
     min-height: auto !important;
-    padding: 30px 0 !important;
+    padding: 0px 0 !important;
     order: unset !important;
   }
   .hero-text-wrapper {
@@ -1294,21 +1294,23 @@ html {
     .hero-section-container {
       min-height: 600px !important;
       align-items: flex-start !important;
-      padding-top: 30px !important;
+      padding-top: 100px !important;
       padding-bottom: 30px !important;
     }
     .hero-video-element {
-      object-position: 50% center !important;
+      object-position: 65% center !important;
     }
     .hero-main-content h1 {
       font-size: 1.8rem !important;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 5px rgba(255, 255, 255, 1) !important;
     }
     .hero-main-content p {
       font-size: 14px !important;
-      max-width: 85% !important;
+      max-width: 100% !important;
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 5px rgba(255, 255, 255, 1) !important;
     }
     .hero-main-content {
-      max-width: 60% !important;
+      max-width: 75% !important;
     }
     .hero-buttons-wrapper {
       margin-bottom: 20px !important;
@@ -1348,7 +1350,7 @@ html {
 .hero-video-element {
   object-fit: cover;
   object-position: 70% center;
-  filter: brightness(1.06) contrast(1.05);
+  filter: brightness(1.25) contrast(1.15);
 }
 
 .hero-section-container { min-height: 100vh; }
