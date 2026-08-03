@@ -93,19 +93,24 @@ export default function Header() {
         </Link>
 
         <nav className="nav-links">
-          {LINKS.map((link) => (
-            <Link
-              key={link.id}
-              to={link.to}
-              className={activeId === link.id ? "active" : ""}
-            >
-              {link.label}
-            </Link>
-          ))}
+          {LINKS.map((link) => {
+            const isHashLink = link.to.includes("#");
+            return isHashLink ? (
+              <a key={link.id} href={link.to} className={activeId === link.id ? "active" : ""}>
+                {link.label}
+              </a>
+            ) : (
+              <Link key={link.id} to={link.to} className={activeId === link.id ? "active" : ""}>
+                {link.label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="header-actions">
-          <Link className="btn-primary desktop-btn-getstarted" to="/#get-started">Get Started</Link>
+          <a className="btn-primary desktop-btn-getstarted" href="/#get-started">
+            Get Started
+          </a>
           <button
             className="mobile-menu-toggle"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
