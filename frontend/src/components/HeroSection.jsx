@@ -2,16 +2,65 @@ import React, { useRef, useEffect } from 'react';
 import bgVideo from '../assets/final video.mp4';
 
 export default function HeroSection() {
-  const videoRef = useRef(null);
+  const video1Ref = useRef(null);
+  const video2Ref = useRef(null);
+  const activeVideoRef = useRef(1);
+  const isTransitioningRef = useRef(false);
+  const transitionDuration = 1.5; // seconds
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.play().catch((err) => {
-        console.log('Video autoplay prevented:', err);
-      });
+    if (video1Ref.current) {
+      video1Ref.current.style.opacity = 1;
+      video1Ref.current.style.zIndex = 1;
+      video1Ref.current.muted = true;
+      video1Ref.current.play().catch(err => console.log('Autoplay prevented:', err));
+    }
+    if (video2Ref.current) {
+      video2Ref.current.style.opacity = 0;
+      video2Ref.current.style.zIndex = 2;
+      video2Ref.current.muted = true;
     }
   }, []);
+
+  const handleTimeUpdate = (e) => {
+    const video = e.target;
+    const active = activeVideoRef.current;
+    const isCurrentVideo = (active === 1 && video === video1Ref.current) || (active === 2 && video === video2Ref.current);
+    
+    // 1. Current video triggers the next video to start playing before it ends
+    if (isCurrentVideo && video.duration && (video.duration - video.currentTime) <= transitionDuration) {
+      if (!isTransitioningRef.current) {
+        isTransitioningRef.current = true;
+        const nextVideo = active === 1 ? video2Ref.current : video1Ref.current;
+        
+        nextVideo.currentTime = 0;
+        nextVideo.style.zIndex = 2; // Next video sits on top
+        video.style.zIndex = 1; // Current video stays underneath
+        nextVideo.play().catch(err => console.log('Autoplay prevented:', err));
+      }
+    }
+
+    // 2. Next video triggers the fade ONLY once it proves it has buffered and is actually playing
+    if (isTransitioningRef.current) {
+      const nextVideo = active === 1 ? video2Ref.current : video1Ref.current;
+      const currentVideo = active === 1 ? video1Ref.current : video2Ref.current;
+
+      if (video === nextVideo && video.currentTime > 0.1) {
+        // Guarantee it's playing, start fade!
+        nextVideo.style.transition = `opacity ${transitionDuration}s ease-in-out`;
+        nextVideo.style.opacity = 1;
+        isTransitioningRef.current = false; // lock to prevent multiple triggers
+
+        // After fade, reset the old video
+        setTimeout(() => {
+          currentVideo.pause();
+          currentVideo.style.transition = 'none'; // remove transition so it snaps to 0
+          currentVideo.style.opacity = 0;
+          activeVideoRef.current = active === 1 ? 2 : 1;
+        }, transitionDuration * 1000);
+      }
+    }
+  };
 
   return (
     <div className="hero-section-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#ffffff', color: '#111827', fontFamily: 'sans-serif', minHeight: '620px', display: 'flex', alignItems: 'center' }}>
@@ -19,12 +68,13 @@ export default function HeroSection() {
       {/* Background Video Layer */}
       <div className="hero-video-layer" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, backgroundColor: '#ffffff', overflow: 'hidden' }}>
         <video 
-          ref={videoRef}
+          ref={video1Ref}
           autoPlay 
           muted 
           loop
           playsInline 
           preload="auto"
+          onTimeUpdate={handleTimeUpdate}
           className="hero-video-element"
           style={{ 
             width: '100%', 
@@ -36,6 +86,29 @@ export default function HeroSection() {
             left: 0,
             filter: 'brightness(1.25) contrast(1.15)',
             zIndex: 1
+          }}
+        >
+          <source src={bgVideo} type="video/mp4" />
+        </video>
+        <video 
+          ref={video2Ref}
+          muted 
+          loop
+          playsInline 
+          preload="auto"
+          onTimeUpdate={handleTimeUpdate}
+          className="hero-video-element"
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover', 
+            objectPosition: 'center top',
+            position: 'absolute', 
+            top: 0, 
+            left: 0,
+            filter: 'brightness(1.25) contrast(1.15)',
+            opacity: 0,
+            zIndex: 0
           }}
         >
           <source src={bgVideo} type="video/mp4" />
