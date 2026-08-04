@@ -230,7 +230,7 @@ export default function Login() {
 
         {/* Footer Copyright */}
         <footer className="login-card-footer">
-          <p>© 2025 NEXA24 HEALTHCARE. All Rights Reserved.</p>
+          <p>© 2026 NEXA24 HEALTHCARE. All Rights Reserved.</p>
         </footer>
       </div>
 

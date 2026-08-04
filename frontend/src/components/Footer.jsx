@@ -38,11 +38,11 @@ export default function Footer() {
 
         <div>
           <h5>QUICK LINKS</h5>
-          <a href="/#home">Home</a>
+          <a href="#!" onClick={(e) => e.preventDefault()}>Home</a>
           <a href="/#services">Services</a>
-          <Link to="/testimonials">Testimonials</Link>
-          <Link to="/login">Admin Portal</Link>
-          <a href="/#contact">Contact</a>
+          <a href="#!" onClick={(e) => e.preventDefault()}>Testimonials</a>
+          <Link to="/about">About Us</Link>
+          <a href="#!" onClick={(e) => e.preventDefault()}>Contact</a>
         </div>
 
 
@@ -62,7 +62,7 @@ export default function Footer() {
       </div>
 
       <div className="footer-bottom">
-        © 2024 NEXA24 HEALTHCARE. ENGINEERED FOR EXCELLENCE.
+        © 2026 NEXA24 HEALTHCARE. ENGINEERED FOR EXCELLENCE.
       </div>
     </footer>
   );

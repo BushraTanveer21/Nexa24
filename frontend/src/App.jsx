@@ -13,6 +13,7 @@ import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/AdminDashboard";
 import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
+import AboutUs from "./pages/AboutUs";
 
 // Scrolls the window to the top whenever the route path changes (e.g.
 // clicking a service card), so the new page always opens from the
@@ -40,6 +41,7 @@ export default function App() {
         <Route path="/" element={<Services />} />
         <Route path="/services" element={<Services />} />
         <Route path="/services/:slug" element={<ServiceDetail />} />
+        <Route path="/about" element={<AboutUs />} />
         <Route path="/login" element={<Login />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminDashboard />} />
