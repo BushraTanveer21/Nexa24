@@ -1,20 +1,28 @@
 .falling-petals-wrapper {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   overflow: hidden;
-  z-index: 20;
+  z-index: 0;
 }
 
 .falling-element {
   position: absolute;
-  top: -10vh; /* Start above viewport */
+  top: -10%; /* Start above parent */
   animation-name: fall-down-screen;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
+  animation-duration: var(--anim-dur, 15s); /* Fallback */
+}
+
+@media (min-width: 768px) {
+  .falling-element {
+    /* Desktop containers are shorter, so we make the animation duration faster (40% of mobile duration) to maintain the same falling speed effect */
+    animation-duration: calc(var(--anim-dur, 15s) * 0.4);
+  }
 }
 
 .falling-element-inner {
@@ -28,7 +36,8 @@
 
 @keyframes fall-down-screen {
   0% {
-    transform: translateY(-10vh) rotate(0deg);
+    top: -10%;
+    transform: rotate(0deg);
     opacity: 0;
   }
   5% {
@@ -38,7 +47,8 @@
     opacity: 1;
   }
   100% {
-    transform: translateY(120vh) rotate(360deg);
+    top: 110%;
+    transform: rotate(360deg);
     opacity: 0;
   }
 }

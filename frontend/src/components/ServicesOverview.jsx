@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import FallingPetals from './FallingPetals';
 
 const ServicesOverview = () => {
   const [activeIndex, setActiveIndex] = useState(null);
@@ -36,7 +37,9 @@ const ServicesOverview = () => {
   ];
 
   return (
-    <section className="services-exact container" id="services" style={{ position: 'relative' }}>
+    <section className="services-exact container" id="services" style={{ position: 'relative', overflow: 'hidden' }}>
+      <FallingPetals />
+      
       {/* Decorative leaf branch in the bottom-right space */}
       <img 
         src="/image.png?v=5" 

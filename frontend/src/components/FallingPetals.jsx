@@ -25,7 +25,7 @@ export default function FallingPetals() {
         type,
         style: {
           left: `${left}%`,
-          animationDuration: `${animDuration}s`,
+          '--anim-dur': `${animDuration}s`,
           animationDelay: `${animDelay}s`,
           width: `${size}px`,
           height: `${size}px`,

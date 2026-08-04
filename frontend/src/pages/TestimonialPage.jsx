@@ -3,6 +3,7 @@ import Tilt from 'react-parallax-tilt';
 import './TestimonialPage.css';
 
 export default function TestimonialPage() {
+
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -17,7 +18,9 @@ export default function TestimonialPage() {
         const data = await response.json();
         setTestimonials(data);
       } catch (err) {
-        setError(err.message);
+        // Silently catch the error on Vercel and just show the empty state instead of crashing
+        setTestimonials([]);
+        setError(null);
       } finally {
         setLoading(false);
       }

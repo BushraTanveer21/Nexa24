@@ -1,9 +1,11 @@
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
+import FallingPetals from './FallingPetals';
 
 const AboutUs = () => {
   return (
     <section className="about-exact container" id="about" style={{ position: 'relative', overflow: 'hidden', padding: '80px 5%', background: 'var(--white)' }}>
+      <FallingPetals />
 
       {/* Attached to the top-left corner of the AboutUs section */}
       <img 
@@ -25,7 +27,7 @@ const AboutUs = () => {
         <h2 style={{ fontSize: 'clamp(2rem, 4vw, 36px)', fontWeight: '800', color: 'var(--text-dark-exact)' }}>Welcome to <span className="purple-text">NEXA24 HEALTHCARE</span></h2>
       </div>
       
-      <div className="about-content" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px', alignItems: 'center' }}>
+      <div className="about-content" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px', alignItems: 'center', position: 'relative', zIndex: 1 }}>
         <div className="about-text" style={{ fontSize: '18px', lineHeight: '1.6', color: 'var(--text-muted-exact)' }}>
           <p style={{ marginBottom: '24px' }}>
             At NEXA24 HEALTHCARE, we believe healthcare should be simple, accessible, and available whenever you need it.

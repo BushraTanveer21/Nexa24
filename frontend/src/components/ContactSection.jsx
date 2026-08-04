@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import FallingPetals from './FallingPetals';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const ContactSection = () => {
 
   return (
     <section className="contact-exact container" id="contact" style={{ position: 'relative', overflow: 'hidden' }}>
+      <FallingPetals />
       {/* Decorative leaf branch bottom left */}
       <img 
         src="/image.png?v=4" 
