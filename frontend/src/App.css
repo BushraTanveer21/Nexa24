@@ -775,18 +775,6 @@ html {
   animation: tree-sway-realistic 6s ease-in-out infinite alternate !important;
 }
 
-.hero-video-layer {
-  mask-image: linear-gradient(to right, transparent 0%, transparent 45%, black 65%, black 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, transparent 45%, black 65%, black 100%);
-  background: linear-gradient(135deg, #f3e8ff 0%, #e0e7ff 100%);
-  animation: pulse-loading 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse-loading {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
-}
-
 @keyframes tree-sway-realistic {
   0% { transform: rotate(-1.5deg); }
   100% { transform: rotate(1.5deg); }
