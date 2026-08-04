@@ -3,7 +3,9 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
+import ContactPage from './pages/ContactPage';
 import ComingSoonPage from './pages/ComingSoonPage';
+import TestimonialPage from './pages/TestimonialPage';
 
 function ScrollAnimations() {
   const location = useLocation();
@@ -39,20 +41,16 @@ function ScrollAnimations() {
         '.contact-form-card',
         '.about-promise',
         '.hero-inner',
-        '.sov-card'
+        '.sov-card',
+        '.testimonial-card'
       ];
-
-      document.querySelectorAll(cardSelectors.join(', ')).forEach((el, i) => {
-        el.classList.add('anim-card');
-        const parent = el.parentElement;
-        if (parent) {
-          const siblings = Array.from(parent.children).filter((c) =>
-            c.classList.contains('anim-card')
-          );
-          const idx = siblings.indexOf(el);
-          el.style.transitionDelay = `${idx * 0.1}s`;
-        }
-        observer.observe(el);
+      
+      cardSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach((el, index) => {
+          el.style.setProperty('--delay', index);
+          el.classList.add('anim-card');
+          observer.observe(el);
+        });
       });
 
       document.querySelectorAll(
@@ -82,6 +80,8 @@ function App() {
         <main className="page-content">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/testimonial" element={<TestimonialPage />} />
             <Route path="*" element={<ComingSoonPage />} />
           </Routes>
         </main>

@@ -1,18 +1,82 @@
 import React, { useRef, useEffect } from 'react';
 import bgVideo from '../assets/final video.mp4';
-import bgPoster from '../assets/tree_poster.jpg';
 
 export default function HeroSection() {
-  const videoRef = useRef(null);
+  const video1Ref = useRef(null);
+  const video2Ref = useRef(null);
+  const isTransitioningRef = useRef(false);
+  const activeVideoRef = useRef(1);
+  const transitionDuration = 1.5; // seconds
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.muted = true;
-      videoRef.current.play().catch((err) => {
+    if (video1Ref.current) {
+      video1Ref.current.muted = true;
+      video1Ref.current.play().catch((err) => {
         console.log('Video autoplay prevented:', err);
       });
     }
+    if (video2Ref.current) {
+      video2Ref.current.muted = true;
+    }
   }, []);
+
+  const handleTimeUpdate = (e) => {
+    const video = e.target;
+    const isActive = (video === video1Ref.current && activeVideoRef.current === 1) || 
+                     (video === video2Ref.current && activeVideoRef.current === 2);
+    
+    if (!isActive) return;
+
+    // Start crossfade before the video ends
+    if (video.duration && (video.duration - video.currentTime) <= transitionDuration) {
+      if (!isTransitioningRef.current) {
+        isTransitioningRef.current = true;
+        
+        const nextVideo = activeVideoRef.current === 1 ? video2Ref.current : video1Ref.current;
+        
+        // Prepare next video to fade in on top
+        nextVideo.style.zIndex = 1;
+        video.style.zIndex = 0;
+        
+        nextVideo.currentTime = 0;
+        nextVideo.play().catch(err => console.log('Autoplay prevented:', err));
+        
+        nextVideo.style.opacity = 1;
+        
+        // After transition completes, reset the old video
+        setTimeout(() => {
+          video.pause();
+          video.style.opacity = 0;
+          activeVideoRef.current = activeVideoRef.current === 1 ? 2 : 1;
+          isTransitioningRef.current = false;
+        }, transitionDuration * 1000);
+      }
+    }
+  };
+
+  const handleEnded = (e) => {
+    const video = e.target;
+    const isActive = (video === video1Ref.current && activeVideoRef.current === 1) || 
+                     (video === video2Ref.current && activeVideoRef.current === 2);
+    
+    if (!isActive) return;
+
+    // Fallback in case timeupdate missed the window
+    if (!isTransitioningRef.current) {
+       const nextVideo = activeVideoRef.current === 1 ? video2Ref.current : video1Ref.current;
+       
+       nextVideo.style.zIndex = 1;
+       video.style.zIndex = 0;
+       
+       nextVideo.currentTime = 0;
+       nextVideo.play().catch(err => console.log('Autoplay prevented:', err));
+       
+       nextVideo.style.opacity = 1;
+       video.style.opacity = 0;
+       
+       activeVideoRef.current = activeVideoRef.current === 1 ? 2 : 1;
+    }
+  };
 
   return (
     <div className="hero-section-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#ffffff', color: '#111827', fontFamily: 'sans-serif', minHeight: '620px', display: 'flex', alignItems: 'center' }}>
@@ -20,13 +84,13 @@ export default function HeroSection() {
       {/* Background Video Layer */}
       <div className="hero-video-layer" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, backgroundColor: '#ffffff', overflow: 'hidden' }}>
         <video 
-          ref={videoRef}
-          poster={bgPoster}
+          ref={video1Ref}
           autoPlay 
-          loop 
           muted 
           playsInline 
           preload="auto"
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={handleEnded}
           className="hero-video-element"
           style={{ 
             width: '100%', 
@@ -36,7 +100,34 @@ export default function HeroSection() {
             position: 'absolute', 
             top: 0, 
             left: 0,
-            filter: 'brightness(1.25) contrast(1.15)'
+            filter: 'brightness(1.25) contrast(1.15)',
+            transition: `opacity ${transitionDuration}s ease-in-out`,
+            opacity: 1,
+            zIndex: 1
+          }}
+        >
+          <source src={bgVideo} type="video/mp4" />
+        </video>
+        <video 
+          ref={video2Ref}
+          muted 
+          playsInline 
+          preload="auto"
+          onTimeUpdate={handleTimeUpdate}
+          onEnded={handleEnded}
+          className="hero-video-element"
+          style={{ 
+            width: '100%', 
+            height: '100%', 
+            objectFit: 'cover', 
+            objectPosition: 'center top',
+            position: 'absolute', 
+            top: 0, 
+            left: 0,
+            filter: 'brightness(1.25) contrast(1.15)',
+            transition: `opacity ${transitionDuration}s ease-in-out`,
+            opacity: 0,
+            zIndex: 0
           }}
         >
           <source src={bgVideo} type="video/mp4" />

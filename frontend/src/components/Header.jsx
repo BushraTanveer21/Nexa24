@@ -19,13 +19,14 @@ const Header = () => {
     <header className={`header-exact ${scrolled ? 'scrolled' : ''}`}>
       <div className="logo-exact">
         <Link to="/">
-          <img src="/Logo.jpeg" alt="NEXA24 Logo" style={{ height: '40px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
+          <img src="/Logo.jpeg" alt="NEXA24 Logo" style={{ height: '75px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
         </Link>
       </div>
 
       <nav className={`nav-links-exact ${menuOpen ? 'mobile-open' : ''}`}>
         <Link to="/" className={location.pathname === '/' ? 'active' : ''} onClick={closeMenu}>Home</Link>
         <Link to="/services" className={location.pathname === '/services' ? 'active' : ''} onClick={closeMenu}>Services</Link>
+        <Link to="/testimonial" className={location.pathname === '/testimonial' ? 'active' : ''} onClick={closeMenu}>Testimonial</Link>
         <Link to="/contact" className={location.pathname === '/contact' ? 'active' : ''} onClick={closeMenu}>Contact</Link>
         <Link to="/about" className={location.pathname === '/about' ? 'active' : ''} onClick={closeMenu}>About Us</Link>
         <Link to="/contact" className="btn-get-started-exact mobile-nav-btn" onClick={closeMenu}>Get Started</Link>

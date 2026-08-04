@@ -1,0 +1,53 @@
+.falling-petals-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 20;
+}
+
+.falling-element {
+  position: absolute;
+  top: -10vh; /* Start above viewport */
+  animation-name: fall-down-screen;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.falling-element-inner {
+  width: 100%;
+  height: 100%;
+  animation-name: sway-side;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes fall-down-screen {
+  0% {
+    transform: translateY(-10vh) rotate(0deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(120vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes sway-side {
+  0% {
+    transform: translateX(-30px) rotate(-30deg);
+  }
+  100% {
+    transform: translateX(30px) rotate(30deg);
+  }
+}

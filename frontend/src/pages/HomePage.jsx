@@ -1,5 +1,6 @@
 import React from 'react';
 import HeroSection from '../components/HeroSection';
+import FallingPetals from '../components/FallingPetals';
 import StatsBanner from '../components/StatsBanner';
 import AboutUs from '../components/AboutUs';
 import Advantage from '../components/Advantage';
@@ -11,7 +12,10 @@ const HomePage = () => {
   return (
     <div style={{ position: 'relative' }}>
       <div style={{ position: 'relative', zIndex: 1 }}>
-        <HeroSection />
+        <div style={{ position: 'relative', zIndex: 30, backgroundColor: '#fff' }}>
+          <HeroSection />
+        </div>
+        <FallingPetals />
         <StatsBanner />
         <AboutUs />
         <Advantage />

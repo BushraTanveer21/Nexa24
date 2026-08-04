@@ -18,7 +18,7 @@ const ComingSoonPage = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '60px 20px',
+        padding: '140px 20px 60px',
         backgroundColor: '#faf8fc',
         position: 'relative',
         overflow: 'hidden'
