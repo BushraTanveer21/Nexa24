@@ -1,5 +1,5 @@
 import React from "react";
-import { Star, ShieldCheck, Users, TrendingUp, Gauge, Quote } from "lucide-react";
+import { Star, ShieldCheck, Users, TrendingUp, Gauge } from "lucide-react";
 import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
 import useScrollReveal from "../hooks/useScrollReveal";
@@ -110,7 +110,6 @@ export default function AboutUs() {
                 <p className="about-info-role">CEO &amp; Founder, NEXA24 Healthcare LLC</p>
 
                 <div className="about-info-quote">
-                  <Quote size={18} className="about-info-quote-icon" />
                   <p>
                     I started NEXA24 with hard work, passion, and a mission: to help
                     healthcare providers thrive. Every service we offer reflects the effort

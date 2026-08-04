@@ -430,7 +430,7 @@ img { max-width: 100%; display: block; }
   border-radius: 28px;
   overflow: hidden;
   box-shadow: var(--card-shadow-hover), 0 0 0 1px var(--card-border);
-  z-index: 3;
+  z-index: 10;
   animation: photoCardFloat 5s ease-in-out infinite;
 }
 .detail-hero-photo {
@@ -884,7 +884,15 @@ img { max-width: 100%; display: block; }
   
   .footer-grid { grid-template-columns: 1fr 1fr; }
 
-  .detail-hero-visual { width: 400px; height: 400px; margin: 20px auto 0; }
+  /* FIX: was a fixed 400x400 square box forcing landscape photos to sit
+     at the top with empty space below (inside the box) before the next
+     section started. Now the box just wraps the photo's real height. */
+  .detail-hero-visual {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    margin: 20px auto 0;
+  }
   .detail-hero-visual::before { width: 340px; height: 340px; }
   .detail-photo-wrapper { max-width: 340px; max-height: 340px; }
   .detail-hero-photo { max-width: 340px; max-height: 340px; }
@@ -907,7 +915,9 @@ img { max-width: 100%; display: block; }
   .hero-branch-mr { width: 170px; opacity: 0.35; }
   .hero-branch-br { width: 160px; opacity: 0.35; }
 
-  .detail-hero-visual { width: 320px; height: 320px; }
+  /* FIX: same fixed-square issue as the 900px breakpoint above — cap the
+     width only, let height follow the photo's real aspect ratio. */
+  .detail-hero-visual { max-width: 320px; }
   .detail-hero-visual::before { width: 280px; height: 280px; }
   .detail-photo-wrapper { max-width: 300px; max-height: 300px; border-radius: 20px; }
   .detail-hero-photo { max-width: 300px; max-height: 300px; }
@@ -1250,6 +1260,7 @@ img { max-width: 100%; display: block; }
   line-height: 1.75;
   font-style: italic;
 }
+
 .about-info-badges {
   display: flex;
   flex-wrap: wrap;
@@ -1290,12 +1301,26 @@ img { max-width: 100%; display: block; }
   .about-bio-section { padding: 24px 20px 60px; }
   .about-bio-grid { grid-template-columns: 1fr; gap: 40px; }
   .about-bio-intro { max-width: 100%; }
-  .about-bio-right-inner { padding-bottom: 130px !important; margin: 10px auto 0 !important; max-width: 320px !important; }
+
+  /* FIX: previously used position:absolute + a guessed 130px padding-bottom
+     to fake the photo/card overlap. The card's real content (name, role,
+     full quote, two badges) is taller than 130px on narrow screens, so the
+     reserved space never matched the real card height — producing the
+     dead gap / mismatched sizing between the purple photo box and the
+     white card. Switching to normal document flow with a small deliberate
+     overlap fixes it regardless of how tall the card's content gets. */
+  .about-bio-right-inner {
+    padding-bottom: 0 !important;
+    margin: 10px auto 0 !important;
+    max-width: 320px !important;
+  }
   .about-info-card {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: relative;
+    z-index: 2;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    margin-top: -40px;
     border-radius: 20px;
     padding: 22px 20px;
   }
