@@ -47,7 +47,7 @@ const TestimonialsPreview = () => {
       ];
 
   return (
-    <section className="testimonial-grid-section" style={{ padding: '80px 20px', backgroundColor: '#F3E8FF', position: 'relative', overflow: 'hidden' }}>
+    <section style={{ padding: '80px 20px', backgroundColor: '#F3E8FF', position: 'relative', overflow: 'hidden' }}>
       {/* Left Corner Decorative Watercolor Leaves */}
       <img 
         src="/watercolor_leaves.png" 
@@ -61,7 +61,7 @@ const TestimonialsPreview = () => {
           height: 'auto',
           opacity: 0.88,
           pointerEvents: 'none',
-          zIndex: 0,
+          zIndex: 10,
           mixBlendMode: 'multiply'
         }}
       />

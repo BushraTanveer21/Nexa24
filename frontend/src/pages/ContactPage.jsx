@@ -165,7 +165,7 @@ export default function ContactPage() {
       {/* Form Section */}
       <section className="contact-form-section" style={{ position: 'relative' }}>
         {/* Background leaf starting from the corner of the page */}
-        <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch" style={{ position: 'absolute', right: '0px', top: '-120px', width: '280px', transform: 'scaleX(-1) rotate(-15deg)', zIndex: 0, opacity: 0.4 }} />
+        <img src="/image.png" alt="" aria-hidden="true" className="botanical-branch" style={{ position: 'absolute', right: '0px', top: '-120px', width: '280px', transform: 'scaleX(-1) rotate(-15deg)', zIndex: 0, opacity: 0.4 }} />
         
         {/* Wrapper for Card */}
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
