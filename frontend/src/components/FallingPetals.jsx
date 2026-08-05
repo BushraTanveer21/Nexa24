@@ -5,12 +5,14 @@ export default function FallingPetals() {
   const [elements, setElements] = useState([]);
 
   useEffect(() => {
-    // Generate petals only on client to avoid hydration mismatch if SSR
-    const newElements = Array.from({ length: 45 }).map((_, i) => {
+    const totalPetals = 100;
+    const newElements = Array.from({ length: totalPetals }).map((_, i) => {
       const type = Math.floor(Math.random() * 3);
       
-      // randomize values
-      const left = Math.random() * 100;
+      // randomize values but perfectly balance horizontally
+      const segmentWidth = 100 / totalPetals;
+      const left = (i * segmentWidth) + (Math.random() * segmentWidth);
+      
       const animDuration = 10 + Math.random() * 15; // 10s to 25s fall
       const animDelay = -Math.random() * 25; // spread them out initially
       
