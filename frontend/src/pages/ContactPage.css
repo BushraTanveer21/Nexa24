@@ -120,6 +120,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: aboutLogoPulse 4.5s ease-in-out infinite;
 }
 
 .circle-bg {
@@ -221,7 +222,7 @@
 /* Left Pane */
 .contact-card-left {
   flex: 0 0 350px;
-  background-color: lavender;
+  background: linear-gradient(135deg, #F3E7FF 0%, #E9D5FF 60%, #E2CFF7 100%);
   padding: 40px;
   border-right: 1px solid #E5E7EB;
 }
@@ -354,12 +355,17 @@
 
 .select-wrapper {
   position: relative;
+  width: 100%;
 }
 
 .select-wrapper select {
   appearance: none;
   cursor: pointer;
   color: #111827;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .select-wrapper select:invalid,

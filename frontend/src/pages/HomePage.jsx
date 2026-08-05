@@ -4,7 +4,7 @@ import StatsBanner from '../components/StatsBanner';
 import AboutUs from '../components/AboutUs';
 import Advantage from '../components/Advantage';
 import ServicesOverview from '../components/ServicesOverview';
-import CoreValues from '../components/CoreValues';
+import TestimonialsPreview from '../components/TestimonialsPreview';
 import ContactSection from '../components/ContactSection';
 
 const HomePage = () => {
@@ -18,7 +18,7 @@ const HomePage = () => {
         <AboutUs />
         <Advantage />
         <ServicesOverview />
-        <CoreValues />
+        <TestimonialsPreview />
         <ContactSection />
       </div>
     </div>

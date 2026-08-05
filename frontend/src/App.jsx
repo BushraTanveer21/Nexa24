@@ -7,7 +7,7 @@ import ContactPage from './pages/ContactPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import TestimonialPage from './pages/TestimonialPage';
 
-// Ayesha's new pages
+
 import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -26,7 +26,7 @@ function ScrollAnimations() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            entry.target.classList.add('is-visible');
+            entry.target.classList.add('in-view');
             observer.unobserve(entry.target);
           }
         });
@@ -36,7 +36,7 @@ function ScrollAnimations() {
 
     const timer = setTimeout(() => {
       document.querySelectorAll('section').forEach((el) => {
-        el.classList.add('anim-section');
+        el.classList.add('reveal');
         observer.observe(el);
       });
 
@@ -44,28 +44,38 @@ function ScrollAnimations() {
         '.card',
         '.service-card',
         '.adv-card',
+        '.adv-card-exact',
+        '.how-step-exact',
+        '.service-item-exact',
+        '.stat-item-exact',
         '.nexa-meaning-card',
         '.timeline-step',
         '.contact-form-card',
+        '.contact-form-card-exact',
         '.about-promise',
         '.hero-inner',
         '.sov-card',
         '.testimonial-card'
       ];
-      
+
       cardSelectors.forEach(selector => {
         document.querySelectorAll(selector).forEach((el, index) => {
-          el.style.setProperty('--delay', index);
-          el.classList.add('anim-card');
+          el.style.transitionDelay = `${index * 0.1}s`;
+          el.classList.add('reveal');
           observer.observe(el);
         });
       });
 
       document.querySelectorAll(
-        '.about-us-headline, .about-us-desc, .about-eyebrow, .eyebrow, .hero-text h1, .hero-tagline, .hero-ctas, .hero-promise, .contact-info h2, .contact-info p'
+        '.about-us-headline, .about-us-desc, .about-eyebrow, .eyebrow, .eyebrow-exact, .hero-text h1, .hero-tagline, .hero-ctas, .hero-promise, .contact-info h2, .contact-info p'
       ).forEach((el, i) => {
-        el.classList.add('anim-fade');
+        el.classList.add('reveal');
         el.style.transitionDelay = `${i * 0.08}s`;
+        observer.observe(el);
+      });
+
+      // Catch-all: ensure any element manually given the 'reveal' class in JSX is observed!
+      document.querySelectorAll('.reveal').forEach((el) => {
         observer.observe(el);
       });
     }, 100);
@@ -90,8 +100,8 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/testimonial" element={<TestimonialPage />} />
-            
-            {/* Ayesha's routes */}
+
+            {/*  routes */}
             <Route path="/services" element={<Services />} />
             <Route path="/services/:slug" element={<ServiceDetail />} />
             <Route path="/about" element={<AboutUs />} />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './ContactPage.css';
+import branchTL from "../assets/botanical-branch-tl.png";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -13,10 +14,36 @@ export default function ContactPage() {
   
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [servicesList, setServicesList] = useState([
+    "Virtual Assistance Services",
+    "Medical Billing Services",
+    "Credentialing Services",
+    "Marketing Services",
+    "Additional Billing & RCM Solutions"
+  ]);
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, []);
+    
+    // Fetch dynamic services
+    const fetchServices = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/services`);
+        if (res.ok) {
+          const data = await res.json();
+          const activeServices = data.filter(s => s.isActive).map(s => s.title);
+          if (activeServices.length > 0) {
+            setServicesList(activeServices);
+          }
+        }
+      } catch (err) {
+        console.warn("Could not fetch services, using fallback.");
+      }
+    };
+    fetchServices();
+  }, [API_URL]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -29,7 +56,7 @@ export default function ContactPage() {
     setStatus({ type: '', message: '' });
 
     try {
-      const response = await fetch('http://localhost:5000/api/contact', {
+      const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -55,42 +82,15 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="contact-page-wrapper">
-      {/* Decorative leaf branch top-left (starting below logo) */}
-      <img 
-        src="/image.png?v=4" 
-        alt="Decorative leaf branch" 
-        style={{ 
-          position: 'absolute', 
-          top: '120px', 
-          left: -20,
-          opacity: 0.7,
-          pointerEvents: 'none',
-          zIndex: 1,
-          width: '250px',
-          maxWidth: '30vw'
-        }} 
-      />
-
+    <div className="main-wrapper">
+      {/* Decorative leaf branch top-left */}
+      <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-tl" />
+      {/* Removed the middle-right branch from here to move it above the form */}
       {/* Decorative leaf branch bottom-right */}
-      <img 
-        src="/image.png?v=4" 
-        alt="Decorative leaf branch" 
-        style={{ 
-          position: 'absolute', 
-          bottom: -20,
-          right: -20,
-          opacity: 0.7,
-          pointerEvents: 'none',
-          zIndex: 1,
-          width: '250px',
-          maxWidth: '30vw',
-          transform: 'rotate(180deg)'
-        }} 
-      />
+      <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-br" />
       
       {/* Hero Section */}
-      <section className="contact-hero">
+      <section className="hero-wrap contact-hero-exact">
         {/* Floating particles for decoration matching the mockup */}
         <div className="hero-particles">
           <div className="particle p1"></div>
@@ -101,15 +101,15 @@ export default function ContactPage() {
           <div className="particle p6"></div>
         </div>
 
-        <div className="contact-hero-content">
-          <div className="contact-hero-left">
-            <div className="contact-eyebrow">
-              <span className="eyebrow-dot"></span> WE'RE HERE FOR YOU
-            </div>
-            <h1 className="contact-title">
-              Let's build better healthcare, <span className="purple-text">together.</span>
+        <div className="hero-inner" style={{ alignItems: 'center' }}>
+          <div className="hero-content reveal">
+            <span className="eyebrow" style={{ display: 'inline-flex', marginBottom: '24px' }}>
+              <span className="dot"></span> WE'RE HERE FOR YOU
+            </span>
+            <h1>
+              Let's build better healthcare, <span>together.</span>
             </h1>
-            <p className="contact-desc">
+            <p>
               Have questions or ready to get started? Our team is here to help you streamline operations and deliver exceptional patient care.
             </p>
             
@@ -142,7 +142,7 @@ export default function ContactPage() {
             </div>
           </div>
           
-          <div className="contact-hero-right">
+          <div className="contact-hero-right reveal" style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
             <div className="headset-graphic-wrapper">
               <div className="circle-bg c1"></div>
               <div className="circle-bg c2"></div>
@@ -163,28 +163,15 @@ export default function ContactPage() {
       </section>
 
       {/* Form Section */}
-      <section className="contact-form-section">
+      <section className="contact-form-section" style={{ position: 'relative' }}>
+        {/* Background leaf starting from the corner of the page */}
+        <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch" style={{ position: 'absolute', right: '0px', top: '-120px', width: '280px', transform: 'scaleX(-1) rotate(-15deg)', zIndex: 0, opacity: 0.4 }} />
         
-        {/* Wrapper for Card and Decorative Leaf */}
+        {/* Wrapper for Card */}
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-          
-          {/* Decorative leaf hugging the top-right corner of the card */}
-          <img 
-            src="/image.png?v=4" 
-            alt="Decorative leaf branch" 
-            style={{ 
-              position: 'absolute', 
-              top: '-110px', 
-              right: '-20px', 
-              width: '200px', 
-              opacity: 0.7,
-              transform: 'scaleX(-1) rotate(180deg)',
-              pointerEvents: 'none',
-              zIndex: 0
-            }} 
-          />
 
-          <div className="contact-form-card-exact" style={{ position: 'relative', zIndex: 10 }}>
+          <div className="contact-form-card-exact" style={{ position: 'relative', zIndex: 10, background: '#ffffff', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.08)', display: 'flex', overflow: 'hidden', minHeight: '600px' }}>
+            
             
             <div className="contact-card-left">
               <h3>Get in Touch</h3>
@@ -200,7 +187,7 @@ export default function ContactPage() {
                 </div>
                 <div className="channel-info">
                   <h5>Email Us</h5>
-                  <p>care@nex24.com</p>
+                  <p>care@nexa24.com</p>
                 </div>
               </div>
               
@@ -212,7 +199,7 @@ export default function ContactPage() {
                 </div>
                 <div className="channel-info">
                   <h5>Call Us</h5>
-                  <p>+1 (800) NEX24-24</p>
+                  <p>+1 (800) NEXA24-24</p>
                   <p>(800) 639-424</p>
                 </div>
               </div>
@@ -263,66 +250,74 @@ export default function ContactPage() {
                     <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
                   </svg>
                 </a>
+                <a href="#" aria-label="WhatsApp">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+                  </svg>
+                </a>
               </div>
             </div>
           </div>
           
           <div className="contact-card-right" style={{ position: 'relative' }}>
-            <h3>Send us a message</h3>
-            <p>Fill out the form and our team will get back to you shortly.</p>
+            <h3 style={{ position: 'relative', zIndex: 1, color: 'var(--primary-exact)' }}>Send us a message</h3>
+            <p style={{ position: 'relative', zIndex: 1 }}>Fill out the form and our team will get back to you shortly.</p>
             
-            <form className="contact-form" onSubmit={handleSubmit}>
+            <form className="contact-form-exact" onSubmit={handleSubmit}>
               {status.message && (
                 <div className={`form-status ${status.type}`}>
                   {status.message}
                 </div>
               )}
-              <div className="form-row">
-                <div className="form-group">
+              <div className="form-row-exact">
+                <div className="form-group-exact">
                   <input type="text" name="fullName" value={formData.fullName} onChange={handleChange} placeholder="Full Name" required />
                 </div>
-                <div className="form-group">
+                <div className="form-group-exact">
                   <input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="Work Email" required />
                 </div>
               </div>
               
-              <div className="form-row">
-                <div className="form-group">
+              <div className="form-row-exact">
+                <div className="form-group-exact">
                   <input type="tel" name="phone" value={formData.phone} onChange={handleChange} placeholder="Phone Number" />
                 </div>
-                <div className="form-group">
+                <div className="form-group-exact">
                   <input type="text" name="organization" value={formData.organization} onChange={handleChange} placeholder="Organization / Practice Name" />
                 </div>
               </div>
               
-              <div className="form-group">
+              <div className="form-group-exact full-width">
                 <label>I'm interested in</label>
                 <div className="select-wrapper">
                   <select name="service" value={formData.service} onChange={handleChange} required>
                     <option value="" disabled hidden>Select a Service</option>
-                    <option value="Virtual Assistant">Virtual Assistant</option>
-                    <option value="Medical Billing">Medical Billing</option>
-                    <option value="Credentialing">Credentialing</option>
-                    <option value="RCM Solutions">RCM Solutions</option>
+                    {servicesList.map((service, index) => (
+                      <option key={index} value={service}>{service}</option>
+                    ))}
                   </select>
-                  <svg className="select-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg className="select-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </div>
               </div>
               
-              <div className="form-group">
+              <div className="form-group-exact full-width">
                 <label>How can we help you?</label>
-                <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Tell us more about your needs..." rows="4" required></textarea>
+                <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Tell us more about your needs..." rows="5" required></textarea>
               </div>
               
               <div className="form-actions">
-                <button type="submit" className="btn-send-message" disabled={isSubmitting}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                  </svg>
-                  {isSubmitting ? 'Sending...' : 'Send Message'}
+                <button type="submit" className="btn-purple-exact" disabled={isSubmitting}>
+                  {isSubmitting ? 'Sending...' : (
+                    <>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                      </svg>
+                      Send Message
+                    </>
+                  )}
                 </button>
                 <div className="privacy-note">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

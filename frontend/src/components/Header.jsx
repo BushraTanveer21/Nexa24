@@ -7,14 +7,14 @@ import nexaLogo from "../assets/nexa24-logo.png";
 // Home ko bhi enabled: false kar diya — ab woh sirf text ki tarah dikhega,
 // click nahi karega (logo pe click kar ke "/" pe jaya ja sakta hai).
 const LINKS = [
-  { id: "home", to: "/", label: "Home", enabled: true },
+  { id: "home", to: "/", label: "HOME", enabled: true },
   { id: "services", to: "/services", label: "SERVICES", enabled: true },
-  { id: "about", to: "/about", label: "ABOUT US", enabled: true },
   { id: "testimonials", to: "/testimonial", label: "TESTIMONIALS", enabled: true },
   { id: "contact", to: "/contact", label: "CONTACT", enabled: true },
+  { id: "about", to: "/about", label: "ABOUT US", enabled: true },
 ];
 
-const GET_STARTED_TARGET = "/about";
+const GET_STARTED_TARGET = "/contact";
 
 // ===== Compact drawer styles =====
 const drawerStyle = {
@@ -107,10 +107,16 @@ export default function Header() {
 
   const isServices = location.pathname.startsWith("/services");
   const isAbout = location.pathname.startsWith("/about");
+  const isTestimonials = location.pathname.startsWith("/testimonial");
+  const isContact = location.pathname.startsWith("/contact");
 
-  const [activeId, setActiveId] = useState(
-    isServices ? "services" : isAbout ? "about" : "home"
-  );
+  let initialActive = "home";
+  if (isServices) initialActive = "services";
+  else if (isAbout) initialActive = "about";
+  else if (isTestimonials) initialActive = "testimonials";
+  else if (isContact) initialActive = "contact";
+
+  const [activeId, setActiveId] = useState(initialActive);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -133,16 +139,14 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
-    if (isServices) {
-      setActiveId("services");
-      return;
-    }
-    if (isAbout) {
-      setActiveId("about");
-      return;
-    }
-    setActiveId("home");
-  }, [isServices, isAbout]);
+    let currentActive = "home";
+    const path = location.pathname;
+    if (path.startsWith("/services")) currentActive = "services";
+    else if (path.startsWith("/about")) currentActive = "about";
+    else if (path.startsWith("/testimonial")) currentActive = "testimonials";
+    else if (path.startsWith("/contact")) currentActive = "contact";
+    setActiveId(currentActive);
+  }, [location.pathname]);
 
   if (
     location.pathname === "/login" ||

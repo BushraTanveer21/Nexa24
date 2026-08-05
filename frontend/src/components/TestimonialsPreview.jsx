@@ -1,0 +1,108 @@
+import React, { useEffect, useState } from 'react';
+import Tilt from 'react-parallax-tilt';
+import '../pages/TestimonialPage.css';
+
+const TestimonialsPreview = () => {
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/testimonials`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch testimonials');
+        }
+        const data = await response.json();
+        
+        // Filter enabled testimonials
+        const activeTestimonials = data.filter(t => t.isEnabled !== false);
+        
+        // Sort by best rating first (descending)
+        activeTestimonials.sort((a, b) => (b.rating || 5) - (a.rating || 5));
+        
+        // Take the top 3
+        setTestimonials(activeTestimonials.slice(0, 3));
+      } catch (err) {
+        setTestimonials([]);
+        setError(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, [API_URL]);
+
+  // Determine what to display in the grid
+  const displayCards = testimonials.length > 0 
+    ? testimonials 
+    : [
+        { _id: 'empty-1', message: 'No testimonials available yet. Check back soon!', name: 'Coming Soon', position: 'NEXA24' },
+        { _id: 'empty-2', message: 'No testimonials available yet. Check back soon!', name: 'Coming Soon', position: 'NEXA24' },
+        { _id: 'empty-3', message: 'No testimonials available yet. Check back soon!', name: 'Coming Soon', position: 'NEXA24' }
+      ];
+
+  return (
+    <section className="testimonial-grid-section" style={{ padding: '80px 20px', backgroundColor: '#F3E8FF', position: 'relative', overflow: 'hidden' }}>
+      {/* Left Corner Decorative Watercolor Leaves */}
+      <img 
+        src="/watercolor_leaves.png" 
+        alt="Decorative Watercolor Leaves Left" 
+        className="decorative-watercolor-leaf"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '330px',
+          height: 'auto',
+          opacity: 0.88,
+          pointerEvents: 'none',
+          zIndex: 0,
+          mixBlendMode: 'multiply'
+        }}
+      />
+      <div className="container" style={{ maxWidth: '1200px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
+        
+        <div className="how-header-exact" style={{ textAlign: 'center', marginBottom: '60px' }}>
+          <div className="eyebrow-exact" style={{ justifyContent: 'center' }}>CLIENT STORIES</div>
+          <h2>Hear from our <span className="purple-text">partners.</span></h2>
+        </div>
+
+        {loading ? (
+          <div className="loading-state">
+            <div className="spinner"></div>
+          </div>
+        ) : (
+          <>
+            <div className="testimonial-grid">
+              {displayCards.map((t) => (
+                <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
+                  <div className="testimonial-card">
+                    <div className="quote-icon">"</div>
+                    <p className="testimonial-content">{t.message}</p>
+                    <div className="testimonial-author">
+                      <h4>{t.name}</h4>
+                      <p className="author-role">{t.position}</p>
+                    </div>
+                  </div>
+                </Tilt>
+              ))}
+            </div>
+            
+            <div style={{ textAlign: 'center', marginTop: '60px' }}>
+              <a href="/testimonial" className="btn-purple-exact">
+                View All Client Stories
+              </a>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+};
+
+export default TestimonialsPreview;

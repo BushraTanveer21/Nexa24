@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Users, FileText, ShieldCheck, Megaphone, DollarSign } from 'lucide-react';
 import FallingPetals from './FallingPetals';
 
 const ServicesOverview = () => {
@@ -10,29 +11,29 @@ const ServicesOverview = () => {
 
   const services = [
     { 
-      title: 'Remote Patient Monitoring', 
-      description: 'Real-time tracking of patient health metrics (vitals, heart rate, blood pressure) from home to improve care outcomes and reduce hospital readmissions.',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"/></svg> 
+      title: 'Virtual Assistance Services', 
+      description: 'Smart support for scheduling, admin and daily operations.',
+      icon: <Users size={20} strokeWidth={2} /> 
     },
     { 
-      title: 'Clinical Documentation Support', 
-      description: 'Accurate and timely transcription, medical scribing, and management of health records to reduce provider burnout and ensure compliance.',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"/><path d="M12 12h.01M7 12h.01M17 12h.01M7 16h10M7 8h10"/></svg> 
+      title: 'Medical Billing Services', 
+      description: 'Accurate coding, claim management and faster reimbursements.',
+      icon: <FileText size={20} strokeWidth={2} /> 
     },
     { 
-      title: 'Medical Billing & RCM', 
-      description: 'Streamlined revenue cycle management including claims coding, submission, and denial management to accelerate reimbursement and maximize practice revenue.',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg> 
+      title: 'Credentialing Services', 
+      description: 'Faster credentialing and CAQH maintenance.',
+      icon: <ShieldCheck size={20} strokeWidth={2} /> 
     },
     { 
-      title: 'Virtual Assistant & Admin Support', 
-      description: 'Dedicated virtual support for scheduling, patient intake, insurance verification, and email management to keep your clinic running smoothly.',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg> 
+      title: 'Marketing Services', 
+      description: 'Digital strategies that grow your practice online.',
+      icon: <Megaphone size={20} strokeWidth={2} /> 
     },
     { 
-      title: 'Telehealth Support', 
-      description: 'Seamless setup, technical assistance, and session management for virtual consultations, ensuring secure and high-quality remote care.',
-      icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg> 
+      title: 'Additional Billing & RCM Solutions', 
+      description: 'End-to-end revenue cycle management that improves cash flow.',
+      icon: <DollarSign size={20} strokeWidth={2} /> 
     }
   ];
 
@@ -65,7 +66,7 @@ const ServicesOverview = () => {
                 alignItems: 'stretch',
                 gap: 0,
                 transition: 'all 0.3s ease',
-                backgroundColor: activeIndex === i ? '#F5EEFF' : '#F9FAFB',
+                backgroundColor: activeIndex === i ? 'var(--bg-lavender)' : 'var(--bg-exact)',
                 border: activeIndex === i ? '1px solid var(--primary-light)' : '1px solid transparent',
                 borderRadius: '12px',
                 padding: '20px 24px',

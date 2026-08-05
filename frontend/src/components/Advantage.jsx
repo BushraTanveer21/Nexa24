@@ -23,8 +23,8 @@ const Advantage = () => {
       />
 
       <div className="advantage-header-exact" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="eyebrow-exact">WHY CHOOSE NEX24</div>
-        <h2>Why Choose <span className="purple-text">NEX24.</span></h2>
+        <div className="eyebrow-exact">WHY CHOOSE NEXA24</div>
+        <h2>Why Choose <span className="purple-text">NEXA24.</span></h2>
       </div>
       
       <div className="advantage-grid-exact" style={{ position: 'relative', zIndex: 1 }}>
@@ -74,8 +74,10 @@ const Advantage = () => {
             </div>
           </Tilt>
         </div>
-        <div className="advantage-image-exact" style={{ position: 'relative', zIndex: 1 }}>
-          <img src="/doctor.png" alt="Doctor" />
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', maxWidth: '450px', margin: '0 auto' }}>
+          <div className="detail-photo-wrapper" style={{ width: '100%' }}>
+            <img src="/doctor_purple.png" alt="Doctor" className="detail-hero-photo" style={{ width: '100%', height: 'auto', objectFit: 'cover' }} />
+          </div>
         </div>
       </div>
     </section>
