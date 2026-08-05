@@ -804,7 +804,8 @@ img { max-width: 100%; display: block; }
   margin: 0 auto;
 }
 .footer-grid h5 { font-size: 11.5px; letter-spacing: 1.5px; color: var(--primary); font-weight: 700; margin-bottom: 16px; }
-.footer-grid p, .footer-grid a { display: block; color: var(--text-muted); font-size: 13.5px; line-height: 2; }
+.footer-grid p, .footer-grid a, .footer-grid a:visited { display: block; color: var(--text-muted); font-size: 13.5px; line-height: 2; transition: color 0.2s; }
+.footer-grid a:hover, .footer-grid a:active { color: var(--primary); }
 .footer-brand { display: flex; align-items: center; gap: 10px; font-weight: 800; color: var(--deep); margin-bottom: 14px; }
 .footer-brand img {
   mix-blend-mode: multiply;
@@ -863,9 +864,12 @@ img { max-width: 100%; display: block; }
 }
 
 @media (max-width: 900px) {
-  .hero-wrap, .services-section, .why-section, .how-section, .cta-section, .header, .footer {
+  .hero-wrap, .header, .footer {
     padding-left: 20px;
     padding-right: 20px;
+  }
+  .services-section, .why-section, .how-section, .cta-section {
+    padding: 30px 20px;
   }
   .logo-mark img { height: 40px; }
   .header-inner { gap: 12px; }
@@ -2774,14 +2778,31 @@ html {
   }
   
   .hero-content p {
+    max-width: 100%;
+    margin: 18px auto 0 !important;
+    text-align: center;
+  }
+  
+  .hero-section-container .hero-content p {
     max-width: 60%;
-    margin-top: 18px !important;
     margin-left: 0 !important;
+    text-align: left;
   }
 
   .hero-ctas {
-    flex-direction: column !important;
-    align-items: flex-start !important;
+    flex-direction: row !important;
+    justify-content: center !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+  }
+  
+  .btn-primary, .btn-outline {
+    padding: 10px 16px !important;
+    font-size: 13px !important;
+  }
+  
+  .hero-section-container .hero-ctas {
+    justify-content: flex-start !important;
   }
 
   .hero-ctas a {
@@ -2928,6 +2949,27 @@ html {
     width: 160px !important;
     max-width: 180px !important;
     opacity: 0.9 !important;
+  }
+}
+
+
+/* GLOBAL MOBILE RESPONSIVENESS FIXES */
+@media (max-width: 768px) {
+  .services-grid,
+  .handles-grid,
+  .why-grid,
+  .why-grid-4,
+  .how-steps-grid,
+  .services-grid-exact {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .hero-content h1 {
+    font-size: 2.3rem !important;
+  }
+
+  .service-detail-hero .hero-inner {
+    align-items: center !important;
   }
 }
 

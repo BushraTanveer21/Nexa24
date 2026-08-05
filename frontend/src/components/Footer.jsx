@@ -38,11 +38,11 @@ export default function Footer() {
 
         <div>
           <h5>QUICK LINKS</h5>
-          <a href="#!" onClick={(e) => e.preventDefault()}>Home</a>
-          <a href="/#services">Services</a>
-          <a href="#!" onClick={(e) => e.preventDefault()}>Testimonials</a>
+          <Link to="/">Home</Link>
+          <Link to="/services">Services</Link>
+          <Link to="/testimonial">Testimonials</Link>
           <Link to="/about">About Us</Link>
-          <a href="#!" onClick={(e) => e.preventDefault()}>Contact</a>
+          <Link to="/contact">Contact</Link>
         </div>
 
 
