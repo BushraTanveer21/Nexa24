@@ -1,66 +1,87 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import bgVideo from '../assets/final video.mp4';
 
 export default function HeroSection() {
   const video1Ref = useRef(null);
   const video2Ref = useRef(null);
   const activeVideoRef = useRef(1);
-  const isTransitioningRef = useRef(false);
-  const transitionDuration = 1.5; // seconds
+  const isFadingRef = useRef(false);
+  const fadeTime = 0.8; // 0.8s makes the transition buttery smooth and invisible
+
+  const blobUrlRef = useRef(null);
 
   useEffect(() => {
-    if (video1Ref.current) {
-      video1Ref.current.style.opacity = 1;
-      video1Ref.current.style.zIndex = 1;
-      video1Ref.current.muted = true;
-      video1Ref.current.play().catch(err => console.log('Autoplay prevented:', err));
-    }
-    if (video2Ref.current) {
-      video2Ref.current.style.opacity = 0;
-      video2Ref.current.style.zIndex = 2;
-      video2Ref.current.muted = true;
-    }
+    // 1. Silent Blob Hotswap for slow internet
+    fetch(bgVideo)
+      .then(res => res.blob())
+      .then(blob => {
+        blobUrlRef.current = URL.createObjectURL(blob);
+      })
+      .catch(e => console.log('Blob fetch error:', e));
+
+    const v1 = video1Ref.current;
+    const v2 = video2Ref.current;
+    if (!v1 || !v2) return;
+
+    // Start initial video
+    v1.play().catch(e => console.log('Autoplay prevented:', e));
+
+    let animationFrameId;
+
+    const tick = () => {
+      const active = activeVideoRef.current === 1 ? v1 : v2;
+      const next = activeVideoRef.current === 1 ? v2 : v1;
+
+      if (active.duration) {
+        const timeRemaining = active.duration - active.currentTime;
+
+        if (timeRemaining <= fadeTime && !isFadingRef.current) {
+          isFadingRef.current = true;
+          
+          next.currentTime = 0;
+          
+          // CRITICAL FIX: We must wait for the video to actually start decoding frames
+          // before we trigger the CSS fade. Otherwise, it fades in a frozen frame!
+          const playPromise = next.play();
+          
+          if (playPromise !== undefined) {
+            playPromise.then(() => {
+              // Video is now fully moving and active. Begin the smooth fade!
+              next.style.transition = `opacity ${fadeTime}s ease-in-out`;
+              next.style.opacity = 1;
+              next.style.zIndex = 2;
+              
+              active.style.zIndex = 1;
+
+              setTimeout(() => {
+                active.pause();
+                active.style.transition = 'none';
+                active.style.opacity = 0;
+                
+                // Hot-swap to RAM blob for zero network buffering on future loops
+                if (blobUrlRef.current && !active.src.startsWith('blob:')) {
+                  active.src = blobUrlRef.current;
+                  active.load();
+                }
+
+                activeVideoRef.current = activeVideoRef.current === 1 ? 2 : 1;
+                isFadingRef.current = false;
+              }, fadeTime * 1000);
+
+            }).catch(e => {
+              console.log(e);
+              isFadingRef.current = false; // Reset if play fails
+            });
+          }
+        }
+      }
+      animationFrameId = requestAnimationFrame(tick);
+    };
+
+    animationFrameId = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(animationFrameId);
   }, []);
-
-  const handleTimeUpdate = (e) => {
-    const video = e.target;
-    const active = activeVideoRef.current;
-    const isCurrentVideo = (active === 1 && video === video1Ref.current) || (active === 2 && video === video2Ref.current);
-    
-    // 1. Current video triggers the next video to start playing before it ends
-    if (isCurrentVideo && video.duration && (video.duration - video.currentTime) <= transitionDuration) {
-      if (!isTransitioningRef.current) {
-        isTransitioningRef.current = true;
-        const nextVideo = active === 1 ? video2Ref.current : video1Ref.current;
-        
-        nextVideo.currentTime = 0;
-        nextVideo.style.zIndex = 2; // Next video sits on top
-        video.style.zIndex = 1; // Current video stays underneath
-        nextVideo.play().catch(err => console.log('Autoplay prevented:', err));
-      }
-    }
-
-    // 2. Next video triggers the fade ONLY once it proves it has buffered and is actually playing
-    if (isTransitioningRef.current) {
-      const nextVideo = active === 1 ? video2Ref.current : video1Ref.current;
-      const currentVideo = active === 1 ? video1Ref.current : video2Ref.current;
-
-      if (video === nextVideo && video.currentTime > 0.1) {
-        // Guarantee it's playing, start fade!
-        nextVideo.style.transition = `opacity ${transitionDuration}s ease-in-out`;
-        nextVideo.style.opacity = 1;
-        isTransitioningRef.current = false; // lock to prevent multiple triggers
-
-        // After fade, reset the old video
-        setTimeout(() => {
-          currentVideo.pause();
-          currentVideo.style.transition = 'none'; // remove transition so it snaps to 0
-          currentVideo.style.opacity = 0;
-          activeVideoRef.current = active === 1 ? 2 : 1;
-        }, transitionDuration * 1000);
-      }
-    }
-  };
 
   return (
     <div className="hero-section-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#ffffff', color: '#111827', fontFamily: 'sans-serif', minHeight: '620px', display: 'flex', alignItems: 'center' }}>
@@ -74,7 +95,6 @@ export default function HeroSection() {
           loop
           playsInline 
           preload="auto"
-          onTimeUpdate={handleTimeUpdate}
           className="hero-video-element"
           style={{ 
             width: '100%', 
@@ -96,7 +116,6 @@ export default function HeroSection() {
           loop
           playsInline 
           preload="auto"
-          onTimeUpdate={handleTimeUpdate}
           className="hero-video-element"
           style={{ 
             width: '100%', 
