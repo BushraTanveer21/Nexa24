@@ -440,9 +440,19 @@
   }
 
   .contact-feature-item {
-    text-align: left;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
   }
   
+  .contact-features {
+    align-items: center;
+  }
+
+  .contact-hero-exact h1 {
+    font-size: 2.3rem !important;
+  }
+
   .contact-form-card-exact {
     flex-direction: column;
   }
