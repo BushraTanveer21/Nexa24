@@ -7,6 +7,14 @@ import ContactPage from './pages/ContactPage';
 import ComingSoonPage from './pages/ComingSoonPage';
 import TestimonialPage from './pages/TestimonialPage';
 
+// Ayesha's new pages
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import AdminDashboard from "./pages/AdminDashboard";
+import Services from "./pages/Services";
+import ServiceDetail from "./pages/ServiceDetail";
+import AboutUs from "./pages/AboutUs";
+
 function ScrollAnimations() {
   const location = useLocation();
 
@@ -82,6 +90,15 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/testimonial" element={<TestimonialPage />} />
+            
+            {/* Ayesha's routes */}
+            <Route path="/services" element={<Services />} />
+            <Route path="/services/:slug" element={<ServiceDetail />} />
+            <Route path="/about" element={<AboutUs />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/reset-password/:token" element={<ResetPassword />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+
             <Route path="*" element={<ComingSoonPage />} />
           </Routes>
         </main>

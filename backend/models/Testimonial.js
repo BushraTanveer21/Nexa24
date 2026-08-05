@@ -1,26 +1,15 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
-const testimonialSchema = new mongoose.Schema({
-  authorName: {
-    type: String,
-    required: true
+const testimonialSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    position: { type: String },
+    message: { type: String, required: true },
+    rating: { type: Number, min: 1, max: 5, default: 5 },
+    image: { type: String },
+    isEnabled: { type: Boolean, default: true },
   },
-  organization: {
-    type: String,
-    required: true
-  },
-  role: {
-    type: String,
-    default: ''
-  },
-  content: {
-    type: String,
-    required: true
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+  { timestamps: true }
+);
 
-module.exports = mongoose.model('Testimonial', testimonialSchema);
+export default mongoose.model("Testimonial", testimonialSchema);
