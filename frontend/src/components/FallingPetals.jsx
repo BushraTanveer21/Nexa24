@@ -5,7 +5,9 @@ export default function FallingPetals() {
   const [elements, setElements] = useState([]);
 
   useEffect(() => {
-    const totalPetals = 100;
+    const isMobile = window.innerWidth <= 768;
+    const totalPetals = isMobile ? 75 : 100;
+    
     const newElements = Array.from({ length: totalPetals }).map((_, i) => {
       const type = Math.floor(Math.random() * 3);
       
