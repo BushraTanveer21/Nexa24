@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
@@ -108,12 +108,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminDashboard />} />
-
-            {/* Common redirects for aliases */}
-            <Route path="/aboutus" element={<Navigate to="/about" replace />} />
-            <Route path="/contactus" element={<Navigate to="/contact" replace />} />
-            <Route path="/testimonials" element={<Navigate to="/testimonial" replace />} />
-            <Route path="/service" element={<Navigate to="/services" replace />} />
 
             <Route path="*" element={<ComingSoonPage />} />
           </Routes>
