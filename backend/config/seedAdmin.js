@@ -15,20 +15,18 @@ const seedAdmin = async () => {
       const normalizedEmail = adminData.email.toLowerCase().trim();
       const existing = await Admin.findOne({ email: normalizedEmail });
 
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(adminData.password, salt);
-
       if (!existing) {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(adminData.password, salt);
+
         await Admin.create({
           name: adminData.name,
           email: normalizedEmail,
           password: hashedPassword,
         });
-        console.log(`🔐 Admin account created for ${normalizedEmail}. Password set from env/config — check with whoever set it up.`);
+        console.log(`🔐 Admin account created for ${normalizedEmail}.`);
       } else {
-        existing.password = hashedPassword;
-        await existing.save();
-        console.log(`🔐 Admin credentials verified for ${normalizedEmail}.`);
+        console.log(`🔐 Admin already exists for ${normalizedEmail}, skipping seed.`);
       }
     }
   } catch (error) {

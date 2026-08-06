@@ -140,6 +140,8 @@ export default function AdminDashboard() {
   }, [navigate]);
 
   const fetchBackendData = async () => {
+    const token = getAuthToken();
+
     try {
       const resT = await fetch(`${API_URL}/api/testimonials`);
       if (resT.ok) {
@@ -159,7 +161,12 @@ export default function AdminDashboard() {
         }
       }
 
-      const resS = await fetch(`${API_URL}/api/services`);
+      // Admin dashboard needs ALL services (including disabled ones), not
+      // just the public/active list — use the admin endpoint with auth,
+      // so a service that gets deactivated doesn't disappear from here too.
+      const resS = await fetch(`${API_URL}/api/services/admin`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (resS.ok) {
         const dataS = await resS.json();
         if (Array.isArray(dataS)) {
@@ -175,7 +182,6 @@ export default function AdminDashboard() {
         }
       }
 
-      const token = getAuthToken();
       const resC = await fetch(`${API_URL}/api/contact`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -189,9 +195,9 @@ export default function AdminDashboard() {
             subject: c.subject || "General Inquiry",
             receivedOn: c.createdAt
               ? new Date(c.createdAt).toLocaleString("en-US", {
-                  month: "short", day: "numeric", year: "numeric",
-                  hour: "numeric", minute: "2-digit",
-                })
+                month: "short", day: "numeric", year: "numeric",
+                hour: "numeric", minute: "2-digit",
+              })
               : "",
             status: c.status || "New",
             message: c.message || "",
@@ -657,7 +663,7 @@ export default function AdminDashboard() {
         </header>
 
         {/* TAB CONTENT RENDERING */}
-        
+
         {/* DASHBOARD OVERVIEW TAB */}
         {activeNav === "dashboard" && (
           <>

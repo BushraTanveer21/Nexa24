@@ -2,6 +2,7 @@ import React from "react";
 import { Star, ShieldCheck, Users, TrendingUp, Gauge } from "lucide-react";
 import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
+import ceoImage from "../assets/ceo-yamna.jpg";
 import useScrollReveal from "../hooks/useScrollReveal";
 
 // 4 core values — same slot the mockup used for its 3 bullet items
@@ -100,9 +101,11 @@ export default function AboutUs() {
           <div className="about-bio-right reveal">
             <div className="about-bio-right-inner">
               <div className="about-photo-frame">
-                <div className="about-photo-placeholder">
-                  <span>Y</span>
-                </div>
+                <img 
+                  src={ceoImage} 
+                  alt="Yamna - CEO & Founder" 
+                  className="about-photo-image"
+                />
               </div>
 
               <div className="about-info-card">
