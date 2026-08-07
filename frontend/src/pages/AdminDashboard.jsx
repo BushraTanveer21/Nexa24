@@ -23,7 +23,9 @@ import {
   Image as ImageIcon,
   Menu,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Video,
+  Camera
 } from "lucide-react";
 import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
@@ -51,6 +53,22 @@ const uploadImageFile = async (file) => {
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Image upload failed");
+  return data.url;
+};
+
+const uploadVideoFile = async (file) => {
+  const token = getAuthToken();
+  const formData = new FormData();
+  formData.append("video", file);
+
+  const res = await fetch(`${API_URL}/api/upload/video`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.message || "Video upload failed");
   return data.url;
 };
 
@@ -95,12 +113,24 @@ export default function AdminDashboard() {
     status: "Published",
     homepageDisplay: true,
     message: "",
-    image: ""
+    email: "",
+    videoUrl: "",
+    type: "text"
   });
 
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [uploadingServiceImage, setUploadingServiceImage] = useState(false);
+  const [uploadingTestimonialVideo, setUploadingTestimonialVideo] = useState(false);
   const [uploadingTestimonialImage, setUploadingTestimonialImage] = useState(false);
+
+  const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
+  const [confirmDialog, setConfirmDialog] = useState({ show: false, title: '', onConfirm: null });
+  const [testimonialTab, setTestimonialTab] = useState("admin");
+
+  const showToast = (message, type = 'success') => {
+    setToast({ show: true, message, type });
+    setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
+  };
 
   useEffect(() => {
     // Auth Check — verify the token with the backend rather than just
@@ -143,7 +173,9 @@ export default function AdminDashboard() {
     const token = getAuthToken();
 
     try {
-      const resT = await fetch(`${API_URL}/api/testimonials`);
+      const resT = await fetch(`${API_URL}/api/testimonials/admin`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (resT.ok) {
         const dataT = await resT.json();
         if (Array.isArray(dataT)) {
@@ -155,7 +187,10 @@ export default function AdminDashboard() {
             homepageDisplay: t.homepageDisplay !== undefined ? t.homepageDisplay : (t.isEnabled !== false),
             message: t.message || "",
             rating: t.rating || 5,
-            image: t.image || ""
+            email: t.email || "",
+            videoUrl: t.videoUrl || "",
+            image: t.image || "",
+            isClientSubmitted: t.isClientSubmitted || false
           }));
           setTestimonials(mappedT);
         }
@@ -190,8 +225,9 @@ export default function AdminDashboard() {
         if (Array.isArray(dataC)) {
           const mappedC = dataC.map((c) => ({
             _id: c._id,
-            name: c.name,
+            name: c.name || c.fullName,
             email: c.email,
+            phone: c.phone || "Not Provided",
             subject: c.subject || "General Inquiry",
             receivedOn: c.createdAt
               ? new Date(c.createdAt).toLocaleString("en-US", {
@@ -291,30 +327,36 @@ export default function AdminDashboard() {
         setServices([...services, mapped]);
       }
       setShowServiceModal(false);
+      showToast(isEditing ? "Service updated successfully." : "Service created successfully.");
     } catch (err) {
-      alert(err.message || "Could not save service. Please try again.");
+      showToast(err.message || "Could not save service. Please try again.", "error");
     }
   };
 
-  const handleDeleteService = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this service?")) return;
+  const handleDeleteService = (id) => {
+    setConfirmDialog({
+      show: true,
+      title: "Are you sure you want to delete this service?",
+      onConfirm: async () => {
+        try {
+          const token = getAuthToken();
+          const res = await fetch(`${API_URL}/api/services/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
-    try {
-      const token = getAuthToken();
-      const res = await fetch(`${API_URL}/api/services/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || "Failed to delete service");
+          }
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || "Failed to delete service");
+          setServices(services.filter(s => s._id !== id));
+          showToast("Service deleted successfully.");
+        } catch (err) {
+          showToast(err.message || "Could not delete service. Please try again.", "error");
+        }
       }
-
-      setServices(services.filter(s => s._id !== id));
-    } catch (err) {
-      alert(err.message || "Could not delete service. Please try again.");
-    }
+    });
   };
 
   const handleOrderChange = async (id, newOrder) => {
@@ -337,9 +379,9 @@ export default function AdminDashboard() {
   };
 
   // Testimonial handlers
-  const handleOpenAddTestimonial = () => {
+  const handleOpenAddTestimonial = (type = 'text') => {
     setEditingTestimonial(null);
-    setTestimonialForm({ clientName: "", designation: "", status: "Published", homepageDisplay: true, message: "", image: "" });
+    setTestimonialForm({ clientName: "", designation: "", status: "Published", homepageDisplay: true, message: "", email: "", videoUrl: "", image: "", rating: 5, type });
     setShowTestimonialModal(true);
   };
 
@@ -351,7 +393,11 @@ export default function AdminDashboard() {
       status: t.status,
       homepageDisplay: t.homepageDisplay,
       message: t.message || "",
-      image: t.image || ""
+      email: t.email || "",
+      videoUrl: t.videoUrl || "",
+      image: t.image || "",
+      rating: t.rating || 5,
+      type: t.videoUrl ? "video" : "text"
     });
     setShowTestimonialModal(true);
   };
@@ -360,13 +406,26 @@ export default function AdminDashboard() {
     e.preventDefault();
     if (!testimonialForm.clientName.trim()) return;
 
+    if (testimonialForm.type === 'video' && !testimonialForm.videoUrl) {
+      alert("Please upload a video.");
+      return;
+    }
+
+    if (testimonialForm.type === 'text' && (!testimonialForm.message || !testimonialForm.message.trim())) {
+      alert("Please enter a review message.");
+      return;
+    }
+
     // Backend model fields are name/position/isEnabled — dashboard form uses
     // clientName/designation/status+homepageDisplay. Map here.
     const payload = {
       name: testimonialForm.clientName,
       position: testimonialForm.designation,
       message: testimonialForm.message,
+      email: testimonialForm.email,
+      videoUrl: testimonialForm.videoUrl,
       image: testimonialForm.image,
+      rating: Number(testimonialForm.rating),
       isEnabled: testimonialForm.status !== "Disabled" && testimonialForm.homepageDisplay,
     };
 
@@ -400,7 +459,10 @@ export default function AdminDashboard() {
         homepageDisplay: saved.isEnabled !== false,
         message: saved.message || "",
         rating: saved.rating || 5,
+        email: saved.email || "",
+        videoUrl: saved.videoUrl || "",
         image: saved.image || "",
+        isClientSubmitted: saved.isClientSubmitted || false
       };
 
       if (isEditing) {
@@ -409,30 +471,36 @@ export default function AdminDashboard() {
         setTestimonials([...testimonials, mapped]);
       }
       setShowTestimonialModal(false);
+      showToast(isEditing ? "Testimonial updated successfully." : "Testimonial created successfully.");
     } catch (err) {
-      alert(err.message || "Could not save testimonial. Please try again.");
+      showToast(err.message || "Could not save testimonial. Please try again.", "error");
     }
   };
 
-  const handleDeleteTestimonial = async (id) => {
-    if (!window.confirm("Delete this testimonial item?")) return;
+  const handleDeleteTestimonial = (id) => {
+    setConfirmDialog({
+      show: true,
+      title: "Delete this testimonial item?",
+      onConfirm: async () => {
+        try {
+          const token = getAuthToken();
+          const res = await fetch(`${API_URL}/api/testimonials/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
-    try {
-      const token = getAuthToken();
-      const res = await fetch(`${API_URL}/api/testimonials/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || "Failed to delete testimonial");
+          }
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || "Failed to delete testimonial");
+          setTestimonials(testimonials.filter(t => t._id !== id));
+          showToast("Testimonial deleted successfully.");
+        } catch (err) {
+          showToast(err.message || "Could not delete testimonial. Please try again.", "error");
+        }
       }
-
-      setTestimonials(testimonials.filter(t => t._id !== id));
-    } catch (err) {
-      alert(err.message || "Could not delete testimonial. Please try again.");
-    }
+    });
   };
 
   const handleToggleHomepageDisplay = async (id) => {
@@ -458,26 +526,31 @@ export default function AdminDashboard() {
   };
 
   // Contact handlers
-  const handleDeleteContact = async (id) => {
-    if (!window.confirm("Delete this inquiry?")) return;
+  const handleDeleteContact = (id) => {
+    setConfirmDialog({
+      show: true,
+      title: "Delete this inquiry?",
+      onConfirm: async () => {
+        try {
+          const token = getAuthToken();
+          const res = await fetch(`${API_URL}/api/contact/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${token}` },
+          });
 
-    try {
-      const token = getAuthToken();
-      const res = await fetch(`${API_URL}/api/contact/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.message || "Failed to delete inquiry");
+          }
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || "Failed to delete inquiry");
+          setContacts(contacts.filter(c => c._id !== id));
+          if (selectedInquiry?._id === id) setSelectedInquiry(null);
+          showToast("Inquiry deleted successfully.");
+        } catch (err) {
+          showToast(err.message || "Could not delete inquiry. Please try again.", "error");
+        }
       }
-
-      setContacts(contacts.filter(c => c._id !== id));
-      if (selectedInquiry?._id === id) setSelectedInquiry(null);
-    } catch (err) {
-      alert(err.message || "Could not delete inquiry. Please try again.");
-    }
+    });
   };
 
   const handleUpdateInquiryStatus = async (id, newStatus) => {
@@ -683,7 +756,7 @@ export default function AdminDashboard() {
 
               {/* Card 2: Total Testimonials */}
               <div className="stat-card">
-                <div className="stat-icon-box purple-outline">
+                <div className="stat-icon-box purple">
                   <Star size={22} />
                 </div>
                 <div className="stat-info">
@@ -808,12 +881,27 @@ export default function AdminDashboard() {
         {/* TESTIMONIALS MANAGEMENT TAB */}
         {activeNav === "testimonials" && (
           <section className="dash-section-card animate-fade-in">
-            <div className="section-card-header">
-              <h2 className="section-title">Testimonials Management</h2>
-              <button className="btn-primary-purple" onClick={handleOpenAddTestimonial}>
-                <Plus size={16} />
-                <span>Add Testimonial</span>
-              </button>
+            <div className="section-card-header" style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '16px', marginBottom: '16px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '24px' }}>
+                <button 
+                  onClick={() => setTestimonialTab("admin")}
+                  style={{ background: 'none', border: 'none', padding: '8px 4px', fontSize: '15px', fontWeight: testimonialTab === "admin" ? '600' : '500', color: testimonialTab === "admin" ? '#6d28d9' : '#64748b', borderBottom: testimonialTab === "admin" ? '2px solid #6d28d9' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-17px' }}
+                >
+                  Testimonial Management
+                </button>
+                <button 
+                  onClick={() => setTestimonialTab("client")}
+                  style={{ background: 'none', border: 'none', padding: '8px 4px', fontSize: '15px', fontWeight: testimonialTab === "client" ? '600' : '500', color: testimonialTab === "client" ? '#6d28d9' : '#64748b', borderBottom: testimonialTab === "client" ? '2px solid #6d28d9' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-17px' }}
+                >
+                  Client Testimonials
+                </button>
+              </div>
+              <div className="table-actions">
+                <button className="btn-primary-purple" onClick={() => handleOpenAddTestimonial('text')}>
+                  <Plus size={16} />
+                  <span>Add Testimonial</span>
+                </button>
+              </div>
             </div>
 
             <div className="table-responsive-wrapper">
@@ -821,26 +909,34 @@ export default function AdminDashboard() {
                 <thead>
                   <tr>
                     <th style={{ width: "32px" }}>#</th>
-                    <th style={{ width: "70px" }}>Photo</th>
+                    <th style={{ width: "60px" }}>Avatar</th>
                     <th>Client Name</th>
                     <th>Designation</th>
-                    <th style={{ textAlign: "center" }}>Review</th>
+                    <th>Review</th>
                     <th style={{ textAlign: "center" }}>Status</th>
                     <th style={{ textAlign: "center" }}>Actions</th>
                     <th style={{ textAlign: "center" }}>Homepage Display</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {testimonials.map((t, idx) => (
+                  {testimonials.filter(t => testimonialTab === "client" ? t.isClientSubmitted : !t.isClientSubmitted).map((t, idx) => (
                     <tr key={t._id}>
                       <td className="col-index">{idx + 1}</td>
                       <td className="col-image">
                         {t.image ? (
-                          <img src={t.image} alt={t.clientName} className="service-table-thumb" />
+                          <img 
+                            src={t.image}
+                            alt={t.clientName} 
+                            className="service-table-thumb" 
+                            style={{ borderRadius: '50%', objectFit: 'cover' }}
+                          />
                         ) : (
-                          <div className="service-thumb-placeholder" title="No photo uploaded">
-                            <ImageIcon size={18} />
-                          </div>
+                          <img 
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.clientName || 'User')}&background=random&color=fff&size=128`}
+                            alt={t.clientName} 
+                            className="service-table-thumb" 
+                            style={{ borderRadius: '50%' }}
+                          />
                         )}
                       </td>
                       <td><strong>{t.clientName}</strong></td>
@@ -888,7 +984,7 @@ export default function AdminDashboard() {
                       </td>
                     </tr>
                   ))}
-                  {testimonials.length === 0 && (
+                  {testimonials.filter(t => testimonialTab === "client" ? t.isClientSubmitted : !t.isClientSubmitted).length === 0 && (
                     <tr>
                       <td colSpan="8" className="empty-row">No testimonials found.</td>
                     </tr>
@@ -916,6 +1012,7 @@ export default function AdminDashboard() {
                     <th>Subject</th>
                     <th>Received On</th>
                     <th style={{ textAlign: "center" }}>Status</th>
+                    <th style={{ textAlign: "center" }}>Read Status</th>
                     <th style={{ textAlign: "center" }}>Actions</th>
                   </tr>
                 </thead>
@@ -923,7 +1020,6 @@ export default function AdminDashboard() {
                   {contacts.map((c, idx) => (
                     <tr key={c._id} style={!c.isRead ? { fontWeight: 600 } : undefined}>
                       <td className="col-index">
-                        {!c.isRead && <span className="dot-badge orange" style={{ marginRight: 6 }}><span className="dot"></span></span>}
                         {idx + 1}
                       </td>
                       <td><strong>{c.name}</strong></td>
@@ -939,6 +1035,13 @@ export default function AdminDashboard() {
                         )}
                         {c.status === "Handled" && (
                           <span className="status-pill handled">Handled</span>
+                        )}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        {c.isRead ? (
+                          <span className="status-pill handled">Read</span>
+                        ) : (
+                          <span className="status-pill pending">Unread</span>
                         )}
                       </td>
                       <td style={{ textAlign: "center" }}>
@@ -963,7 +1066,7 @@ export default function AdminDashboard() {
                   ))}
                   {contacts.length === 0 && (
                     <tr>
-                      <td colSpan="7" className="empty-row">No contact inquiries.</td>
+                      <td colSpan="8" className="empty-row">No contact inquiries.</td>
                     </tr>
                   )}
                 </tbody>
@@ -1035,6 +1138,13 @@ export default function AdminDashboard() {
                         onChange={async (e) => {
                           const file = e.target.files && e.target.files[0];
                           if (!file) return;
+                          
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("Image is too large. Please upload an image under 5MB.");
+                            e.target.value = "";
+                            return;
+                          }
+
                           setUploadingServiceImage(true);
                           try {
                             const url = await uploadImageFile(file);
@@ -1080,12 +1190,52 @@ export default function AdminDashboard() {
         <div className="modal-backdrop" onClick={() => setShowTestimonialModal(false)}>
           <div className="nexa-modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h3>{editingTestimonial ? "Edit Testimonial" : "Add New Testimonial"}</h3>
-              <button className="modal-close-btn" onClick={() => setShowTestimonialModal(false)}>
-                <X size={18} />
+              <h2>
+                {editingTestimonial
+                  ? `Edit ${testimonialForm.type === 'video' ? 'Video' : 'Text'} Testimonial`
+                  : `Add New ${testimonialForm.type === 'video' ? 'Video' : 'Text'} Testimonial`}
+              </h2>
+              <button className="btn-close" onClick={() => setShowTestimonialModal(false)}>
+                <X size={20} />
               </button>
             </div>
             <form onSubmit={handleSaveTestimonial} className="modal-form">
+              <div className="modal-field">
+                <label>Testimonial Type</label>
+                <div style={{ display: 'flex', gap: '10px' }}>
+                  <button 
+                    type="button" 
+                    className={`btn-primary-purple ${testimonialForm.type === 'text' ? '' : 'btn-outline'}`}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: '1px solid #7c3aed',
+                      background: testimonialForm.type === 'text' ? '#7c3aed' : 'transparent',
+                      color: testimonialForm.type === 'text' ? 'white' : '#7c3aed',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => setTestimonialForm({ ...testimonialForm, type: 'text' })}
+                  >
+                    Text Review
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`btn-primary-purple ${testimonialForm.type === 'video' ? '' : 'btn-outline'}`}
+                    style={{
+                      padding: '8px 16px',
+                      borderRadius: '8px',
+                      border: '1px solid #7c3aed',
+                      background: testimonialForm.type === 'video' ? '#7c3aed' : 'transparent',
+                      color: testimonialForm.type === 'video' ? 'white' : '#7c3aed',
+                      cursor: 'pointer'
+                    }}
+                    onClick={() => setTestimonialForm({ ...testimonialForm, type: 'video' })}
+                  >
+                    Video Review
+                  </button>
+                </div>
+              </div>
+
               <div className="modal-field">
                 <label>Client Name</label>
                 <input
@@ -1108,60 +1258,161 @@ export default function AdminDashboard() {
               </div>
 
               <div className="modal-field">
-                <label>Client Photo</label>
-                <div className="image-upload-wrapper">
-                  {testimonialForm.image ? (
-                    <div className="image-preview-box">
-                      <img src={testimonialForm.image} alt="Client Preview" className="service-img-preview" />
-                      <button
-                        type="button"
-                        className="btn-remove-image"
-                        onClick={() => setTestimonialForm({ ...testimonialForm, image: "" })}
-                      >
-                        <X size={14} /> Clear Image
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="file-upload-dropzone">
-                      <Upload size={22} className="upload-icon" />
-                      <div className="upload-text">
-                        <strong>{uploadingTestimonialImage ? "Uploading..." : "Click or drag to upload photo"}</strong>
-                        <span>PNG, JPG, WEBP up to 5MB</span>
-                      </div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="file-input-hidden"
-                        disabled={uploadingTestimonialImage}
-                        onChange={async (e) => {
-                          const file = e.target.files && e.target.files[0];
-                          if (!file) return;
-                          setUploadingTestimonialImage(true);
-                          try {
-                            const url = await uploadImageFile(file);
-                            setTestimonialForm((prev) => ({ ...prev, image: url }));
-                          } catch (err) {
-                            alert(err.message || "Image upload failed. Please try again.");
-                          } finally {
-                            setUploadingTestimonialImage(false);
-                          }
-                        }}
-                      />
-                    </label>
-                  )}
-                </div>
-              </div>
-
-              <div className="modal-field">
-                <label>Review Message</label>
-                <textarea
-                  rows={4}
-                  required
-                  placeholder="Client feedback message..."
-                  value={testimonialForm.message}
-                  onChange={(e) => setTestimonialForm({ ...testimonialForm, message: e.target.value })}
+                <label>Email Address (For Avatar & Details)</label>
+                <input
+                  type="email"
+                  placeholder="client@example.com"
+                  value={testimonialForm.email}
+                  onChange={(e) => setTestimonialForm({ ...testimonialForm, email: e.target.value })}
                 />
               </div>
+
+              {testimonialForm.type === 'text' && (
+                <div className="modal-field">
+                  <label>Client Image (Optional)</label>
+                  <div className="image-upload-wrapper">
+                    {testimonialForm.image ? (
+                      <div className="image-preview-box">
+                        <img src={testimonialForm.image} alt="Client Preview" className="service-img-preview" />
+                        <button
+                          type="button"
+                          className="btn-remove-image"
+                          onClick={() => setTestimonialForm({ ...testimonialForm, image: "" })}
+                        >
+                          <X size={14} /> Clear Image
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="file-upload-dropzone" style={{ minHeight: '100px', padding: '1rem' }}>
+                        <Upload size={20} className="upload-icon" />
+                        <div className="upload-text">
+                          <strong>{uploadingTestimonialImage ? "Uploading..." : "Click to upload image"}</strong>
+                          <span style={{ fontSize: '11px' }}>JPG, PNG up to 5MB</span>
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="file-input-hidden"
+                          disabled={uploadingTestimonialImage}
+                          onChange={async (e) => {
+                            const file = e.target.files && e.target.files[0];
+                            if (!file) return;
+
+                            if (file.size > 5 * 1024 * 1024) {
+                              alert("Image is too large. Please upload an image under 5MB.");
+                              e.target.value = "";
+                              return;
+                            }
+
+                            setUploadingTestimonialImage(true);
+                            try {
+                              const url = await uploadImageFile(file);
+                              setTestimonialForm((prev) => ({ ...prev, image: url }));
+                            } catch (err) {
+                              alert(err.message || "Image upload failed. Please try again.");
+                            } finally {
+                              setUploadingTestimonialImage(false);
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="modal-field">
+                <label>Rating (1-5)</label>
+                <select
+                  value={testimonialForm.rating}
+                  onChange={(e) => setTestimonialForm({ ...testimonialForm, rating: e.target.value })}
+                >
+                  <option value="5">5 Stars</option>
+                  <option value="4">4 Stars</option>
+                  <option value="3">3 Stars</option>
+                  <option value="2">2 Stars</option>
+                  <option value="1">1 Star</option>
+                </select>
+              </div>
+
+              {testimonialForm.type === 'video' && (
+                <>
+                  <div className="modal-field">
+                    <label>Video Link (YouTube, Vimeo, Social Media, etc.)</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. https://www.youtube.com/watch?v=..."
+                      value={testimonialForm.videoUrl && !testimonialForm.videoUrl.includes('cloudinary') ? testimonialForm.videoUrl : ""}
+                      onChange={(e) => setTestimonialForm({ ...testimonialForm, videoUrl: e.target.value })}
+                      disabled={!!(testimonialForm.videoUrl && testimonialForm.videoUrl.includes('cloudinary'))}
+                    />
+                  </div>
+                  <div style={{ textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: '600', margin: '0' }}>OR UPLOAD A FILE</div>
+                  <div className="modal-field">
+                    <div className="image-upload-wrapper">
+                    {testimonialForm.videoUrl ? (
+                      <div className="image-preview-box" style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
+                        <p style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: '500' }}>Video Uploaded</p>
+                        <button
+                          type="button"
+                          className="btn-remove-image"
+                          onClick={() => setTestimonialForm({ ...testimonialForm, videoUrl: "" })}
+                        >
+                          <X size={14} /> Delete Video
+                        </button>
+                      </div>
+                    ) : (
+                      <label className="file-upload-dropzone">
+                        <Upload size={24} className="upload-icon" />
+                        <div className="upload-text">
+                          <strong>{uploadingTestimonialVideo ? "Uploading Video..." : "Click or drag to upload video"}</strong>
+                          <span>MP4, WebM up to 50MB</span>
+                        </div>
+                        <input
+                          type="file"
+                          accept="video/*"
+                          className="file-input-hidden"
+                          disabled={uploadingTestimonialVideo}
+                          onChange={async (e) => {
+                            const file = e.target.files && e.target.files[0];
+                            if (!file) return;
+
+                            if (file.size > 50 * 1024 * 1024) {
+                              alert("Video is too large. Please upload a video under 50MB.");
+                              e.target.value = "";
+                              return;
+                            }
+
+                            setUploadingTestimonialVideo(true);
+                            try {
+                              const url = await uploadVideoFile(file);
+                              setTestimonialForm((prev) => ({ ...prev, videoUrl: url }));
+                            } catch (err) {
+                              alert(err.message || "Video upload failed. Please try again.");
+                            } finally {
+                              setUploadingTestimonialVideo(false);
+                            }
+                          }}
+                        />
+                      </label>
+                    )}
+                  </div>
+                </div>
+                </>
+              )}
+
+              {testimonialForm.type === 'text' && (
+                <div className="modal-field">
+                  <label>Review Message</label>
+                  <textarea
+                    rows={4}
+                    required={testimonialForm.type === 'text'}
+                    placeholder="Client feedback message..."
+                    value={testimonialForm.message}
+                    onChange={(e) => setTestimonialForm({ ...testimonialForm, message: e.target.value })}
+                  />
+                </div>
+              )}
 
               <div className="modal-field">
                 <label>Status</label>
@@ -1209,58 +1460,124 @@ export default function AdminDashboard() {
               </button>
             </div>
             <div className="inquiry-detail-body">
-              <div className="detail-row">
-                <span className="label">From:</span>
-                <strong>{selectedInquiry.name}</strong> ({selectedInquiry.email})
+              <div className="inquiry-header-info">
+                <div className="inquiry-user-meta">
+                  <div className="inquiry-avatar">
+                    {selectedInquiry.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="inquiry-user-text">
+                    <strong>{selectedInquiry.name}</strong>
+                    <span className="inquiry-email">{selectedInquiry.email}</span>
+                  </div>
+                </div>
+                <div className="inquiry-received-badge">
+                  {selectedInquiry.receivedOn}
+                </div>
               </div>
-              <div className="detail-row">
-                <span className="label">Subject:</span>
-                <span>{selectedInquiry.subject}</span>
+              
+              <div className="inquiry-meta-grid">
+                <div className="meta-card">
+                  <span className="meta-label">Subject</span>
+                  <span className="meta-value">{selectedInquiry.subject}</span>
+                </div>
+                <div className="meta-card">
+                  <span className="meta-label">Phone</span>
+                  <span className="meta-value">{selectedInquiry.phone}</span>
+                </div>
+                <div className="meta-card">
+                  <span className="meta-label">Status</span>
+                  <select
+                    className="status-select-inline"
+                    value={selectedInquiry.status}
+                    onChange={(e) => handleUpdateInquiryStatus(selectedInquiry._id, e.target.value)}
+                  >
+                    <option value="New">New</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Handled">Handled</option>
+                  </select>
+                </div>
+                <div className="meta-card">
+                  <span className="meta-label">Read Status</span>
+                  <select
+                    className="status-select-inline"
+                    value={selectedInquiry.isRead ? "Read" : "Unread"}
+                    onChange={(e) => handleMarkAsRead(selectedInquiry._id, e.target.value === "Read")}
+                  >
+                    <option value="Unread">Unread</option>
+                    <option value="Read">Read</option>
+                  </select>
+                </div>
               </div>
-              <div className="detail-row">
-                <span className="label">Received On:</span>
-                <span>{selectedInquiry.receivedOn}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Status:</span>
-                <select
-                  className="status-select-inline"
-                  value={selectedInquiry.status}
-                  onChange={(e) => handleUpdateInquiryStatus(selectedInquiry._id, e.target.value)}
-                >
-                  <option value="New">New</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Handled">Handled</option>
-                </select>
-              </div>
-              <div className="detail-row">
-                <span className="label">Read Status:</span>
-                <button
-                  type="button"
-                  className="btn-icon"
-                  style={{ width: "auto", padding: "4px 10px" }}
-                  onClick={() => handleMarkAsRead(selectedInquiry._id, !selectedInquiry.isRead)}
-                >
-                  {selectedInquiry.isRead ? "Mark as Unread" : "Mark as Read"}
-                </button>
-              </div>
-              <div className="detail-message-box">
-                <span className="label">Message:</span>
-                <p>{selectedInquiry.message}</p>
-              </div>
+
+              {(() => {
+                let org = null;
+                let srv = null;
+                let msg = selectedInquiry.message;
+
+                if (msg && msg.startsWith("Organization:")) {
+                  const orgMatch = msg.match(/Organization:\s*([^\n]*)/);
+                  const srvMatch = msg.match(/Service Interested In:\s*([^\n]*)/);
+                  const msgMatch = msg.match(/Message:\n([\s\S]*)$/);
+                  
+                  if (orgMatch) org = orgMatch[1];
+                  if (srvMatch) srv = srvMatch[1];
+                  if (msgMatch) msg = msgMatch[1];
+                }
+
+                return (
+                  <div className="detail-message-box">
+                    {org && (
+                      <div style={{ marginBottom: "1.25rem" }}>
+                        <span className="label">Organization</span>
+                        <p>{org}</p>
+                      </div>
+                    )}
+                    {srv && (
+                      <div style={{ marginBottom: "1.25rem" }}>
+                        <span className="label">Service</span>
+                        <p>{srv}</p>
+                      </div>
+                    )}
+                    <div>
+                      <span className="label">Message</span>
+                      <p>{msg}</p>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
             <div className="modal-actions-row">
               <button type="button" className="btn-secondary" onClick={() => setSelectedInquiry(null)}>
                 Close
               </button>
-              <a
-                href={`mailto:${selectedInquiry.email}?subject=Re: ${encodeURIComponent(selectedInquiry.subject)}`}
-                className="btn-primary-purple"
-                style={{ textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "0.4rem" }}
-              >
-                <Mail size={16} />
-                <span>Reply via Email</span>
-              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {toast.show && (
+        <div className={`toast-notification ${toast.type}`} style={{ position: 'fixed', top: '20px', right: '20px', padding: '16px 24px', background: toast.type === 'error' ? '#ef4444' : '#6d28d9', color: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 9999, display: 'flex', alignItems: 'center', gap: '12px', animation: 'slideDown 0.3s ease-out' }}>
+          {toast.type === 'error' ? <X size={20} /> : <CheckCircle2 size={20} />}
+          <span>{toast.message}</span>
+        </div>
+      )}
+
+      {/* Custom Confirm Modal */}
+      {confirmDialog.show && (
+        <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={() => setConfirmDialog({ show: false, title: '', onConfirm: null })}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center', padding: '30px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#f3e8ff', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <Trash2 size={24} color="#6d28d9" />
+            </div>
+            <h3 style={{ marginBottom: '10px' }}>Confirm Deletion</h3>
+            <p style={{ color: '#64748b', marginBottom: '24px' }}>{confirmDialog.title}</p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button className="btn-secondary" onClick={() => setConfirmDialog({ show: false, title: '', onConfirm: null })}>Cancel</button>
+              <button className="btn-primary" onClick={() => {
+                if (confirmDialog.onConfirm) confirmDialog.onConfirm();
+                setConfirmDialog({ show: false, title: '', onConfirm: null });
+              }}>Delete</button>
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import md5 from 'md5';
 import Tilt from 'react-parallax-tilt';
+import { Star } from 'lucide-react';
 import '../pages/TestimonialPage.css';
 
 const TestimonialsPreview = () => {
@@ -83,16 +85,42 @@ const TestimonialsPreview = () => {
                 <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
                   <div className="testimonial-card">
                     <div className="testimonial-author">
-                      {t.image && (
-                        <img src={t.image} alt={t.name} className="testimonial-author-image" />
-                      )}
+                      {(() => {
+                        if (t.type === 'video' || t.videoUrl) return null;
+                        if (t.image) {
+                          return <img src={t.image} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />;
+                        }
+                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'User')}&background=random&color=fff&size=128`;
+                        
+                        return (
+                          <img src={fallbackUrl} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+                        );
+                      })()}
                       <div className="testimonial-author-info">
                         <h4>{t.name}</h4>
                         <p className="author-role">{t.position}</p>
+                        <div style={{ display: 'flex', gap: '2px', marginTop: '6px' }}>
+                          {[...Array(5)].map((_, i) => (
+                            <Star key={i} size={14} fill={i < (t.rating || 5) ? "#7c3aed" : "transparent"} color="#7c3aed" />
+                          ))}
+                        </div>
                       </div>
                     </div>
-                    <div className="quote-icon">"</div>
-                    <p className="testimonial-content">{t.message}</p>
+                    {t.videoUrl && (
+                      <div className="testimonial-video-container" style={{ marginTop: 'auto', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
+                        <video 
+                          src={t.videoUrl} 
+                          controls 
+                          style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '340px', objectFit: 'cover' }}
+                        />
+                      </div>
+                    )}
+                    {t.message && (
+                      <>
+                        <div className="quote-icon">"</div>
+                        <p className="testimonial-content">{t.message}</p>
+                      </>
+                    )}
                   </div>
                 </Tilt>
               ))}

@@ -784,12 +784,31 @@ input:checked + .slider:before {
   max-width: 540px;
   max-height: 88vh;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 2rem;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
   display: flex;
   flex-direction: column;
   margin: auto;
   box-sizing: border-box;
+}
+
+.nexa-modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nexa-modal::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 16px 0; /* Keeps the scrollbar away from the curved corners */
+}
+
+.nexa-modal::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.nexa-modal::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .modal-header {
@@ -802,7 +821,7 @@ input:checked + .slider:before {
 .modal-header h3 {
   font-size: 1.3rem;
   font-weight: 800;
-  color: #1e1b4b;
+  color: #4c1d95;
   margin: 0;
 }
 
@@ -832,7 +851,7 @@ input:checked + .slider:before {
 .modal-field label {
   font-size: 0.85rem;
   font-weight: 700;
-  color: #1e1b4b;
+  color: #5b21b6;
 }
 
 .modal-field input,
@@ -840,10 +859,12 @@ input:checked + .slider:before {
 .modal-field textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid #e9d5ff;
+  background-color: #faf5ff;
   border-radius: 10px;
   font-family: inherit;
   font-size: 0.9rem;
+  color: #1e1b4b;
   outline: none;
   transition: all 0.2s;
   box-sizing: border-box;
@@ -894,50 +915,125 @@ input:checked + .slider:before {
 .inquiry-detail-body {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  font-size: 0.9rem;
+  gap: 1.5rem;
+  font-size: 0.95rem;
   color: #334155;
+  margin-top: 0.5rem;
 }
 
-.detail-row {
+.inquiry-header-info {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 1.25rem;
 }
 
-.detail-row .label {
+.inquiry-user-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.inquiry-avatar {
+  width: 48px;
+  height: 48px;
+  background: var(--bg-lavender);
+  color: var(--primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
   font-weight: 700;
-  color: #1e1b4b;
-  min-width: 90px;
+}
+
+.inquiry-user-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.inquiry-user-text strong {
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.inquiry-email {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+
+.inquiry-received-badge {
+  background: #f1f5f9;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: #475569;
+  font-weight: 500;
+}
+
+.inquiry-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.meta-card {
+  background: #f8fafc;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #94a3b8;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.meta-value {
+  color: #1e293b;
+  font-weight: 500;
 }
 
 .status-select-inline {
-  padding: 0.2rem 0.5rem;
-  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
   border: 1px solid #cbd5e1;
   font-size: 0.85rem;
   font-weight: 600;
   outline: none;
+  background: #ffffff;
+  color: var(--primary);
+  cursor: pointer;
+  margin-top: 4px;
 }
 
 .detail-message-box {
-  margin-top: 0.5rem;
-  background: #f8fafc;
-  padding: 1rem;
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-lavender);
+  padding: 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(139, 92, 246, 0.1);
 }
 
 .detail-message-box .label {
   display: block;
   font-weight: 700;
-  color: #1e1b4b;
-  margin-bottom: 0.5rem;
+  color: var(--primary);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
 }
 
 .detail-message-box p {
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.6;
+  color: #334155;
+  white-space: pre-wrap;
 }
 
 /* Service Image Thumbnail & Upload Styles */
@@ -1224,5 +1320,15 @@ input:checked + .slider:before {
   .branch-bottom-right {
     width: 230px;
     opacity: 0.6;
+  }
+
+  .inquiry-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .inquiry-header-info {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 }

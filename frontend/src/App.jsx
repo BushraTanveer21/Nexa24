@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ContactPage from './pages/ContactPage';
-import ComingSoonPage from './pages/ComingSoonPage';
+
 import TestimonialPage from './pages/TestimonialPage';
 
 
@@ -34,8 +34,8 @@ function ScrollAnimations() {
       { threshold: 0.08, rootMargin: '0px 0px -50px 0px' }
     );
 
-    const timer = setTimeout(() => {
-      document.querySelectorAll('section').forEach((el) => {
+    const applyAnimations = () => {
+      document.querySelectorAll('section:not(.reveal)').forEach((el) => {
         el.classList.add('reveal');
         observer.observe(el);
       });
@@ -55,22 +55,23 @@ function ScrollAnimations() {
         '.about-promise',
         '.hero-inner',
         '.sov-card',
-        '.testimonial-card'
+        '.testimonial-card',
+        '.contact-cta-card'
       ];
 
       cardSelectors.forEach(selector => {
-        document.querySelectorAll(selector).forEach((el, index) => {
-          el.style.transitionDelay = `${index * 0.1}s`;
+        document.querySelectorAll(`${selector}:not(.reveal)`).forEach((el, index) => {
+          el.style.transitionDelay = `${(index % 10) * 0.1}s`;
           el.classList.add('reveal');
           observer.observe(el);
         });
       });
 
       document.querySelectorAll(
-        '.about-us-headline, .about-us-desc, .about-eyebrow, .eyebrow, .eyebrow-exact, .hero-text h1, .hero-tagline, .hero-ctas, .hero-promise, .contact-info h2, .contact-info p'
+        '.about-us-headline:not(.reveal), .about-us-desc:not(.reveal), .about-eyebrow:not(.reveal), .eyebrow:not(.reveal), .eyebrow-exact:not(.reveal), .hero-text h1:not(.reveal), .hero-tagline:not(.reveal), .hero-ctas:not(.reveal), .hero-promise:not(.reveal), .contact-info h2:not(.reveal), .contact-info p:not(.reveal)'
       ).forEach((el, i) => {
         el.classList.add('reveal');
-        el.style.transitionDelay = `${i * 0.08}s`;
+        el.style.transitionDelay = `${(i % 5) * 0.08}s`;
         observer.observe(el);
       });
 
@@ -78,6 +79,18 @@ function ScrollAnimations() {
       document.querySelectorAll('.reveal').forEach((el) => {
         observer.observe(el);
       });
+    };
+
+    let mutationObserver;
+
+    const timer = setTimeout(() => {
+      applyAnimations();
+      
+      // Watch for dynamically loaded content (e.g., Client Stories)
+      mutationObserver = new MutationObserver(() => {
+        applyAnimations();
+      });
+      mutationObserver.observe(document.body, { childList: true, subtree: true });
     }, 100);
 
     return () => {
@@ -109,7 +122,7 @@ function App() {
             <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminDashboard />} />
 
-            <Route path="*" element={<ComingSoonPage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
         <Footer />

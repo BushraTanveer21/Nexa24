@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import md5 from 'md5';
 import Tilt from 'react-parallax-tilt';
+import ReactPlayer from 'react-player';
+import { Star, MessageSquarePlus } from 'lucide-react';
 import './TestimonialPage.css';
 import branchTL from "../assets/botanical-branch-tl.png";
+import TestimonialSubmitModal from '../components/TestimonialSubmitModal';
 
 export default function TestimonialPage() {
 
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showSubmitModal, setShowSubmitModal] = useState(false);
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
@@ -56,41 +61,107 @@ export default function TestimonialPage() {
       </section>
 
       <section className="testimonial-grid-section">
-        {loading ? (
-          <div className="loading-state">
-            <div className="spinner"></div>
-            <p>Loading testimonials...</p>
+        <div className="section-inner">
+          <div className="testimonial-actions-bar" style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px', marginTop: '-30px' }}>
+            <button className="btn-primary-purple" onClick={() => setShowSubmitModal(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '16px', padding: '12px 24px', borderRadius: '30px' }}>
+              <MessageSquarePlus size={20} /> Share Your Experience
+            </button>
           </div>
-        ) : error ? (
-          <div className="error-state">
-            <p>Error loading testimonials. Please try again later.</p>
-          </div>
-        ) : testimonials.length === 0 ? (
-          <div className="empty-state">
-            <p>No testimonials available yet. Check back soon!</p>
-          </div>
-        ) : (
-          <div className="testimonial-grid">
-            {testimonials.map((t) => (
-              <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
-                  <div className="testimonial-card">
-                    <div className="testimonial-author">
-                      {t.image && (
-                        <img src={t.image} alt={t.name} className="testimonial-author-image" />
-                      )}
-                      <div className="testimonial-author-info">
-                        <h4>{t.name}</h4>
-                        <p className="author-role">{t.position}</p>
+
+          {loading ? (
+            <div className="loading-state">
+              <div className="spinner"></div>
+              <p>Loading testimonials...</p>
+            </div>
+          ) : error ? (
+            <div className="error-state">
+              <p>Error loading testimonials. Please try again later.</p>
+            </div>
+          ) : testimonials.length === 0 ? (
+            <div className="empty-state">
+              <p>No testimonials available yet. Check back soon!</p>
+            </div>
+          ) : (
+            <>
+              {testimonials.filter(t => t.videoUrl).length > 0 && (
+                <div className="testimonial-grid" style={{ marginBottom: '40px' }}>
+                {testimonials.filter(t => t.videoUrl).map((t) => (
+                  <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
+                      <div className="testimonial-card">
+                        <div className="testimonial-author">
+                          <div className="testimonial-author-info">
+                            <h4>{t.name}</h4>
+                            <p className="author-role">{t.position}</p>
+                            <div style={{ display: 'flex', gap: '2px', marginTop: '6px' }}>
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} size={14} fill={i < (t.rating || 5) ? "#7c3aed" : "transparent"} color="#7c3aed" />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="testimonial-video-container" style={{ marginTop: 'auto', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
+                          <ReactPlayer 
+                            url={t.videoUrl} 
+                            controls 
+                            width="100%"
+                            height="340px"
+                            style={{ display: 'block', objectFit: 'cover' }}
+                          />
+                        </div>
+                        {t.message && (
+                          <>
+                            <div className="quote-icon">"</div>
+                            <p className="testimonial-content">{t.message}</p>
+                          </>
+                        )}
                       </div>
-                    </div>
-                    <div className="quote-icon">"</div>
-                    <p className="testimonial-content">{t.message}</p>
-                  </div>
-              </Tilt>
-            ))}
-          </div>
+                  </Tilt>
+                ))}
+              </div>
+              )}
+
+              {testimonials.filter(t => !t.videoUrl).length > 0 && (
+                <div className="testimonial-grid">
+                {testimonials.filter(t => !t.videoUrl).map((t) => (
+                  <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
+                      <div className="testimonial-card">
+                        <div className="testimonial-author">
+                          {(() => {
+                            if (t.image) {
+                              return <img src={t.image} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />;
+                            }
+                            const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'User')}&background=random&color=fff&size=128`;
+                            return (
+                              <img src={fallbackUrl} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+                            );
+                          })()}
+                          <div className="testimonial-author-info">
+                            <h4>{t.name}</h4>
+                            <p className="author-role">{t.position}</p>
+                            <div style={{ display: 'flex', gap: '2px', marginTop: '6px' }}>
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} size={14} fill={i < (t.rating || 5) ? "#7c3aed" : "transparent"} color="#7c3aed" />
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        {t.message && (
+                          <>
+                            <div className="quote-icon">"</div>
+                            <p className="testimonial-content">{t.message}</p>
+                          </>
+                        )}
+                      </div>
+                  </Tilt>
+                ))}
+              </div>
+              )}
+            </>
         )}
+        </div>
       </section>
+      
+      {showSubmitModal && <TestimonialSubmitModal onClose={() => setShowSubmitModal(false)} />}
     </div>
   );
 }

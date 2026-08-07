@@ -18,3 +18,19 @@ export const forgotPasswordLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
+export const testimonialSubmissionLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 3, // 3 submissions per IP per 15 mins
+  message: { message: "Too many submissions. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+export const publicUploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 6, // 6 uploads per IP per 15 mins
+  message: { message: "Too many uploads. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
+});

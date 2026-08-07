@@ -78,7 +78,7 @@ const ServicesOverview = () => {
                 <div 
                   className="service-icon-exact"
                   style={{
-                    backgroundColor: activeIndex === i ? 'var(--primary-exact)' : '#E5E7EB',
+                    backgroundColor: activeIndex === i ? 'var(--primary-exact)' : 'var(--bg-lavender)',
                     color: activeIndex === i ? 'var(--white)' : 'var(--primary-exact)',
                     transition: 'all 0.3s ease'
                   }}

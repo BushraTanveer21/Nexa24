@@ -135,6 +135,7 @@
   width: 320px;
   height: 320px;
   border: 1px solid rgba(76, 29, 149, 0.05);
+  animation: circlePulse 4s infinite alternate ease-in-out;
 }
 
 .circle-bg.c2 {
@@ -142,6 +143,7 @@
   height: 240px;
   border: 1px solid rgba(76, 29, 149, 0.1);
   background-color: rgba(243, 232, 255, 0.3);
+  animation: circlePulse 4.5s infinite alternate-reverse ease-in-out;
 }
 
 .circle-bg.c3 {
@@ -174,7 +176,11 @@
   height: 4px;
   background-color: #4C1D95;
   border-radius: 50%;
+  animation: dotPulse 1.4s infinite ease-in-out both;
 }
+
+.headset-dots span:nth-child(1) { animation-delay: -0.32s; }
+.headset-dots span:nth-child(2) { animation-delay: -0.16s; }
 
 /* Static particles */
 .hero-particles {
@@ -255,13 +261,19 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background-color: #ffffff;
+  background-color: var(--bg-lavender);
   color: var(--primary-exact);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(76, 29, 149, 0.1);
+  transition: all 0.3s ease;
+}
+.channel-item:hover .channel-icon {
+  transform: scale(1.1);
+  background-color: var(--primary-exact);
+  color: #ffffff;
 }
 
 .channel-info h5 {

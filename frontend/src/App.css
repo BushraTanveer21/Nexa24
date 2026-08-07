@@ -197,6 +197,9 @@ img { max-width: 100%; display: block; }
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(109, 40, 217, 0.36); }
+.btn-primary:active { transform: translateY(1px); box-shadow: 0 4px 12px rgba(109, 40, 217, 0.28); }
+.btn-primary svg { transition: transform 0.25s ease; }
+.btn-primary:hover svg { transform: translateX(4px); }
 
 .btn-outline {
   padding: 11px 24px;
@@ -1158,7 +1161,7 @@ img { max-width: 100%; display: block; }
   transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
 }
 .about-value-item:hover .about-value-icon {
-  transform: scale(1.1) rotate(-6deg);
+  transform: scale(1.1);
   background: var(--primary);
   color: var(--white);
 }
@@ -1619,6 +1622,19 @@ html {
 .stat-icon-exact {
   color: var(--primary-exact);
   margin-bottom: 16px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--bg-lavender);
+}
+.stat-item-exact:hover .stat-icon-exact {
+  transform: scale(1.1);
+  background: var(--primary-exact);
+  color: #ffffff;
 }
 .stat-icon-exact svg { width: 24px; height: 24px; }
 
@@ -1675,7 +1691,7 @@ html {
 }
 
 .service-icon-exact {
-  background: #E5E7EB;
+  background: var(--bg-lavender);
   width: 36px;
   height: 36px;
   border-radius: 6px;
@@ -1683,6 +1699,12 @@ html {
   align-items: center;
   justify-content: center;
   color: var(--primary-exact);
+  transition: all 0.3s ease;
+}
+.service-item-exact:hover .service-icon-exact {
+  transform: scale(1.1);
+  background: var(--primary-exact);
+  color: #ffffff;
 }
 .service-icon-exact svg { width: 18px; height: 18px; }
 
@@ -1716,7 +1738,7 @@ html {
   max-width: 1200px;
   margin: 0 auto;
   gap: 40px;
-  align-items: center;
+  align-items: stretch;
 }
 
 .advantage-cards-exact {
@@ -1751,6 +1773,19 @@ html {
 .adv-icon-exact {
   color: var(--primary-exact);
   margin-bottom: 12px;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--bg-lavender);
+}
+.adv-card-exact:hover .adv-icon-exact {
+  transform: scale(1.1);
+  background: var(--primary-exact);
+  color: #ffffff;
 }
 .adv-icon-exact svg { width: 24px; height: 24px; }
 
@@ -1821,14 +1856,21 @@ html {
 .how-icon-exact {
   width: 60px;
   height: 60px;
-  background: var(--white);
-  border: 1px solid #D1D5DB;
+  background: var(--bg-lavender);
+  border: 1px solid transparent;
   border-radius: 50%;
   margin: 0 auto 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--primary-exact);
+  transition: all 0.3s ease;
+}
+.how-step-exact:hover .how-icon-exact {
+  transform: scale(1.1);
+  background: var(--primary-exact);
+  color: #ffffff;
+  border-color: var(--primary-exact);
 }
 .how-icon-exact svg { width: 24px; height: 24px; }
 
@@ -3050,4 +3092,81 @@ html {
 }
 .select-icon.open {
   transform: rotate(180deg);
+}
+
+/* --- Contact CTA Card --- */
+.contact-cta-card {
+  background-color: #efe6fc;
+  border-radius: 24px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.08);
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-cta-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(147, 51, 234, 0.12);
+}
+
+.contact-cta-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.contact-cta-logo-circle {
+  width: 80px;
+  height: 80px;
+  background-color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+}
+
+.contact-cta-text h3 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 8px 0;
+  letter-spacing: -0.5px;
+  line-height: 1.2;
+}
+
+.contact-cta-text p {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.contact-cta-btn {
+  padding: 16px 32px;
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .contact-cta-card {
+    padding: 32px 20px;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .contact-cta-header {
+    flex-direction: column;
+    gap: 16px;
+  }
 }

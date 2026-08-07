@@ -26,8 +26,14 @@ export default function ContactPage() {
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
-    window.scrollTo(0, 0);
-    
+    if (window.location.hash) {
+      const element = document.querySelector(window.location.hash);
+      if (element) {
+        setTimeout(() => element.scrollIntoView({ behavior: 'smooth' }), 100);
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
     // Fetch dynamic services
     const fetchServices = async () => {
       try {
@@ -268,7 +274,7 @@ export default function ContactPage() {
             </div>
           </div>
           
-          <div className="contact-card-right" style={{ position: 'relative' }}>
+          <div id="contact-form" className="contact-card-right" style={{ position: 'relative', scrollMarginTop: '100px' }}>
             <h3 style={{ position: 'relative', zIndex: 1, color: 'var(--primary-exact)' }}>Send us a message</h3>
             <p style={{ position: 'relative', zIndex: 1 }}>Fill out the form and our team will get back to you shortly.</p>
             

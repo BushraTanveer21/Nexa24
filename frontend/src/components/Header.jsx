@@ -14,7 +14,7 @@ const LINKS = [
   { id: "about", to: "/about", label: "ABOUT US", enabled: true },
 ];
 
-const GET_STARTED_TARGET = "/contact";
+const GET_STARTED_TARGET = "/contact#contact-form";
 
 // ===== Compact drawer styles =====
 const drawerStyle = {
