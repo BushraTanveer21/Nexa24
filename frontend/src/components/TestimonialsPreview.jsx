@@ -61,7 +61,7 @@ const TestimonialsPreview = () => {
           height: 'auto',
           opacity: 0.88,
           pointerEvents: 'none',
-          zIndex: 10,
+          zIndex: 0,
           mixBlendMode: 'multiply'
         }}
       />
@@ -82,12 +82,17 @@ const TestimonialsPreview = () => {
               {displayCards.map((t) => (
                 <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
                   <div className="testimonial-card">
+                    <div className="testimonial-author">
+                      {t.image && (
+                        <img src={t.image} alt={t.name} className="testimonial-author-image" />
+                      )}
+                      <div className="testimonial-author-info">
+                        <h4>{t.name}</h4>
+                        <p className="author-role">{t.position}</p>
+                      </div>
+                    </div>
                     <div className="quote-icon">"</div>
                     <p className="testimonial-content">{t.message}</p>
-                    <div className="testimonial-author">
-                      <h4>{t.name}</h4>
-                      <p className="author-role">{t.position}</p>
-                    </div>
                   </div>
                 </Tilt>
               ))}

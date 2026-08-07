@@ -356,7 +356,7 @@ export default function ServiceDetail() {
               {data.eyebrow}
             </span>
             <h1>
-              {data.title} <span>{data.highlightTitle}</span>
+              {data.title} <br /><span>{data.highlightTitle}</span>
             </h1>
             <p>{data.description}</p>
           </div>

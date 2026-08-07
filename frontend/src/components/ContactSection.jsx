@@ -3,10 +3,11 @@ import FallingPetals from './FallingPetals';
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
-    fullName: '', email: '', phone: '', organization: '', service: ''
+    fullName: '', email: '', phone: '', organization: '', service: '', message: ''
   });
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const [servicesList, setServicesList] = useState([
     "Virtual Assistance Services",
@@ -44,26 +45,34 @@ const ContactSection = () => {
     setStatus({ type: '', message: '' });
 
     try {
+      const payload = {
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        subject: `New Inquiry from ${formData.fullName}`,
+        message: `Organization: ${formData.organization}\nService Interested In: ${formData.service}\n\nMessage:\n${formData.message}`
+      };
+
       const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
 
       if (response.ok) {
         setStatus({ type: 'success', message: 'Thank you! Your message has been sent successfully.' });
-        setFormData({ fullName: '', email: '', phone: '', organization: '', service: '' });
+        setFormData({ fullName: '', email: '', phone: '', organization: '', service: '', message: '' });
       } else {
         setStatus({ type: 'error', message: data.message || 'Something went wrong. Please try again.' });
       }
     } catch (error) {
       console.warn('Backend unavailable. Simulating success for Vercel deployment.');
       setStatus({ type: 'success', message: 'Thank you! Your message has been sent successfully. (Simulated)' });
-      setFormData({ fullName: '', email: '', phone: '', organization: '', service: '' });
+      setFormData({ fullName: '', email: '', phone: '', organization: '', service: '', message: '' });
     } finally {
       setIsSubmitting(false);
     }
@@ -117,17 +126,58 @@ const ContactSection = () => {
             </div>
             <div className="form-group-exact full-width">
               <label>I'm interested in</label>
-              <div className="select-wrapper">
-                  <select name="service" value={formData.service} onChange={handleChange} required>
-                    <option value="" disabled hidden>Select a Service</option>
+              <div 
+                className={`custom-dropdown-container ${dropdownOpen ? 'open' : ''}`}
+                onClick={() => setDropdownOpen(!dropdownOpen)}
+                onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
+                tabIndex="0"
+              >
+                <div className={`custom-dropdown-selected ${!formData.service ? 'placeholder' : ''}`}>
+                  {formData.service || 'Select a Service'}
+                  <svg className={`select-icon ${dropdownOpen ? 'open' : ''}`} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+                {dropdownOpen && (
+                  <ul className="custom-dropdown-list">
                     {servicesList.map((service, index) => (
-                      <option key={index} value={service}>{service}</option>
+                      <li 
+                        key={index} 
+                        className={`custom-dropdown-item ${formData.service === service ? 'selected' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleChange({ target: { name: 'service', value: service } });
+                          setDropdownOpen(false);
+                        }}
+                      >
+                        {service}
+                        {formData.service === service && (
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        )}
+                      </li>
                     ))}
-                  </select>
-                <svg className="select-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="6 9 12 15 18 9"></polyline>
-                </svg>
+                  </ul>
+                )}
               </div>
+              <select 
+                name="service" 
+                value={formData.service} 
+                onChange={handleChange} 
+                required 
+                style={{ opacity: 0, position: 'absolute', bottom: 0, pointerEvents: 'none', width: '100%', height: '1px' }}
+                tabIndex="-1"
+              >
+                <option value="" disabled hidden>Select a Service</option>
+                {servicesList.map((service, index) => (
+                  <option key={index} value={service}>{service}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group-exact full-width" style={{ marginTop: '16px', marginBottom: '24px' }}>
+              <label>How can we help you?</label>
+              <textarea name="message" value={formData.message} onChange={handleChange} placeholder="Tell us more about your needs..." rows="4" required style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', fontSize: '1rem', outline: 'none', resize: 'vertical' }}></textarea>
             </div>
             <button type="submit" className="btn-purple-exact form-submit-btn" disabled={isSubmitting}>
               {isSubmitting ? 'Sending...' : 'Send Message'} <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>

@@ -14,6 +14,7 @@ export default function ContactPage() {
   
   const [status, setStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [servicesList, setServicesList] = useState([
     "Virtual Assistance Services",
     "Medical Billing Services",
@@ -56,12 +57,20 @@ export default function ContactPage() {
     setStatus({ type: '', message: '' });
 
     try {
+      const payload = {
+        name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        subject: `New Inquiry from ${formData.fullName}`,
+        message: `Organization: ${formData.organization}\nService Interested In: ${formData.service}\n\nMessage:\n${formData.message}`
+      };
+
       const response = await fetch(`${API_URL}/api/contact`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
@@ -289,17 +298,54 @@ export default function ContactPage() {
               
               <div className="form-group-exact full-width">
                 <label>I'm interested in</label>
-                <div className="select-wrapper">
-                  <select name="service" value={formData.service} onChange={handleChange} required>
-                    <option value="" disabled hidden>Select a Service</option>
-                    {servicesList.map((service, index) => (
-                      <option key={index} value={service}>{service}</option>
-                    ))}
-                  </select>
-                  <svg className="select-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
+                <div 
+                  className={`custom-dropdown-container ${dropdownOpen ? 'open' : ''}`}
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  onBlur={() => setTimeout(() => setDropdownOpen(false), 150)}
+                  tabIndex="0"
+                >
+                  <div className={`custom-dropdown-selected ${!formData.service ? 'placeholder' : ''}`}>
+                    {formData.service || 'Select a Service'}
+                    <svg className={`select-icon ${dropdownOpen ? 'open' : ''}`} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  {dropdownOpen && (
+                    <ul className="custom-dropdown-list">
+                      {servicesList.map((service, index) => (
+                        <li 
+                          key={index} 
+                          className={`custom-dropdown-item ${formData.service === service ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleChange({ target: { name: 'service', value: service } });
+                            setDropdownOpen(false);
+                          }}
+                        >
+                          {service}
+                          {formData.service === service && (
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark">
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
+                <select 
+                  name="service" 
+                  value={formData.service} 
+                  onChange={handleChange} 
+                  required 
+                  style={{ opacity: 0, position: 'absolute', bottom: 0, pointerEvents: 'none', width: '100%', height: '1px' }}
+                  tabIndex="-1"
+                >
+                  <option value="" disabled hidden>Select a Service</option>
+                  {servicesList.map((service, index) => (
+                    <option key={index} value={service}>{service}</option>
+                  ))}
+                </select>
               </div>
               
               <div className="form-group-exact full-width">
