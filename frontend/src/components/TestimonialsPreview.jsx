@@ -4,6 +4,47 @@ import Tilt from 'react-parallax-tilt';
 import { Star } from 'lucide-react';
 import '../pages/TestimonialPage.css';
 
+const renderVideoPlayer = (url) => {
+  if (!url) return null;
+
+  const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const ytMatch = url.match(ytRegex);
+  if (ytMatch && ytMatch[1]) {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        style={{ width: '100%', height: '280px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
+  const vimeoMatch = url.match(/(?:vimeo\.com\/)(\d+)/);
+  if (vimeoMatch && vimeoMatch[1]) {
+    return (
+      <iframe
+        src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
+        title="Vimeo video player"
+        frameBorder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowFullScreen
+        style={{ width: '100%', height: '280px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
+  return (
+    <video
+      src={url}
+      controls
+      style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '340px', objectFit: 'cover', borderRadius: '12px' }}
+    />
+  );
+};
+
 const TestimonialsPreview = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -108,11 +149,7 @@ const TestimonialsPreview = () => {
                     </div>
                     {t.videoUrl && (
                       <div className="testimonial-video-container" style={{ marginTop: 'auto', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
-                        <video 
-                          src={t.videoUrl} 
-                          controls 
-                          style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '340px', objectFit: 'cover' }}
-                        />
+                        {renderVideoPlayer(t.videoUrl)}
                       </div>
                     )}
                     {t.message && (

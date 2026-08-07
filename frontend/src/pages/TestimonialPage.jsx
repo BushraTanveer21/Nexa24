@@ -1,11 +1,51 @@
 import React, { useEffect, useState } from 'react';
 import md5 from 'md5';
 import Tilt from 'react-parallax-tilt';
-import ReactPlayer from 'react-player';
 import { Star, MessageSquarePlus } from 'lucide-react';
 import './TestimonialPage.css';
 import branchTL from "../assets/botanical-branch-tl.png";
 import TestimonialSubmitModal from '../components/TestimonialSubmitModal';
+
+const renderVideoPlayer = (url) => {
+  if (!url) return null;
+
+  const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const ytMatch = url.match(ytRegex);
+  if (ytMatch && ytMatch[1]) {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${ytMatch[1]}`}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        allowFullScreen
+        style={{ width: '100%', height: '280px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
+  const vimeoMatch = url.match(/(?:vimeo\.com\/)(\d+)/);
+  if (vimeoMatch && vimeoMatch[1]) {
+    return (
+      <iframe
+        src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
+        title="Vimeo video player"
+        frameBorder="0"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowFullScreen
+        style={{ width: '100%', height: '280px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
+  return (
+    <video
+      src={url}
+      controls
+      style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '340px', objectFit: 'cover', borderRadius: '12px' }}
+    />
+  );
+};
 
 export default function TestimonialPage() {
 
@@ -100,13 +140,7 @@ export default function TestimonialPage() {
                           </div>
                         </div>
                         <div className="testimonial-video-container" style={{ marginTop: 'auto', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
-                          <ReactPlayer 
-                            url={t.videoUrl} 
-                            controls 
-                            width="100%"
-                            height="340px"
-                            style={{ display: 'block', objectFit: 'cover' }}
-                          />
+                          {renderVideoPlayer(t.videoUrl)}
                         </div>
                         {t.message && (
                           <>
