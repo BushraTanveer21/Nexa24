@@ -40,7 +40,7 @@ const renderVideoPlayer = (url) => {
     <video
       src={url}
       controls
-      style={{ width: '100%', height: 'auto', display: 'block', maxHeight: '340px', objectFit: 'cover', borderRadius: '12px' }}
+      style={{ width: '100%', height: '280px', display: 'block', objectFit: 'cover', borderRadius: '12px' }}
     />
   );
 };
@@ -148,7 +148,7 @@ const TestimonialsPreview = () => {
                       </div>
                     </div>
                     {t.videoUrl && (
-                      <div className="testimonial-video-container" style={{ marginTop: 'auto', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
+                      <div className="testimonial-video-container" style={{ marginTop: '16px', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
                         {renderVideoPlayer(t.videoUrl)}
                       </div>
                     )}
