@@ -14,7 +14,7 @@ const ICON_RULES = [
 
 function renderServiceIcon(service) {
   if (service.image) {
-    return <img src={service.image} alt={service.title} style={{ width: '20px', height: '20px', borderRadius: '4px', objectFit: 'cover' }} />;
+    return <img src={service.image} alt={service.title} style={{ width: '100%', height: '100%', borderRadius: 'inherit', objectFit: 'cover' }} />;
   }
   const match = ICON_RULES.find((rule) => rule.test.test(service.title || ''));
   const IconComponent = match ? match.Icon : Package;
@@ -69,7 +69,7 @@ const ServicesOverview = () => {
                 alignItems: 'stretch',
                 gap: 0,
                 transition: 'all 0.3s ease',
-                backgroundColor: activeIndex === i ? 'var(--bg-lavender)' : 'var(--bg-exact)',
+                backgroundColor: 'var(--bg-exact)',
                 border: activeIndex === i ? '1px solid var(--primary-light)' : '1px solid transparent',
                 borderRadius: '12px',
                 padding: '20px 24px',
@@ -81,9 +81,10 @@ const ServicesOverview = () => {
                 <div 
                   className="service-icon-exact"
                   style={{
-                    backgroundColor: activeIndex === i ? 'var(--primary-exact)' : 'var(--bg-lavender)',
+                    backgroundColor: s.image ? 'transparent' : (activeIndex === i ? 'var(--primary-exact)' : 'var(--bg-lavender)'),
                     color: activeIndex === i ? 'var(--white)' : 'var(--primary-exact)',
-                    transition: 'all 0.3s ease'
+                    transition: 'all 0.3s ease',
+                    overflow: 'hidden'
                   }}
                 >
                   {renderServiceIcon(s)}
