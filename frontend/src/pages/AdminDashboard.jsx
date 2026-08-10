@@ -508,7 +508,11 @@ export default function AdminDashboard() {
     if (!current) return;
     const nextValue = !current.homepageDisplay;
 
-    setTestimonials(testimonials.map(t => t._id === id ? { ...t, homepageDisplay: nextValue } : t));
+    setTestimonials(testimonials.map(t => t._id === id ? { 
+      ...t, 
+      homepageDisplay: nextValue,
+      status: nextValue ? "Published" : "Disabled"
+    } : t));
 
     try {
       const token = getAuthToken();
@@ -947,11 +951,24 @@ export default function AdminDashboard() {
                         </span>
                       </td>
                       <td style={{ textAlign: "center" }}>
-                        {t.status === "Published" && (
-                          <span className="status-pill published">Published</span>
-                        )}
-                        {t.status === "Disabled" && (
-                          <span className="status-pill disabled">Disabled</span>
+                        {t.homepageDisplay ? (
+                          <span 
+                            className="status-pill published" 
+                            onClick={() => handleToggleHomepageDisplay(t._id)}
+                            style={{ cursor: 'pointer' }}
+                            title="Click to Disable"
+                          >
+                            Published
+                          </span>
+                        ) : (
+                          <span 
+                            className="status-pill disabled" 
+                            onClick={() => handleToggleHomepageDisplay(t._id)}
+                            style={{ cursor: 'pointer' }}
+                            title="Click to Publish"
+                          >
+                            Disabled
+                          </span>
                         )}
                       </td>
                       <td style={{ textAlign: "center" }}>
