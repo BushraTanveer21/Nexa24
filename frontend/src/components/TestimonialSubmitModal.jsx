@@ -15,18 +15,23 @@ export default function TestimonialSubmitModal({ onClose }) {
   });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [isDraggingImage, setIsDraggingImage] = useState(false);
+  const [isDraggingVideo, setIsDraggingVideo] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-  const handleImageUpload = async (e) => {
-    const file = e.target.files && e.target.files[0];
+  const processImageFile = async (file) => {
     if (!file) return;
+    setError(null);
+    if (!file.type.startsWith("image/")) {
+      setError("Please select a valid image file (JPG, PNG, WebP).");
+      return;
+    }
     if (file.size > 5 * 1024 * 1024) {
-      alert("Image is too large. Please upload an image under 5MB.");
-      e.target.value = "";
+      setError("Image is too large. Maximum size limit is 5MB.");
       return;
     }
     setUploadingImage(true);
@@ -37,22 +42,28 @@ export default function TestimonialSubmitModal({ onClose }) {
         method: "POST",
         body: formData,
       });
-      if (!res.ok) throw new Error("Image upload failed");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || "Image upload failed");
+      }
       const data = await res.json();
-      setFormState({ ...formState, image: data.url });
+      setFormState((prev) => ({ ...prev, image: data.url }));
     } catch (err) {
-      alert(err.message || "Failed to upload image");
+      setError(err.message || "Failed to upload image. Please try again.");
     } finally {
       setUploadingImage(false);
     }
   };
 
-  const handleVideoUpload = async (e) => {
-    const file = e.target.files && e.target.files[0];
+  const processVideoFile = async (file) => {
     if (!file) return;
+    setError(null);
+    if (!file.type.startsWith("video/")) {
+      setError("Please select a valid video file (MP4, WebM, MOV).");
+      return;
+    }
     if (file.size > 50 * 1024 * 1024) {
-      alert("Video is too large. Please upload a video under 50MB.");
-      e.target.value = "";
+      setError("Video is too large. Maximum size limit is 50MB.");
       return;
     }
     setUploadingVideo(true);
@@ -68,9 +79,9 @@ export default function TestimonialSubmitModal({ onClose }) {
         throw new Error(errData.message || "Video upload failed");
       }
       const data = await res.json();
-      setFormState({ ...formState, videoUrl: data.url });
+      setFormState((prev) => ({ ...prev, videoUrl: data.url }));
     } catch (err) {
-      alert(err.message || "Failed to upload video");
+      setError(err.message || "Failed to upload video. Please try again.");
     } finally {
       setUploadingVideo(false);
     }
@@ -87,9 +98,16 @@ export default function TestimonialSubmitModal({ onClose }) {
       setError("Please enter a review message.");
       return;
     }
-    if (formState.type === 'video' && !formState.videoUrl) {
-      setError("Please upload a video.");
-      return;
+    if (formState.type === 'video') {
+      if (!formState.videoUrl) {
+        setError("Please upload a video file or paste a video URL.");
+        return;
+      }
+      const trimmed = formState.videoUrl.trim();
+      if (!/^(https?:\/\/|\/|blob:)/i.test(trimmed)) {
+        setError("Please enter a valid video link (e.g. https://www.youtube.com/...) or upload a video file!");
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -226,13 +244,35 @@ export default function TestimonialSubmitModal({ onClose }) {
                     </button>
                   </div>
                 ) : (
-                  <label className="file-upload-dropzone" style={{ minHeight: '80px', padding: '1rem' }}>
+                  <label 
+                    className={`file-upload-dropzone ${isDraggingImage ? 'dragging' : ''}`} 
+                    style={{ minHeight: '80px', padding: '1rem', borderColor: isDraggingImage ? '#7c3aed' : undefined, backgroundColor: isDraggingImage ? '#f3e8ff' : undefined }}
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImage(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImage(false); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsDraggingImage(false);
+                      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                      if (file) processImageFile(file);
+                    }}
+                  >
                     <Upload size={16} className="upload-icon" />
                     <div className="upload-text">
-                      <strong>{uploadingImage ? "Uploading..." : "Click to upload photo"}</strong>
+                      <strong>{uploadingImage ? "Uploading..." : isDraggingImage ? "Drop photo here!" : "Click or drag to upload photo"}</strong>
                       <span style={{ fontSize: '11px' }}>JPG, PNG up to 5MB</span>
                     </div>
-                    <input type="file" accept="image/*" className="file-input-hidden" disabled={uploadingImage} onChange={handleImageUpload} />
+                    <input 
+                      type="file" 
+                      accept="image/*" 
+                      className="file-input-hidden" 
+                      disabled={uploadingImage} 
+                      onChange={(e) => {
+                        const file = e.target.files && e.target.files[0];
+                        if (file) processImageFile(file);
+                        e.target.value = "";
+                      }} 
+                    />
                   </label>
                 )}
               </div>
@@ -286,13 +326,35 @@ export default function TestimonialSubmitModal({ onClose }) {
                     </button>
                   </div>
                 ) : (
-                  <label className="file-upload-dropzone">
+                  <label 
+                    className={`file-upload-dropzone ${isDraggingVideo ? 'dragging' : ''}`}
+                    style={{ borderColor: isDraggingVideo ? '#7c3aed' : undefined, backgroundColor: isDraggingVideo ? '#f3e8ff' : undefined }}
+                    onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingVideo(true); }}
+                    onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingVideo(false); }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setIsDraggingVideo(false);
+                      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                      if (file) processVideoFile(file);
+                    }}
+                  >
                     <Upload size={24} className="upload-icon" />
                     <div className="upload-text">
-                      <strong>{uploadingVideo ? "Uploading Video..." : "Click or drag to upload video"}</strong>
+                      <strong>{uploadingVideo ? "Uploading Video..." : isDraggingVideo ? "Drop video here!" : "Click or drag to upload video"}</strong>
                       <span>MP4, WebM up to 50MB</span>
                     </div>
-                    <input type="file" accept="video/*" className="file-input-hidden" disabled={uploadingVideo} onChange={handleVideoUpload} />
+                    <input 
+                      type="file" 
+                      accept="video/*" 
+                      className="file-input-hidden" 
+                      disabled={uploadingVideo} 
+                      onChange={(e) => {
+                        const file = e.target.files && e.target.files[0];
+                        if (file) processVideoFile(file);
+                        e.target.value = "";
+                      }} 
+                    />
                   </label>
                 )}
               </div>

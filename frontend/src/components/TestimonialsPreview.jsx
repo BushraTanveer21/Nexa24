@@ -42,6 +42,49 @@ const renderVideoPlayer = (url) => {
     );
   }
 
+  const instaRegex = /(?:instagram\.com|instagr\.am)\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/;
+  const instaMatch = trimmed.match(instaRegex);
+  if (instaMatch && instaMatch[1]) {
+    return (
+      <iframe
+        src={`https://www.instagram.com/p/${instaMatch[1]}/embed`}
+        title="Instagram video player"
+        frameBorder="0"
+        scrolling="no"
+        allowTransparency="true"
+        style={{ width: '100%', height: '360px', borderRadius: '12px', border: 'none', display: 'block', overflow: 'hidden' }}
+      ></iframe>
+    );
+  }
+
+  const tiktokRegex = /(?:tiktok\.com\/@[\w.-]+\/video\/|v[mt]\.tiktok\.com\/)(\d+)/;
+  const tiktokMatch = trimmed.match(tiktokRegex);
+  if (tiktokMatch && tiktokMatch[1]) {
+    return (
+      <iframe
+        src={`https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`}
+        title="TikTok video player"
+        frameBorder="0"
+        allow="fullscreen"
+        style={{ width: '100%', height: '380px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
+  const xRegex = /(?:twitter\.com|x\.com)\/(?:#!\/)?(?:\w+)\/status\/(\d+)/;
+  const xMatch = trimmed.match(xRegex);
+  if (xMatch && xMatch[1]) {
+    return (
+      <iframe
+        src={`https://platform.twitter.com/embed/Tweet.html?id=${xMatch[1]}`}
+        title="X/Twitter video player"
+        frameBorder="0"
+        scrolling="no"
+        style={{ width: '100%', height: '360px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
   return (
     <video
       src={trimmed}
@@ -54,6 +97,10 @@ const renderVideoPlayer = (url) => {
       style={{ width: '100%', height: '280px', display: 'block', objectFit: 'cover', borderRadius: '12px' }}
     />
   );
+};
+
+const hasValidVideo = (t) => {
+  return t && t.videoUrl && typeof t.videoUrl === 'string' && /^(https?:\/\/|\/|blob:)/i.test(t.videoUrl.trim());
 };
 
 const TestimonialsPreview = () => {

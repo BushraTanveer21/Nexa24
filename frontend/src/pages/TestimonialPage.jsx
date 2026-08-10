@@ -44,6 +44,49 @@ const renderVideoPlayer = (url) => {
     );
   }
 
+  const instaRegex = /(?:instagram\.com|instagr\.am)\/(?:p|reel|tv)\/([A-Za-z0-9_-]+)/;
+  const instaMatch = trimmed.match(instaRegex);
+  if (instaMatch && instaMatch[1]) {
+    return (
+      <iframe
+        src={`https://www.instagram.com/p/${instaMatch[1]}/embed`}
+        title="Instagram video player"
+        frameBorder="0"
+        scrolling="no"
+        allowTransparency="true"
+        style={{ width: '100%', height: '360px', borderRadius: '12px', border: 'none', display: 'block', overflow: 'hidden' }}
+      ></iframe>
+    );
+  }
+
+  const tiktokRegex = /(?:tiktok\.com\/@[\w.-]+\/video\/|v[mt]\.tiktok\.com\/)(\d+)/;
+  const tiktokMatch = trimmed.match(tiktokRegex);
+  if (tiktokMatch && tiktokMatch[1]) {
+    return (
+      <iframe
+        src={`https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`}
+        title="TikTok video player"
+        frameBorder="0"
+        allow="fullscreen"
+        style={{ width: '100%', height: '380px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
+  const xRegex = /(?:twitter\.com|x\.com)\/(?:#!\/)?(?:\w+)\/status\/(\d+)/;
+  const xMatch = trimmed.match(xRegex);
+  if (xMatch && xMatch[1]) {
+    return (
+      <iframe
+        src={`https://platform.twitter.com/embed/Tweet.html?id=${xMatch[1]}`}
+        title="X/Twitter video player"
+        frameBorder="0"
+        scrolling="no"
+        style={{ width: '100%', height: '360px', borderRadius: '12px', border: 'none', display: 'block' }}
+      ></iframe>
+    );
+  }
+
   return (
     <video
       src={trimmed}
@@ -56,6 +99,17 @@ const renderVideoPlayer = (url) => {
       style={{ width: '100%', height: '280px', display: 'block', objectFit: 'cover', borderRadius: '12px' }}
     />
   );
+};
+
+const formatDate = (dateVal) => {
+  if (!dateVal) return '';
+  const d = new Date(dateVal);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+};
+
+const hasValidVideo = (t) => {
+  return t && t.videoUrl && typeof t.videoUrl === 'string' && /^(https?:\/\/|\/|blob:)/i.test(t.videoUrl.trim());
 };
 
 export default function TestimonialPage() {
@@ -134,21 +188,28 @@ export default function TestimonialPage() {
             </div>
           ) : (
             <>
-              {testimonials.filter(t => t.videoUrl).length > 0 && (
+              {testimonials.filter(hasValidVideo).length > 0 && (
                 <div className="testimonial-grid" style={{ marginBottom: '40px' }}>
-                {testimonials.filter(t => t.videoUrl).map((t) => (
+                {testimonials.filter(hasValidVideo).map((t) => (
                   <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
                       <div className="testimonial-card">
-                        <div className="testimonial-author">
-                          <div className="testimonial-author-info">
-                            <h4>{t.name}</h4>
-                            <p className="author-role">{t.position}</p>
-                            <div style={{ display: 'flex', gap: '2px', marginTop: '6px' }}>
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} size={14} fill={i < (t.rating || 5) ? "#7c3aed" : "transparent"} color="#7c3aed" />
-                              ))}
+                        <div className="testimonial-author" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            <div className="testimonial-author-info">
+                              <h4>{t.name}</h4>
+                              <p className="author-role">{t.position}</p>
+                              <div style={{ display: 'flex', gap: '2px', marginTop: '6px' }}>
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} size={14} fill={i < (t.rating || 5) ? "#7c3aed" : "transparent"} color="#7c3aed" />
+                                ))}
+                              </div>
                             </div>
                           </div>
+                          {(t.date || t.createdAt) && (
+                            <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '500', whiteSpace: 'nowrap' }}>
+                              {formatDate(t.date || t.createdAt)}
+                            </span>
+                          )}
                         </div>
                         <div className="testimonial-video-container" style={{ marginTop: '16px', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
                           {renderVideoPlayer(t.videoUrl)}
@@ -165,30 +226,37 @@ export default function TestimonialPage() {
               </div>
               )}
 
-              {testimonials.filter(t => !t.videoUrl).length > 0 && (
+              {testimonials.filter(t => !hasValidVideo(t)).length > 0 && (
                 <div className="testimonial-grid">
-                {testimonials.filter(t => !t.videoUrl).map((t) => (
+                {testimonials.filter(t => !hasValidVideo(t)).map((t) => (
                   <Tilt key={t._id} tiltMaxAngleX={5} tiltMaxAngleY={5} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="testimonial-card-wrapper">
                       <div className="testimonial-card">
-                        <div className="testimonial-author">
-                          {(() => {
-                            if (t.image) {
-                              return <img src={t.image} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />;
-                            }
-                            const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'User')}&background=random&color=fff&size=128`;
-                            return (
-                              <img src={fallbackUrl} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />
-                            );
-                          })()}
-                          <div className="testimonial-author-info">
-                            <h4>{t.name}</h4>
-                            <p className="author-role">{t.position}</p>
-                            <div style={{ display: 'flex', gap: '2px', marginTop: '6px' }}>
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} size={14} fill={i < (t.rating || 5) ? "#7c3aed" : "transparent"} color="#7c3aed" />
-                              ))}
+                        <div className="testimonial-author" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                            {(() => {
+                              if (t.image) {
+                                return <img src={t.image} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />;
+                              }
+                              const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'User')}&background=random&color=fff&size=128`;
+                              return (
+                                <img src={fallbackUrl} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />
+                              );
+                            })()}
+                            <div className="testimonial-author-info">
+                              <h4>{t.name}</h4>
+                              <p className="author-role">{t.position}</p>
+                              <div style={{ display: 'flex', gap: '2px', marginTop: '6px' }}>
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} size={14} fill={i < (t.rating || 5) ? "#7c3aed" : "transparent"} color="#7c3aed" />
+                                ))}
+                              </div>
                             </div>
                           </div>
+                          {(t.date || t.createdAt) && (
+                            <span style={{ fontSize: '12px', color: '#94a3b8', fontWeight: '500', whiteSpace: 'nowrap' }}>
+                              {formatDate(t.date || t.createdAt)}
+                            </span>
+                          )}
                         </div>
                         {t.message && (
                           <>

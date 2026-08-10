@@ -1,41 +1,67 @@
-import React, { useState } from 'react';
-import { Users, FileText, ShieldCheck, Megaphone, DollarSign } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, FileText, ShieldCheck, Megaphone, DollarSign, Package } from 'lucide-react';
 import FallingPetals from './FallingPetals';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
+const DEFAULT_SERVICES = [
+  { 
+    title: 'Virtual Assistance Services', 
+    description: 'Smart support for scheduling, admin and daily operations.',
+  },
+  { 
+    title: 'Medical Billing Services', 
+    description: 'Accurate coding, claim management and faster reimbursements.',
+  },
+  { 
+    title: 'Credentialing Services', 
+    description: 'Faster credentialing and CAQH maintenance.',
+  },
+  { 
+    title: 'Marketing Services', 
+    description: 'Digital strategies that grow your practice online.',
+  },
+  { 
+    title: 'Additional Billing & RCM Solutions', 
+    description: 'End-to-end revenue cycle management that improves cash flow.',
+  }
+];
+
+const ICON_RULES = [
+  { test: /virtual|assist/i, Icon: Users },
+  { test: /billing/i, Icon: FileText },
+  { test: /credential/i, Icon: ShieldCheck },
+  { test: /marketing/i, Icon: Megaphone },
+  { test: /rcm|revenue|solution/i, Icon: DollarSign },
+];
+
+function renderServiceIcon(service) {
+  if (service.image) {
+    return <img src={service.image} alt={service.title} style={{ width: '20px', height: '20px', borderRadius: '4px', objectFit: 'cover' }} />;
+  }
+  const match = ICON_RULES.find((rule) => rule.test.test(service.title || ''));
+  const IconComponent = match ? match.Icon : Package;
+  return <IconComponent size={20} strokeWidth={2} />;
+}
 
 const ServicesOverview = () => {
   const [activeIndex, setActiveIndex] = useState(null);
+  const [services, setServices] = useState(DEFAULT_SERVICES);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/services`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setServices(data);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const toggleActive = (index) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
-
-  const services = [
-    { 
-      title: 'Virtual Assistance Services', 
-      description: 'Smart support for scheduling, admin and daily operations.',
-      icon: <Users size={20} strokeWidth={2} /> 
-    },
-    { 
-      title: 'Medical Billing Services', 
-      description: 'Accurate coding, claim management and faster reimbursements.',
-      icon: <FileText size={20} strokeWidth={2} /> 
-    },
-    { 
-      title: 'Credentialing Services', 
-      description: 'Faster credentialing and CAQH maintenance.',
-      icon: <ShieldCheck size={20} strokeWidth={2} /> 
-    },
-    { 
-      title: 'Marketing Services', 
-      description: 'Digital strategies that grow your practice online.',
-      icon: <Megaphone size={20} strokeWidth={2} /> 
-    },
-    { 
-      title: 'Additional Billing & RCM Solutions', 
-      description: 'End-to-end revenue cycle management that improves cash flow.',
-      icon: <DollarSign size={20} strokeWidth={2} /> 
-    }
-  ];
 
   return (
     <section className="services-exact container" id="services" style={{ position: 'relative', overflow: 'hidden' }}>
@@ -57,7 +83,7 @@ const ServicesOverview = () => {
           {services.map((s, i) => (
             <div 
               className="service-item-exact" 
-              key={i}
+              key={s._id || i}
               onClick={() => toggleActive(i)}
               style={{
                 cursor: 'pointer',
@@ -83,7 +109,7 @@ const ServicesOverview = () => {
                     transition: 'all 0.3s ease'
                   }}
                 >
-                  {s.icon}
+                  {renderServiceIcon(s)}
                 </div>
                 <h3 style={{ flex: 1, margin: 0, fontSize: '16px', fontWeight: '700', color: activeIndex === i ? 'var(--primary-exact)' : 'var(--text-dark-exact)' }}>
                   {s.title}
@@ -104,7 +130,7 @@ const ServicesOverview = () => {
 
               <div 
                 style={{
-                  maxHeight: activeIndex === i ? '150px' : '0px',
+                  maxHeight: activeIndex === i ? '200px' : '0px',
                   opacity: activeIndex === i ? 1 : 0,
                   overflow: 'hidden',
                   transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin-top 0.3s ease',

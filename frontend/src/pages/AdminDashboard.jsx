@@ -24,6 +24,7 @@ import {
   Menu,
   ChevronLeft,
   ChevronRight,
+  Search,
   Video,
   Camera
 } from "lucide-react";
@@ -32,6 +33,46 @@ import branchTL from "../assets/botanical-branch-tl.png";
 import "./AdminDashboard.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
+const TestimonialOrderInput = ({ item, idx, onOrderChange }) => {
+  const [val, setVal] = useState(item.order !== undefined ? item.order : idx);
+
+  useEffect(() => {
+    setVal(item.order !== undefined ? item.order : idx);
+  }, [item.order, idx]);
+
+  const handleCommit = () => {
+    const num = parseInt(val, 10);
+    if (!isNaN(num) && num !== item.order) {
+      onOrderChange(item._id, num);
+    } else {
+      setVal(item.order !== undefined ? item.order : idx);
+    }
+  };
+
+  return (
+    <input
+      type="number"
+      min="0"
+      value={val}
+      onChange={(e) => setVal(e.target.value)}
+      onBlur={handleCommit}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          e.target.blur();
+        }
+      }}
+      style={{
+        width: "55px",
+        padding: "5px 8px",
+        borderRadius: "6px",
+        border: "1px solid #cbd5e1",
+        textAlign: "center",
+        fontSize: "13px"
+      }}
+    />
+  );
+};
 
 // Auth token for admin-only writes (create/update/delete). Reads (GET) stay public.
 const getAuthToken = () =>
@@ -122,6 +163,11 @@ export default function AdminDashboard() {
   const [uploadingServiceImage, setUploadingServiceImage] = useState(false);
   const [uploadingTestimonialVideo, setUploadingTestimonialVideo] = useState(false);
   const [uploadingTestimonialImage, setUploadingTestimonialImage] = useState(false);
+  const [isDraggingTestimonialImage, setIsDraggingTestimonialImage] = useState(false);
+  const [isDraggingTestimonialVideo, setIsDraggingTestimonialVideo] = useState(false);
+
+  const [contactSearch, setContactSearch] = useState("");
+  const [contactFilterStatus, setContactFilterStatus] = useState("all");
 
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [confirmDialog, setConfirmDialog] = useState({ show: false, title: '', onConfirm: null });
@@ -179,19 +225,24 @@ export default function AdminDashboard() {
       if (resT.ok) {
         const dataT = await resT.json();
         if (Array.isArray(dataT)) {
-          const mappedT = dataT.map((t, idx) => ({
-            _id: t._id || `t_${idx}`,
-            clientName: t.name || t.clientName || "Client",
-            designation: t.position || t.designation || "Healthcare Client",
-            status: t.status || (t.isEnabled !== false ? "Published" : "Disabled"),
-            homepageDisplay: t.homepageDisplay !== undefined ? t.homepageDisplay : (t.isEnabled !== false),
-            message: t.message || "",
-            rating: t.rating || 5,
-            email: t.email || "",
-            videoUrl: t.videoUrl || "",
-            image: t.image || "",
-            isClientSubmitted: t.isClientSubmitted || false
-          }));
+          const mappedT = dataT
+            .sort((a, b) => (a.order !== undefined ? a.order : 0) - (b.order !== undefined ? b.order : 0))
+            .map((t, idx) => ({
+              _id: t._id || `t_${idx}`,
+              clientName: t.name || t.clientName || "Client",
+              designation: t.position || t.designation || "Healthcare Client",
+              status: t.status || (t.isEnabled !== false ? "Published" : "Disabled"),
+              homepageDisplay: t.homepageDisplay !== undefined ? t.homepageDisplay : (t.isEnabled !== false),
+              message: t.message || "",
+              rating: t.rating || 5,
+              email: t.email || "",
+              videoUrl: t.videoUrl || "",
+              image: t.image || "",
+              date: t.date || t.createdAt || "",
+              createdAt: t.createdAt || "",
+              order: idx,
+              isClientSubmitted: t.isClientSubmitted || false
+            }));
           setTestimonials(mappedT);
         }
       }
@@ -378,10 +429,64 @@ export default function AdminDashboard() {
     }
   };
 
+  const processAdminTestimonialImage = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showToast("Please select a valid image file (JPG, PNG, WebP).", "error");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      showToast("Image is too large. Maximum size limit is 5MB.", "error");
+      return;
+    }
+    setUploadingTestimonialImage(true);
+    try {
+      const url = await uploadImageFile(file);
+      setTestimonialForm((prev) => ({ ...prev, image: url }));
+    } catch (err) {
+      showToast(err.message || "Image upload failed. Please try again.", "error");
+    } finally {
+      setUploadingTestimonialImage(false);
+    }
+  };
+
+  const processAdminTestimonialVideo = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith("video/")) {
+      showToast("Please select a valid video file (MP4, WebM, MOV).", "error");
+      return;
+    }
+    if (file.size > 50 * 1024 * 1024) {
+      showToast("Video is too large. Maximum size limit is 50MB.", "error");
+      return;
+    }
+    setUploadingTestimonialVideo(true);
+    try {
+      const url = await uploadVideoFile(file);
+      setTestimonialForm((prev) => ({ ...prev, videoUrl: url }));
+    } catch (err) {
+      showToast(err.message || "Video upload failed. Please try again.", "error");
+    } finally {
+      setUploadingTestimonialVideo(false);
+    }
+  };
+
   // Testimonial handlers
   const handleOpenAddTestimonial = (type = 'text') => {
     setEditingTestimonial(null);
-    setTestimonialForm({ clientName: "", designation: "", status: "Published", homepageDisplay: true, message: "", email: "", videoUrl: "", image: "", rating: 5, type });
+    setTestimonialForm({
+      clientName: "",
+      designation: "",
+      status: "Published",
+      homepageDisplay: true,
+      message: "",
+      email: "",
+      videoUrl: "",
+      image: "",
+      rating: 5,
+      type,
+      order: testimonials.length
+    });
     setShowTestimonialModal(true);
   };
 
@@ -397,7 +502,8 @@ export default function AdminDashboard() {
       videoUrl: t.videoUrl || "",
       image: t.image || "",
       rating: t.rating || 5,
-      type: t.videoUrl ? "video" : "text"
+      type: t.videoUrl ? "video" : "text",
+      order: t.order !== undefined ? t.order : 0
     });
     setShowTestimonialModal(true);
   };
@@ -412,8 +518,16 @@ export default function AdminDashboard() {
     }
 
     if (testimonialForm.type === 'text' && (!testimonialForm.message || !testimonialForm.message.trim())) {
-      alert("Please enter a review message.");
+      showToast("Please enter a review message.", "error");
       return;
+    }
+
+    if (testimonialForm.type === 'video' && testimonialForm.videoUrl) {
+      const trimmed = testimonialForm.videoUrl.trim();
+      if (!/^(https?:\/\/|\/|blob:)/i.test(trimmed)) {
+        showToast("Please enter a valid video link (e.g. https://www.youtube.com/...) or upload a video file!", "error");
+        return;
+      }
     }
 
     // Backend model fields are name/position/isEnabled — dashboard form uses
@@ -426,6 +540,7 @@ export default function AdminDashboard() {
       videoUrl: testimonialForm.videoUrl,
       image: testimonialForm.image,
       rating: Number(testimonialForm.rating),
+      order: testimonialForm.order !== undefined ? Number(testimonialForm.order) : testimonials.length,
       isEnabled: testimonialForm.status !== "Disabled" && testimonialForm.homepageDisplay,
     };
 
@@ -462,6 +577,9 @@ export default function AdminDashboard() {
         email: saved.email || "",
         videoUrl: saved.videoUrl || "",
         image: saved.image || "",
+        date: saved.date || saved.createdAt || new Date().toISOString(),
+        createdAt: saved.createdAt || new Date().toISOString(),
+        order: saved.order !== undefined ? saved.order : testimonials.length,
         isClientSubmitted: saved.isClientSubmitted || false
       };
 
@@ -526,6 +644,59 @@ export default function AdminDashboard() {
       });
     } catch (err) {
       console.warn("Homepage display toggle failed to persist:", err.message);
+    }
+  };
+
+  const handleTestimonialOrderChange = async (id, newOrderInput) => {
+    const requestedOrder = Math.max(0, parseInt(newOrderInput, 10) || 0);
+
+    // Instant local state update so changes reflect live without page refresh!
+    const currentList = [...testimonials].sort((a, b) => (a.order !== undefined ? a.order : 0) - (b.order !== undefined ? b.order : 0));
+    const targetIndex = currentList.findIndex(t => t._id === id);
+    if (targetIndex !== -1) {
+      const [targetItem] = currentList.splice(targetIndex, 1);
+      const insertAt = Math.min(requestedOrder, currentList.length);
+      currentList.splice(insertAt, 0, targetItem);
+
+      const optimisticList = currentList.map((t, idx) => ({ ...t, order: idx }));
+      setTestimonials(optimisticList);
+    }
+
+    try {
+      const token = getAuthToken();
+      const res = await fetch(`${API_URL}/api/testimonials/admin/${id}/order`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ order: requestedOrder }),
+      });
+
+      if (res.ok) {
+        const freshData = await res.json();
+        if (Array.isArray(freshData)) {
+          const freshMapped = freshData.map((t, idx) => ({
+            _id: t._id || `t_${idx}`,
+            clientName: t.name || t.clientName || "Client",
+            designation: t.position || t.designation || "Healthcare Client",
+            status: t.status || (t.isEnabled !== false ? "Published" : "Disabled"),
+            homepageDisplay: t.homepageDisplay !== undefined ? t.homepageDisplay : (t.isEnabled !== false),
+            message: t.message || "",
+            rating: t.rating || 5,
+            email: t.email || "",
+            videoUrl: t.videoUrl || "",
+            image: t.image || "",
+            date: t.date || t.createdAt || "",
+            createdAt: t.createdAt || "",
+            order: t.order !== undefined ? t.order : idx,
+            isClientSubmitted: t.isClientSubmitted || false
+          }));
+          setTestimonials(freshMapped);
+        }
+      }
+    } catch (err) {
+      console.warn("Testimonial order update failed to persist:", err.message);
     }
   };
 
@@ -916,6 +1087,8 @@ export default function AdminDashboard() {
                     <th style={{ width: "60px" }}>Avatar</th>
                     <th>Client Name</th>
                     <th>Designation</th>
+                    <th>Date</th>
+                    <th style={{ textAlign: "center", width: "70px" }}>Order</th>
                     <th>Review</th>
                     <th style={{ textAlign: "center" }}>Status</th>
                     <th style={{ textAlign: "center" }}>Actions</th>
@@ -945,6 +1118,12 @@ export default function AdminDashboard() {
                       </td>
                       <td><strong>{t.clientName}</strong></td>
                       <td className="col-designation">{t.designation}</td>
+                      <td style={{ fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap' }}>
+                        {t.date || t.createdAt ? new Date(t.date || t.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-'}
+                      </td>
+                      <td style={{ textAlign: "center" }}>
+                        <TestimonialOrderInput item={t} idx={idx} onOrderChange={handleTestimonialOrderChange} />
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         <span className="quote-icon-cell">
                           <Quote size={15} />
@@ -1015,8 +1194,52 @@ export default function AdminDashboard() {
         {/* CONTACT INQUIRIES TAB */}
         {activeNav === "contacts" && (
           <section className="dash-section-card animate-fade-in">
-            <div className="section-card-header">
-              <h2 className="section-title">Contact Form Inquiries</h2>
+            <div className="section-card-header" style={{ flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
+              <h2 className="section-title" style={{ margin: 0 }}>Contact Form Inquiries</h2>
+              
+              {/* Search & Filter Controls */}
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginLeft: 'auto' }}>
+                <div style={{ position: 'relative', width: '260px' }}>
+                  <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
+                  <input
+                    type="text"
+                    placeholder="Search name, email, phone..."
+                    value={contactSearch}
+                    onChange={(e) => setContactSearch(e.target.value)}
+                    style={{
+                      width: '100%',
+                      paddingLeft: '36px',
+                      paddingRight: contactSearch ? '30px' : '12px',
+                      paddingTop: '7px',
+                      paddingBottom: '7px',
+                      borderRadius: '20px',
+                      border: '1px solid #cbd5e1',
+                      fontSize: '13px',
+                      outline: 'none'
+                    }}
+                  />
+                  {contactSearch && (
+                    <button
+                      onClick={() => setContactSearch("")}
+                      style={{ position: 'absolute', right: '10px', top: '50%', transform: 'translateY(-50%)', border: 'none', background: 'none', cursor: 'pointer', color: '#94a3b8', display: 'flex', padding: 0 }}
+                    >
+                      <X size={14} />
+                    </button>
+                  )}
+                </div>
+
+                <select
+                  value={contactFilterStatus}
+                  onChange={(e) => setContactFilterStatus(e.target.value)}
+                  style={{ padding: '7px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', fontSize: '13px', background: '#fff', color: '#334155', outline: 'none', cursor: 'pointer' }}
+                >
+                  <option value="all">All Inquiries ({contacts.length})</option>
+                  <option value="New">New ({contacts.filter(c => c.status === 'New').length})</option>
+                  <option value="Handled">Handled / Done</option>
+                  <option value="unread">Unread ({contacts.filter(c => !c.isRead).length})</option>
+                  <option value="read">Read</option>
+                </select>
+              </div>
             </div>
 
             <div className="table-responsive-wrapper">
@@ -1034,7 +1257,25 @@ export default function AdminDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {contacts.map((c, idx) => (
+                  {contacts.filter((c) => {
+                    if (contactFilterStatus === "New" && c.status !== "New") return false;
+                    if (contactFilterStatus === "Handled" && c.status !== "Handled" && c.status !== "Done") return false;
+                    if (contactFilterStatus === "unread" && c.isRead) return false;
+                    if (contactFilterStatus === "read" && !c.isRead) return false;
+
+                    if (contactSearch.trim()) {
+                      const q = contactSearch.toLowerCase().trim();
+                      const name = (c.name || '').toLowerCase();
+                      const email = (c.email || '').toLowerCase();
+                      const phone = (c.phone || '').toLowerCase();
+                      const org = (c.organization || '').toLowerCase();
+                      const service = (c.service || '').toLowerCase();
+                      const subject = (c.subject || '').toLowerCase();
+                      const message = (c.message || '').toLowerCase();
+                      return name.includes(q) || email.includes(q) || phone.includes(q) || org.includes(q) || service.includes(q) || subject.includes(q) || message.includes(q);
+                    }
+                    return true;
+                  }).map((c, idx) => (
                     <tr key={c._id} style={!c.isRead ? { fontWeight: 600 } : undefined}>
                       <td className="col-index">
                         {idx + 1}
@@ -1050,7 +1291,7 @@ export default function AdminDashboard() {
                         {c.status === "In Progress" && (
                           <span className="status-pill in-progress">In Progress</span>
                         )}
-                        {c.status === "Handled" && (
+                        {(c.status === "Handled" || c.status === "Done") && (
                           <span className="status-pill handled">Handled</span>
                         )}
                       </td>
@@ -1081,9 +1322,29 @@ export default function AdminDashboard() {
                       </td>
                     </tr>
                   ))}
-                  {contacts.length === 0 && (
+                  {contacts.filter((c) => {
+                    if (contactFilterStatus === "New" && c.status !== "New") return false;
+                    if (contactFilterStatus === "Handled" && c.status !== "Handled" && c.status !== "Done") return false;
+                    if (contactFilterStatus === "unread" && c.isRead) return false;
+                    if (contactFilterStatus === "read" && !c.isRead) return false;
+
+                    if (contactSearch.trim()) {
+                      const q = contactSearch.toLowerCase().trim();
+                      const name = (c.name || '').toLowerCase();
+                      const email = (c.email || '').toLowerCase();
+                      const phone = (c.phone || '').toLowerCase();
+                      const org = (c.organization || '').toLowerCase();
+                      const service = (c.service || '').toLowerCase();
+                      const subject = (c.subject || '').toLowerCase();
+                      const message = (c.message || '').toLowerCase();
+                      return name.includes(q) || email.includes(q) || phone.includes(q) || org.includes(q) || service.includes(q) || subject.includes(q) || message.includes(q);
+                    }
+                    return true;
+                  }).length === 0 && (
                     <tr>
-                      <td colSpan="8" className="empty-row">No contact inquiries.</td>
+                      <td colSpan="8" className="empty-row">
+                        {contactSearch || contactFilterStatus !== "all" ? "No inquiries match your search or filter." : "No contact inquiries found."}
+                      </td>
                     </tr>
                   )}
                 </tbody>
@@ -1300,10 +1561,22 @@ export default function AdminDashboard() {
                         </button>
                       </div>
                     ) : (
-                      <label className="file-upload-dropzone" style={{ minHeight: '100px', padding: '1rem' }}>
+                      <label 
+                        className={`file-upload-dropzone ${isDraggingTestimonialImage ? 'dragging' : ''}`} 
+                        style={{ minHeight: '100px', padding: '1rem', borderColor: isDraggingTestimonialImage ? '#7c3aed' : undefined, backgroundColor: isDraggingTestimonialImage ? '#f3e8ff' : undefined }}
+                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialImage(true); }}
+                        onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialImage(false); }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsDraggingTestimonialImage(false);
+                          const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                          if (file) processAdminTestimonialImage(file);
+                        }}
+                      >
                         <Upload size={20} className="upload-icon" />
                         <div className="upload-text">
-                          <strong>{uploadingTestimonialImage ? "Uploading..." : "Click to upload image"}</strong>
+                          <strong>{uploadingTestimonialImage ? "Uploading..." : isDraggingTestimonialImage ? "Drop photo here!" : "Click or drag to upload image"}</strong>
                           <span style={{ fontSize: '11px' }}>JPG, PNG up to 5MB</span>
                         </div>
                         <input
@@ -1311,25 +1584,10 @@ export default function AdminDashboard() {
                           accept="image/*"
                           className="file-input-hidden"
                           disabled={uploadingTestimonialImage}
-                          onChange={async (e) => {
+                          onChange={(e) => {
                             const file = e.target.files && e.target.files[0];
-                            if (!file) return;
-
-                            if (file.size > 5 * 1024 * 1024) {
-                              alert("Image is too large. Please upload an image under 5MB.");
-                              e.target.value = "";
-                              return;
-                            }
-
-                            setUploadingTestimonialImage(true);
-                            try {
-                              const url = await uploadImageFile(file);
-                              setTestimonialForm((prev) => ({ ...prev, image: url }));
-                            } catch (err) {
-                              alert(err.message || "Image upload failed. Please try again.");
-                            } finally {
-                              setUploadingTestimonialImage(false);
-                            }
+                            if (file) processAdminTestimonialImage(file);
+                            e.target.value = "";
                           }}
                         />
                       </label>
@@ -1379,10 +1637,22 @@ export default function AdminDashboard() {
                         </button>
                       </div>
                     ) : (
-                      <label className="file-upload-dropzone">
+                      <label 
+                        className={`file-upload-dropzone ${isDraggingTestimonialVideo ? 'dragging' : ''}`}
+                        style={{ borderColor: isDraggingTestimonialVideo ? '#7c3aed' : undefined, backgroundColor: isDraggingTestimonialVideo ? '#f3e8ff' : undefined }}
+                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialVideo(true); }}
+                        onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialVideo(false); }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsDraggingTestimonialVideo(false);
+                          const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                          if (file) processAdminTestimonialVideo(file);
+                        }}
+                      >
                         <Upload size={24} className="upload-icon" />
                         <div className="upload-text">
-                          <strong>{uploadingTestimonialVideo ? "Uploading Video..." : "Click or drag to upload video"}</strong>
+                          <strong>{uploadingTestimonialVideo ? "Uploading Video..." : isDraggingTestimonialVideo ? "Drop video here!" : "Click or drag to upload video"}</strong>
                           <span>MP4, WebM up to 50MB</span>
                         </div>
                         <input
@@ -1390,25 +1660,10 @@ export default function AdminDashboard() {
                           accept="video/*"
                           className="file-input-hidden"
                           disabled={uploadingTestimonialVideo}
-                          onChange={async (e) => {
+                          onChange={(e) => {
                             const file = e.target.files && e.target.files[0];
-                            if (!file) return;
-
-                            if (file.size > 50 * 1024 * 1024) {
-                              alert("Video is too large. Please upload a video under 50MB.");
-                              e.target.value = "";
-                              return;
-                            }
-
-                            setUploadingTestimonialVideo(true);
-                            try {
-                              const url = await uploadVideoFile(file);
-                              setTestimonialForm((prev) => ({ ...prev, videoUrl: url }));
-                            } catch (err) {
-                              alert(err.message || "Video upload failed. Please try again.");
-                            } finally {
-                              setUploadingTestimonialVideo(false);
-                            }
+                            if (file) processAdminTestimonialVideo(file);
+                            e.target.value = "";
                           }}
                         />
                       </label>
@@ -1430,6 +1685,16 @@ export default function AdminDashboard() {
                   />
                 </div>
               )}
+
+              <div className="modal-field">
+                <label>Display Order Position</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={testimonialForm.order !== undefined ? testimonialForm.order : 0}
+                  onChange={(e) => setTestimonialForm({ ...testimonialForm, order: Number(e.target.value) })}
+                />
+              </div>
 
               <div className="modal-field">
                 <label>Status</label>
