@@ -742,6 +742,18 @@ img {
   color: var(--text-dark);
   margin-bottom: 8px;
   line-height: 1.35;
+  /* Clamp to 2 lines (with a matching min-height) so every "What We
+     Handle" card reserves the exact same title space no matter how short
+     or long its text is. Combined with the description clamp below, this
+     makes every handle-card the same fixed height on every service page
+     -- old or newly added from the admin panel -- instead of sizing
+     itself to whatever content that particular page happens to have. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: calc(15px * 1.35 * 2);
 }
 
 .service-card p {

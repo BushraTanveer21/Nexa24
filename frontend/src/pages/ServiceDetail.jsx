@@ -329,11 +329,14 @@ function getServiceData(slug, backendService) {
   return base;
 }
 
-// Turns a benefit/handle title into a stable DOM id so a badge pill can
-// scroll straight to its matching card, e.g. "Front-desk Support" ->
-// "handle-front-desk-support".
-const slugifyHandle = (text = "") =>
-  `handle-${text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
+// DOM id for a "What We Handle" card, keyed by its POSITION in the list
+// (not its text). Badges and handles are always built in the same order —
+// pill #1 pairs with card #1, pill #2 with card #2, etc. — so matching by
+// index works even when a badge's short label doesn't exactly match its
+// card's longer title (e.g. "Claims Submission" pill vs "Claims Submission
+// & Follow-up" card). This also means any newly added service/benefit pair
+// just works automatically, since it's positional, not text-based.
+const handleId = (idx) => `handle-${idx}`;
 
 export default function ServiceDetail() {
   const { slug } = useParams();
@@ -341,11 +344,11 @@ export default function ServiceDetail() {
   const [loading, setLoading] = useState(true);
 
   // Clicking a purple benefit pill just scrolls the page down to its
-  // matching card in "What Our ... Handle" — nothing else.
+  // matching card (same position) in "What Our ... Handle" — nothing else.
   // scroll-margin-top on .handle-card (App.css) keeps the card clear of the
   // fixed header once it lands.
-  const scrollToHandle = (text) => {
-    const el = document.getElementById(slugifyHandle(text));
+  const scrollToHandle = (idx) => {
+    const el = document.getElementById(handleId(idx));
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
@@ -414,7 +417,7 @@ export default function ServiceDetail() {
                       type="button"
                       className="detail-badge-pill"
                       key={idx}
-                      onClick={() => scrollToHandle(badge.text)}
+                      onClick={() => scrollToHandle(idx)}
                     >
                       <BadgeIcon size={14} />
                       {badge.text}
@@ -446,7 +449,7 @@ export default function ServiceDetail() {
             return (
               <div
                 key={idx}
-                id={slugifyHandle(item.title)}
+                id={handleId(idx)}
                 className="service-card handle-card reveal"
                 style={{ transitionDelay: `${idx * 90}ms` }}
               >
