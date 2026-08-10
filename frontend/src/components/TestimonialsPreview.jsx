@@ -10,11 +10,7 @@ const renderVideoPlayer = (url) => {
 
   // Validate URL format
   if (!/^(https?:\/\/|\/|blob:)/i.test(trimmed)) {
-    return (
-      <div style={{ padding: '24px', textAlign: 'center', background: '#f8fafc', borderRadius: '12px', color: '#64748b', fontSize: '13px', fontWeight: '500' }}>
-        Invalid video URL provided
-      </div>
-    );
+    return null;
   }
 
   const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
@@ -51,9 +47,8 @@ const renderVideoPlayer = (url) => {
       src={trimmed}
       controls
       onError={(e) => {
-        e.currentTarget.style.display = 'none';
         if (e.currentTarget.parentElement) {
-          e.currentTarget.parentElement.innerHTML = '<div style="padding:24px;text-align:center;background:#f8fafc;border-radius:12px;color:#64748b;font-size:13px;font-weight:500;">Video unavailable or link broken</div>';
+          e.currentTarget.parentElement.style.display = 'none';
         }
       }}
       style={{ width: '100%', height: '280px', display: 'block', objectFit: 'cover', borderRadius: '12px' }}
