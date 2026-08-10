@@ -19,6 +19,8 @@ import {
 import branchTL from "../assets/botanical-branch-tl.png";
 import nexaLogo from "../assets/nexa24-logo.png";
 import useScrollReveal from "../hooks/useScrollReveal";
+import WHY_CHOOSE_US from "../data/whyChooseUs";
+import { resolveIcon } from "../utils/iconMap";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -30,7 +32,6 @@ const SERVICE_DETAILS = {
     highlightTitle: "Real Impact.",
     description:
       "Free your staff from admin work. Our trained healthcare VAs handle scheduling, patient follow-ups, prior authorizations, charting support, and front-desk tasks remotely.",
-    benefit: "Save time, reduce overhead, and keep your practice running smoothly.",
     heroImage:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
     badges: [
@@ -91,7 +92,6 @@ const SERVICE_DETAILS = {
     highlightTitle: "Maximized Revenue.",
     description:
       "Complete Revenue Cycle Management designed to maximize reimbursements and reduce denials. From claims submission to payment posting, we handle every step with accuracy and speed.",
-    benefit: "Faster payments, fewer denials, and a healthier bottom line.",
     heroImage:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&auto=format&fit=crop&q=80",
     badges: [
@@ -132,7 +132,6 @@ const SERVICE_DETAILS = {
     highlightTitle: "Made Simple.",
     description:
       "Get providers enrolled and paid faster. We handle the entire credentialing lifecycle with accuracy and speed, so you never miss a payer deadline.",
-    benefit: "Faster enrollments, fewer delays, and providers who can start billing sooner.",
     heroImage:
       "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format&fit=crop&q=80",
     badges: [
@@ -173,23 +172,22 @@ const SERVICE_DETAILS = {
     highlightTitle: "Real Growth.",
     description:
       "Grow your practice online and attract more patients. We build your brand so you stand out — from your website to your social presence.",
-    benefit: "More visibility, more patients, and a brand that reflects your quality of care.",
     heroImage:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
     badges: [
       { text: "Website & SEO", Icon: TrendingUp },
       { text: "Social Media", Icon: UsersRound },
+      { text: "Paid Ads (Google/Meta)", Icon: DollarSign },
       { text: "Google Business Profile", Icon: Calendar },
-      { text: "Review Management", Icon: UserCheck },
       { text: "Branding & Content", Icon: FileCheck2 },
     ],
     handlesHeading: "What Our Marketing Team Handles",
     handles: [
       { Icon: TrendingUp, title: "Website & SEO", desc: "A modern site optimized to rank and convert visitors." },
       { Icon: UsersRound, title: "Social Media Management", desc: "Consistent, engaging content across your channels." },
+      { Icon: DollarSign, title: "Paid Ads: Google + Meta", desc: "Targeted ad campaigns that bring in new patients directly." },
       { Icon: Calendar, title: "Google Business Profile", desc: "Optimized local listings to bring in nearby patients." },
-      { Icon: UserCheck, title: "Patient Review Management", desc: "Build trust with a strong, well-managed review presence." },
-      { Icon: FileCheck2, title: "Content & Branding", desc: "Cohesive messaging that reflects your practice's identity." },
+      { Icon: FileCheck2, title: "Branding, Logo & Content Creation", desc: "Cohesive messaging that reflects your practice's identity." },
     ],
     process: [
       { num: "01", Icon: MessageSquare, title: "Discover", desc: "We learn your practice, patients, and goals." },
@@ -214,7 +212,6 @@ const SERVICE_DETAILS = {
     highlightTitle: "& RCM Support.",
     description:
       "Need support in specific areas? We've got you. Prior authorization, patient statements, collections, denial analysis & custom reports — handled with precision.",
-    benefit: "Targeted support that fills the gaps in your revenue cycle.",
     heroImage:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80",
     badges: [
@@ -250,12 +247,9 @@ const SERVICE_DETAILS = {
   },
 };
 
-// Fallback generator for dynamically added backend services
-function getServiceData(slug, backendService) {
-  if (SERVICE_DETAILS[slug]) {
-    return SERVICE_DETAILS[slug];
-  }
-
+// Fallback generator for dynamically added backend services (used when the
+// slug isn't one of the 5 hand-designed entries above)
+function buildFallbackServiceData(backendService) {
   const name = backendService?.title || backendService?.name || "Healthcare Service";
   return {
     eyebrow: name.toUpperCase(),
@@ -264,7 +258,6 @@ function getServiceData(slug, backendService) {
     description:
       backendService?.description ||
       "Streamline your healthcare practice operations with NEXA24's dedicated managed solutions.",
-    benefit: "Maximized efficiency, clean workflows, and seamless patient satisfaction.",
     heroImage:
       "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
     badges: [
@@ -298,10 +291,63 @@ function getServiceData(slug, backendService) {
   };
 }
 
+// Builds the final data used to render the page. Starts from either the
+// hand-designed content (for the 5 core services) or the generic fallback
+// (for any service added later from the admin panel), then layers the
+// admin-entered subtitle / benefits on top whenever they're set —
+// so nothing about the highlight line or the benefit pills stays hardcoded
+// once an admin fills those fields in.
+function getServiceData(slug, backendService) {
+  const base = SERVICE_DETAILS[slug]
+    ? { ...SERVICE_DETAILS[slug] }
+    : buildFallbackServiceData(backendService);
+
+  if (backendService?.subtitle?.trim()) {
+    base.highlightTitle = backendService.subtitle.trim();
+  }
+
+  // Benefits entered in the admin dashboard drive BOTH the pill row under the
+  // title AND the "What Our ... Handle" cards further down the page — they
+  // used to only feed the pills, so anything an admin added never showed up
+  // in the cards below. Building both from the same array also keeps them in
+  // the same order, so a pill and its matching card share an index.
+  if (Array.isArray(backendService?.benefits) && backendService.benefits.length > 0) {
+    const validBenefits = backendService.benefits.filter((b) => b?.label?.trim());
+
+    base.badges = validBenefits.map((b) => ({
+      text: b.label.trim(),
+      Icon: resolveIcon(b.icon, b.label),
+    }));
+
+    base.handles = validBenefits.map((b) => ({
+      Icon: resolveIcon(b.icon, b.label),
+      title: b.label.trim(),
+      desc: b.description?.trim() || "Handled by our trained NEXA24 team as part of this service.",
+    }));
+  }
+
+  return base;
+}
+
+// Turns a benefit/handle title into a stable DOM id so a badge pill can
+// scroll straight to its matching card, e.g. "Front-desk Support" ->
+// "handle-front-desk-support".
+const slugifyHandle = (text = "") =>
+  `handle-${text.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`;
+
 export default function ServiceDetail() {
   const { slug } = useParams();
   const [backendService, setBackendService] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Clicking a purple benefit pill just scrolls the page down to its
+  // matching card in "What Our ... Handle" — nothing else.
+  // scroll-margin-top on .handle-card (App.css) keeps the card clear of the
+  // fixed header once it lands.
+  const scrollToHandle = (text) => {
+    const el = document.getElementById(slugifyHandle(text));
+    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -359,6 +405,24 @@ export default function ServiceDetail() {
               {data.title} <br /><span>{data.highlightTitle}</span>
             </h1>
             <p>{data.description}</p>
+            {data.badges && data.badges.length > 0 && (
+              <div className="detail-badges-row">
+                {data.badges.map((badge, idx) => {
+                  const BadgeIcon = badge.Icon;
+                  return (
+                    <button
+                      type="button"
+                      className="detail-badge-pill"
+                      key={idx}
+                      onClick={() => scrollToHandle(badge.text)}
+                    >
+                      <BadgeIcon size={14} />
+                      {badge.text}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           {/* Hero Visual — professional framed photo, full image visible */}
@@ -382,6 +446,7 @@ export default function ServiceDetail() {
             return (
               <div
                 key={idx}
+                id={slugifyHandle(item.title)}
                 className="service-card handle-card reveal"
                 style={{ transitionDelay: `${idx * 90}ms` }}
               >
@@ -423,29 +488,29 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {/* ===== WHY PRACTICES CHOOSE NEXA24 SECTION ===== */}
+      {/* ===== WHY PRACTICES CHOOSE NEXA24 SECTION =====
+          Reuses the exact same cards shown on the About Us / Home page
+          (frontend/src/data/whyChooseUs.js) instead of a separate,
+          per-service hardcoded list — one place to edit, shown everywhere. */}
       <section className="why-section">
-        <h2 className="section-heading text-center reveal">{data.whyHeading}</h2>
+        <h2 className="section-heading text-center reveal">Why Choose NEXA24</h2>
 
         <div className="why-grid-4">
-          {data.whyCards.map((item, idx) => {
-            const CardIcon = item.Icon;
-            return (
-              <div
-                className="why-card reveal"
-                key={idx}
-                style={{ transitionDelay: `${idx * 100}ms` }}
-              >
-                <div className="why-icon">
-                  <CardIcon size={22} />
-                </div>
-                <div className="why-card-content">
-                  <h4>{item.title}</h4>
-                  <p>{item.desc}</p>
-                </div>
+          {WHY_CHOOSE_US.map((item, idx) => (
+            <div
+              className="why-card reveal"
+              key={item.title}
+              style={{ transitionDelay: `${idx * 100}ms` }}
+            >
+              <div className="why-icon">
+                <item.Icon size={22} />
               </div>
-            );
-          })}
+              <div className="why-card-content">
+                <h4>{item.title}</h4>
+                <p>{item.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

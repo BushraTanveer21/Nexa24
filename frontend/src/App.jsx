@@ -9,7 +9,6 @@ import TestimonialPage from './pages/TestimonialPage';
 
 
 import Login from "./pages/Login";
-import ResetPassword from "./pages/ResetPassword";
 import AdminDashboard from "./pages/AdminDashboard";
 import Services from "./pages/Services";
 import ServiceDetail from "./pages/ServiceDetail";
@@ -119,7 +118,6 @@ function App() {
             <Route path="/services/:slug" element={<ServiceDetail />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/reset-password/:token" element={<ResetPassword />} />
             <Route path="/admin" element={<AdminDashboard />} />
 
             <Route path="*" element={<Navigate to="/" replace />} />

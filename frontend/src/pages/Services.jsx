@@ -2,12 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
-  Users,
-  FileText,
   ShieldCheck,
-  Megaphone,
-  DollarSign,
-  Package,
   TrendingUp,
   UsersRound,
   MessageSquare,
@@ -18,6 +13,7 @@ import {
 import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
 import useScrollReveal from "../hooks/useScrollReveal";
+import { resolveIcon } from "../utils/iconMap";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -48,19 +44,6 @@ const DEFAULT_SERVICES = [
     description: "End-to-end revenue cycle management that improves cash flow.",
   },
 ];
-
-const ICON_RULES = [
-  { test: /virtual|assist/i, Icon: Users },
-  { test: /billing/i, Icon: FileText },
-  { test: /credential/i, Icon: ShieldCheck },
-  { test: /marketing/i, Icon: Megaphone },
-  { test: /rcm|revenue|solution/i, Icon: DollarSign },
-];
-
-function iconFor(title = "") {
-  const match = ICON_RULES.find((rule) => rule.test.test(title));
-  return match ? match.Icon : Package;
-}
 
 function slugify(title = "") {
   return title
@@ -177,8 +160,8 @@ export default function Services() {
 
             {/* Dynamic Orbit Cards revolving around Center Logo */}
             {orbitServices.map((service, index) => {
-              const Icon = iconFor(service.title || service.name);
               const cardTitle = service.title || service.name;
+              const Icon = resolveIcon(service.icon, cardTitle);
               return (
                 <div key={service._id || index} className={`orbit-card orbit-card-${index + 1}`}>
                   <div className="cluster-icon"><Icon size={18} /></div>
@@ -200,7 +183,7 @@ export default function Services() {
         <div className="services-grid">
           {sortedServices.map((service) => {
             const serviceTitle = service.title || service.name;
-            const Icon = iconFor(serviceTitle);
+            const Icon = resolveIcon(service.icon, serviceTitle);
             const slug = slugify(serviceTitle);
             return (
               <div className="service-card reveal" key={service._id}>
@@ -222,7 +205,7 @@ export default function Services() {
       <section id="solutions" className="why-section">
         <div className="eyebrow-label text-center">WHY NEXA24?</div>
         <h2 className="section-heading text-center">Results that drive your practice forward.</h2>
-        
+
         <div className="why-grid">
           {WHY_ITEMS.map((item) => (
             <div className="why-card reveal" key={item.title}>
@@ -242,7 +225,7 @@ export default function Services() {
       <section id="how-it-works" className="how-section">
         <div className="eyebrow-label text-center">HOW IT WORKS</div>
         <h2 className="section-heading text-center">Simple 4-Step Process</h2>
-        
+
         <div className="how-steps-grid">
           {HOW_STEPS.map((step) => (
             <div className="how-step-card reveal" key={step.title}>

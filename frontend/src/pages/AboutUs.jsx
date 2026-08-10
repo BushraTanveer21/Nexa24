@@ -1,9 +1,21 @@
 import React from "react";
-import { Star, ShieldCheck, Users, TrendingUp, Gauge } from "lucide-react";
+import {
+  Star,
+  ShieldCheck,
+  Users,
+  TrendingUp,
+  Target,
+  Eye,
+  Clock,
+} from "lucide-react";
 import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
 import ceoImage from "../assets/ceo-yamna.jpg";
 import useScrollReveal from "../hooks/useScrollReveal";
+// Shared "Why Choose Us" cards — same list shown on the Home page
+// (Advantage.jsx) and every Service Detail page, so it only needs editing
+// in one place (frontend/src/data/whyChooseUs.js).
+import WHY_CHOOSE_US from "../data/whyChooseUs";
 
 // 4 core values — same slot the mockup used for its 3 bullet items
 const CORE_VALUES = [
@@ -66,6 +78,40 @@ export default function AboutUs() {
         </div>
       </section>
 
+      {/* ===== MISSION & VISION ===== */}
+      <section className="about-mv-section">
+        <div className="about-mv-grid">
+          <div className="about-mv-card reveal">
+            <div className="about-mv-icon">
+              <Target size={26} />
+            </div>
+            <h3>Our Mission</h3>
+            <div className="about-bio-underline" />
+            <p>
+              To empower healthcare providers with reliable, efficient, and 24/7
+              back-office support so they can focus on what matters most — patient
+              care. We combine skilled professionals, smart processes, and modern
+              technology to reduce administrative stress, improve revenue, and help
+              practices grow.
+            </p>
+          </div>
+
+          <div className="about-mv-card reveal" style={{ transitionDelay: "120ms" }}>
+            <div className="about-mv-icon">
+              <Eye size={26} />
+            </div>
+            <h3>Our Vision</h3>
+            <div className="about-bio-underline" />
+            <p>
+              To be the most trusted healthcare operations partner worldwide. We
+              envision a future where every medical practice, big or small, has
+              access to next-generation support that is affordable, accurate, and
+              always available.
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ===== MEET OUR CEO — exact mockup two-column layout ===== */}
       <section className="about-bio-section">
         <div className="about-bio-grid">
@@ -101,9 +147,9 @@ export default function AboutUs() {
           <div className="about-bio-right reveal">
             <div className="about-bio-right-inner">
               <div className="about-photo-frame">
-                <img 
-                  src={ceoImage} 
-                  alt="Yamna - CEO & Founder" 
+                <img
+                  src={ceoImage}
+                  alt="Yamna - CEO & Founder"
                   className="about-photo-image"
                 />
               </div>
@@ -125,7 +171,7 @@ export default function AboutUs() {
                 <div className="about-info-badges">
                   <div className="about-info-badge">
                     <div className="about-info-badge-icon">
-                      <Gauge size={16} />
+                      <Clock size={16} />
                     </div>
                     <span>Founder-Led, 24/7 Commitment</span>
                   </div>
@@ -140,6 +186,31 @@ export default function AboutUs() {
             </div>
           </div>
         </div>
+      </section>
+
+      {/* ===== WHY CHOOSE NEXA24 HEALTHCARE ===== */}
+      <section className="about-why-section">
+        <h2 className="about-why-heading">Why Choose NEXA24 Healthcare</h2>
+
+        <div className="about-why-grid">
+          {WHY_CHOOSE_US.map((item, i) => (
+            <div
+              className="about-why-item reveal"
+              style={{ transitionDelay: `${i * 90}ms` }}
+              key={item.title}
+            >
+              <div className="about-why-icon">
+                <item.Icon size={22} />
+              </div>
+              <h4>{item.title}</h4>
+              <p>{item.description}</p>
+            </div>
+          ))}
+        </div>
+
+        <p className="about-promise center">
+          We handle the backend. You heal the frontline. 24/7.
+        </p>
       </section>
     </div>
   );

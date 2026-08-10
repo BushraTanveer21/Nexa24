@@ -10,15 +10,6 @@ export const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Tighter limit for forgot-password since each hit triggers an email send
-export const forgotPasswordLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // 5 reset requests per IP per window
-  message: { message: "Too many reset requests. Please try again in 15 minutes." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
 export const testimonialSubmissionLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 3, // 3 submissions per IP per 15 mins

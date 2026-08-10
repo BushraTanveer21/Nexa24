@@ -1,9 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import crypto from "crypto";
 import Admin from "../models/Admin.js";
-import { sendPasswordResetEmail } from "../utils/sendEmail.js";
-
 const generateToken = (id) =>
   jwt.sign({ id: id.toString() }, process.env.JWT_SECRET, {
     expiresIn: "7d",
@@ -40,93 +37,6 @@ export const loginAdmin = async (req, res) => {
   }
 };
 
-// @route   POST /api/auth/forgot-password
-export const forgotPassword = async (req, res) => {
-  const { email } = req.body || {};
-
-  if (!email) {
-    return res.status(400).json({ message: "Please provide your admin email address" });
-  }
-
-  // Same generic message whether or not the account exists, so this
-  // endpoint can't be used to check which emails have admin accounts.
-  const genericResponse = {
-    message: "If an account exists for that email, a password reset link has been sent.",
-  };
-
-  try {
-    const normalizedEmail = email.toLowerCase().trim();
-    const admin = await Admin.findOne({ email: normalizedEmail });
-
-    if (!admin) {
-      return res.json(genericResponse);
-    }
-
-    // Generate unhashed 32-byte reset token
-    const resetToken = crypto.randomBytes(32).toString("hex");
-
-    // Hash token for database storage
-    admin.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    admin.resetPasswordExpire = Date.now() + 30 * 60 * 1000; // 30 minutes validity
-
-    await admin.save();
-
-    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
-
-    try {
-      await sendPasswordResetEmail(admin.email, resetUrl);
-    } catch (emailError) {
-      // Roll back the token so a failed email doesn't leave a dangling,
-      // unusable reset request the admin can't retry cleanly.
-      admin.resetPasswordToken = undefined;
-      admin.resetPasswordExpire = undefined;
-      await admin.save();
-      console.error("Failed to send password reset email:", emailError.message);
-      return res.status(500).json({ message: "Could not send reset email. Please try again shortly." });
-    }
-
-    res.json(genericResponse);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// @route   POST /api/auth/reset-password/:token
-export const resetPassword = async (req, res) => {
-  const { token } = req.params;
-  const { password } = req.body || {};
-
-  if (!password || password.length < 6) {
-    return res.status(400).json({ message: "Password must be at least 6 characters long" });
-  }
-
-  try {
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-
-    const admin = await Admin.findOne({
-      resetPasswordToken: hashedToken,
-      resetPasswordExpire: { $gt: Date.now() },
-    });
-
-    if (!admin) {
-      return res.status(400).json({ message: "Invalid or expired password reset token" });
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    admin.password = await bcrypt.hash(password, salt);
-    admin.resetPasswordToken = undefined;
-    admin.resetPasswordExpire = undefined;
-
-    await admin.save();
-
-    res.json({
-      message: "Password reset successful! You can now log in with your new password.",
-    });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
 
 // @route   GET /api/auth/me
 export const getMe = async (req, res) => {
@@ -141,6 +51,65 @@ export const getMe = async (req, res) => {
     }
 
     res.json(admin);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @route   PUT /api/auth/profile
+// Updates the logged-in admin's email and/or password. Requires the
+// admin's current password to confirm the change, so a stolen/leaked
+// JWT alone isn't enough to take over the account.
+export const updateProfile = async (req, res) => {
+  try {
+    if (!req.admin || !req.admin.id) {
+      return res.status(401).json({ message: "Not authorized" });
+    }
+
+    const { currentPassword, newEmail, newPassword } = req.body || {};
+
+    if (!currentPassword) {
+      return res.status(400).json({ message: "Current password is required" });
+    }
+
+    const admin = await Admin.findById(req.admin.id);
+    if (!admin) {
+      return res.status(404).json({ message: "Admin profile not found" });
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, admin.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
+    if (newEmail && newEmail.trim()) {
+      const normalizedEmail = newEmail.toLowerCase().trim();
+      if (normalizedEmail !== admin.email) {
+        const existing = await Admin.findOne({ email: normalizedEmail });
+        if (existing) {
+          return res.status(409).json({ message: "That email is already in use" });
+        }
+        admin.email = normalizedEmail;
+      }
+    }
+
+    if (newPassword && newPassword.trim()) {
+      if (newPassword.length < 8) {
+        return res.status(400).json({ message: "New password must be at least 8 characters" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      admin.password = await bcrypt.hash(newPassword, salt);
+    }
+
+    await admin.save();
+
+    // Reissue token since identity may have changed
+    res.json({
+      _id: admin._id,
+      name: admin.name,
+      email: admin.email,
+      token: generateToken(admin._id),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

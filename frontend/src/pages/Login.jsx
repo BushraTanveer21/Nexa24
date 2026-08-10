@@ -22,9 +22,6 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
-  const [showForgotModal, setShowForgotModal] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState("");
-  const [forgotSubmitted, setForgotSubmitted] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -73,37 +70,6 @@ export default function Login() {
       }
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleForgotSubmit = async (e) => {
-    e.preventDefault();
-    if (!forgotEmail) return;
-    try {
-      const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-      const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: forgotEmail }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Failed to process request");
-
-      setForgotSubmitted(true);
-      setTimeout(() => {
-        setShowForgotModal(false);
-        setForgotSubmitted(false);
-        setForgotEmail("");
-        setSuccessMsg(data.message || "Password reset instructions sent!");
-      }, 1500);
-    } catch (err) {
-      setForgotSubmitted(true);
-      setTimeout(() => {
-        setShowForgotModal(false);
-        setForgotSubmitted(false);
-        setForgotEmail("");
-        setSuccessMsg("Password reset request sent for " + forgotEmail);
-      }, 1200);
     }
   };
 
@@ -156,17 +122,19 @@ export default function Login() {
           )}
 
           {/* Login Form */}
-          <form onSubmit={handleLogin} className="login-card-form">
+          <form onSubmit={handleLogin} className="login-card-form" autoComplete="off">
             <div className="form-field-group">
               <label htmlFor="email">Email Address</label>
               <div className="input-input-wrapper">
                 <Mail className="field-icon-left" size={18} />
                 <input
                   id="email"
+                  name="nexa_admin_email"
                   type="email"
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="off"
                   required
                 />
               </div>
@@ -178,10 +146,12 @@ export default function Login() {
                 <Lock className="field-icon-left" size={18} />
                 <input
                   id="password"
+                  name="nexa_admin_password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
                   required
                 />
                 <button
@@ -205,13 +175,6 @@ export default function Login() {
                 <span className="custom-checkbox"></span>
                 <span>Remember Me</span>
               </label>
-              <button
-                type="button"
-                className="forgot-password-link"
-                onClick={() => setShowForgotModal(true)}
-              >
-                Forgot Password?
-              </button>
             </div>
 
             <button type="submit" className="btn-signin-primary" disabled={loading}>
@@ -233,57 +196,6 @@ export default function Login() {
           <p>© 2026 NEXA24 HEALTHCARE. All Rights Reserved.</p>
         </footer>
       </div>
-
-      {/* Forgot Password Modal */}
-      {showForgotModal && (
-        <div className="modal-overlay" onClick={() => setShowForgotModal(false)}>
-          <div className="forgot-modal" onClick={(e) => e.stopPropagation()}>
-            <h3>Reset Password</h3>
-            <p>Enter your registered admin email address to receive password reset instructions.</p>
-
-            {forgotSubmitted ? (
-              <div className="alert-box success" style={{ flexDirection: "column", alignItems: "flex-start" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <CheckCircle2 size={18} />
-                  <strong>Reset Request Received!</strong>
-                </div>
-                <p style={{ fontSize: "0.82rem", margin: "0.4rem 0 0 0", color: "#166534" }}>
-                  Reset link dispatched for <strong>{forgotEmail || "admin@nexa24.com"}</strong>. In production, an email with a reset link is delivered to this address.
-                </p>
-              </div>
-            ) : (
-              <form onSubmit={handleForgotSubmit}>
-                <div className="form-field-group">
-                  <label htmlFor="forgot-email">Admin Email</label>
-                  <div className="input-input-wrapper">
-                    <Mail size={18} className="field-icon-left" />
-                    <input
-                      id="forgot-email"
-                      type="email"
-                      placeholder="admin@nexa24.com"
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                </div>
-                <div className="modal-actions">
-                  <button
-                    type="button"
-                    className="btn-cancel"
-                    onClick={() => setShowForgotModal(false)}
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" className="btn-submit">
-                    Send Reset Link
-                  </button>
-                </div>
-              </form>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

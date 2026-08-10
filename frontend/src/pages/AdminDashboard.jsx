@@ -9,6 +9,7 @@ import {
   Edit2,
   Trash2,
   Eye,
+  EyeOff,
   GripVertical,
   ShieldCheck,
   ChevronDown,
@@ -26,11 +27,13 @@ import {
   ChevronRight,
   Search,
   Video,
-  Camera
+  Camera,
+  User
 } from "lucide-react";
 import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
 import "./AdminDashboard.css";
+import { ICON_OPTIONS, getIcon } from "../utils/iconMap";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -79,8 +82,9 @@ const getAuthToken = () =>
   localStorage.getItem("nexa_token") || sessionStorage.getItem("nexa_token");
 
 // Uploads a file to the backend, which forwards it to Cloudinary and
-// returns a hosted image URL. Used instead of storing base64 image data
-// directly in MongoDB.
+// returns a hosted image URL + the Cloudinary public_id. The public_id
+// is required later to delete the image from Cloudinary (the URL alone
+// isn't enough for that) — so we keep both instead of discarding it.
 const uploadImageFile = async (file) => {
   const token = getAuthToken();
   const formData = new FormData();
@@ -94,7 +98,31 @@ const uploadImageFile = async (file) => {
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Image upload failed");
-  return data.url;
+  // NOTE: this assumes /api/upload's response includes public_id alongside
+  // url (the standard shape for a Cloudinary upload response). If your
+  // upload route only returns { url }, add public_id to that response too —
+  // otherwise this will always come back undefined and cleanup can't work.
+  return { url: data.url, publicId: data.public_id || data.publicId || "" };
+};
+
+// Deletes an already-uploaded image straight from Cloudinary. Used by the
+// "Clear Image" button so removing an image doesn't leave it orphaned on
+// Cloudinary until (or unless) the form is saved.
+const deleteImageFile = async (publicId) => {
+  if (!publicId) return;
+  const token = getAuthToken();
+  try {
+    await fetch(`${API_URL}/api/upload`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ publicId }),
+    });
+  } catch (err) {
+    console.warn("Cloudinary cleanup failed:", err.message);
+  }
 };
 
 const uploadVideoFile = async (file) => {
@@ -127,24 +155,30 @@ export default function AdminDashboard() {
   const contactsRef = useRef(null);
 
   // Starts empty — real data comes from the backend via fetchBackendData().
-  // (Previously prefilled with fake placeholder services that looked real
-  // but were never actually saved to the database.)
   const [services, setServices] = useState([]);
 
   // Starts empty — real data comes from the backend via fetchBackendData().
-  // (Previously prefilled with fake placeholder testimonials that looked
-  // real but were never actually saved to the database.)
   const [testimonials, setTestimonials] = useState([]);
 
   // Starts empty — real data comes from the backend via fetchBackendData().
-  // (Previously prefilled with fake placeholder inquiries that looked real
-  // but were never actually saved to the database.)
   const [contacts, setContacts] = useState([]);
 
   // Modals state
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [editingService, setEditingService] = useState(null);
-  const [serviceForm, setServiceForm] = useState({ name: "", description: "", order: 1, image: "" });
+  const [serviceForm, setServiceForm] = useState({
+    name: "",
+    description: "",
+    order: 1,
+    image: "",
+    imagePublicId: "",
+    icon: "",
+    // Purple highlight line on the detail page (was hardcoded "Real Results.")
+    subtitle: "",
+    // Single benefit sentence shown under the description on the detail page
+    // Benefit pills shown on the detail page — each has its own icon
+    benefits: [],
+  });
 
   const [showTestimonialModal, setShowTestimonialModal] = useState(false);
   const [editingTestimonial, setEditingTestimonial] = useState(null);
@@ -156,7 +190,9 @@ export default function AdminDashboard() {
     message: "",
     email: "",
     videoUrl: "",
-    type: "text"
+    type: "text",
+    image: "",
+    imagePublicId: "",
   });
 
   const [selectedInquiry, setSelectedInquiry] = useState(null);
@@ -178,9 +214,22 @@ export default function AdminDashboard() {
     setTimeout(() => setToast({ show: false, message: '', type: 'success' }), 3000);
   };
 
+  const [isServiceImageDragging, setIsServiceImageDragging] = useState(false);
+
+  // Profile Settings state
+  const [profileForm, setProfileForm] = useState({
+    currentPassword: "",
+    newEmail: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [profileMessage, setProfileMessage] = useState({ type: "", text: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+
   useEffect(() => {
-    // Auth Check — verify the token with the backend rather than just
-    // trusting that a value exists in storage.
     const token = localStorage.getItem("nexa_token") || sessionStorage.getItem("nexa_token");
 
     if (!token) {
@@ -207,7 +256,6 @@ export default function AdminDashboard() {
         setUser(data);
         fetchBackendData();
       } catch (e) {
-        // Backend unreachable — don't grant access, send back to login.
         navigate("/login");
       }
     };
@@ -238,6 +286,7 @@ export default function AdminDashboard() {
               email: t.email || "",
               videoUrl: t.videoUrl || "",
               image: t.image || "",
+              imagePublicId: t.imagePublicId || "",
               date: t.date || t.createdAt || "",
               createdAt: t.createdAt || "",
               order: idx,
@@ -247,9 +296,6 @@ export default function AdminDashboard() {
         }
       }
 
-      // Admin dashboard needs ALL services (including disabled ones), not
-      // just the public/active list — use the admin endpoint with auth,
-      // so a service that gets deactivated doesn't disappear from here too.
       const resS = await fetch(`${API_URL}/api/services/admin`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
@@ -262,7 +308,11 @@ export default function AdminDashboard() {
             description: s.description || "",
             order: s.order || idx + 1,
             image: s.image || s.imageUrl || "",
-            isActive: s.isActive !== false
+            imagePublicId: s.imagePublicId || "",
+            isActive: s.isActive !== false,
+            icon: s.icon || "",
+            subtitle: s.subtitle || "",
+            benefits: Array.isArray(s.benefits) ? s.benefits : [],
           }));
           setServices(mappedS);
         }
@@ -318,27 +368,70 @@ export default function AdminDashboard() {
   // Service handlers
   const handleOpenAddService = () => {
     setEditingService(null);
-    setServiceForm({ name: "", description: "", order: services.length + 1, image: "" });
+    setServiceForm({
+      name: "",
+      description: "",
+      order: services.length + 1,
+      image: "",
+      imagePublicId: "",
+      icon: "",
+      subtitle: "",
+      benefits: [],
+    });
     setShowServiceModal(true);
   };
 
   const handleOpenEditService = (service) => {
     setEditingService(service);
-    setServiceForm({ name: service.name, description: service.description, order: service.order, image: service.image || "" });
+    setServiceForm({
+      name: service.name,
+      description: service.description,
+      order: service.order,
+      image: service.image || "",
+      imagePublicId: service.imagePublicId || "",
+      icon: service.icon || "",
+      subtitle: service.subtitle || "",
+      benefits: Array.isArray(service.benefits) ? service.benefits : [],
+    });
     setShowServiceModal(true);
+  };
+
+  const handleAddBenefit = () => {
+    setServiceForm((prev) => ({
+      ...prev,
+      benefits: [...prev.benefits, { label: "", icon: "check", description: "" }],
+    }));
+  };
+
+  const handleUpdateBenefit = (index, field, value) => {
+    setServiceForm((prev) => ({
+      ...prev,
+      benefits: prev.benefits.map((b, i) => (i === index ? { ...b, [field]: value } : b)),
+    }));
+  };
+
+  const handleRemoveBenefit = (index) => {
+    setServiceForm((prev) => ({
+      ...prev,
+      benefits: prev.benefits.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSaveService = async (e) => {
     e.preventDefault();
     if (!serviceForm.name.trim()) return;
 
-    // Backend model field is "title", dashboard form field is "name" — map here.
     const payload = {
       title: serviceForm.name,
       description: serviceForm.description,
       order: Number(serviceForm.order) || services.length + 1,
       image: serviceForm.image,
-      isActive: true
+      imagePublicId: serviceForm.imagePublicId,
+      isActive: true,
+      icon: serviceForm.icon,
+      subtitle: serviceForm.subtitle,
+      // Drop any empty benefit rows before saving
+      benefits: serviceForm.benefits.filter((b) => b.label && b.label.trim()),
     };
 
     try {
@@ -362,21 +455,11 @@ export default function AdminDashboard() {
         throw new Error(err.message || "Failed to save service");
       }
 
-      const saved = await res.json();
-      const mapped = {
-        _id: saved._id,
-        name: saved.title,
-        description: saved.description,
-        order: saved.order,
-        image: saved.image || "",
-        isActive: saved.isActive !== false
-      };
-
-      if (isEditing) {
-        setServices(services.map(s => s._id === editingService._id ? mapped : s));
-      } else {
-        setServices([...services, mapped]);
-      }
+      // A save can silently bump another service's order (swap logic on
+      // the backend), so refetch the full list instead of just patching
+      // this one entry — otherwise the other service's card would show
+      // a stale order until the page is reloaded.
+      await fetchBackendData();
       setShowServiceModal(false);
       showToast(isEditing ? "Service updated successfully." : "Service created successfully.");
     } catch (err) {
@@ -424,6 +507,10 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({ order }),
       });
+      // The backend may have swapped another service's order to make
+      // room for this one — refetch so that swap shows up immediately
+      // instead of only after a page reload.
+      await fetchBackendData();
     } catch (err) {
       console.warn("Order update failed to persist:", err.message);
     }
@@ -483,6 +570,7 @@ export default function AdminDashboard() {
       email: "",
       videoUrl: "",
       image: "",
+      imagePublicId: "",
       rating: 5,
       type,
       order: testimonials.length
@@ -501,6 +589,7 @@ export default function AdminDashboard() {
       email: t.email || "",
       videoUrl: t.videoUrl || "",
       image: t.image || "",
+      imagePublicId: t.imagePublicId || "",
       rating: t.rating || 5,
       type: t.videoUrl ? "video" : "text",
       order: t.order !== undefined ? t.order : 0
@@ -539,6 +628,7 @@ export default function AdminDashboard() {
       email: testimonialForm.email,
       videoUrl: testimonialForm.videoUrl,
       image: testimonialForm.image,
+      imagePublicId: testimonialForm.imagePublicId,
       rating: Number(testimonialForm.rating),
       order: testimonialForm.order !== undefined ? Number(testimonialForm.order) : testimonials.length,
       isEnabled: testimonialForm.status !== "Disabled" && testimonialForm.homepageDisplay,
@@ -577,6 +667,7 @@ export default function AdminDashboard() {
         email: saved.email || "",
         videoUrl: saved.videoUrl || "",
         image: saved.image || "",
+        imagePublicId: saved.imagePublicId || "",
         date: saved.date || saved.createdAt || new Date().toISOString(),
         createdAt: saved.createdAt || new Date().toISOString(),
         order: saved.order !== undefined ? saved.order : testimonials.length,
@@ -626,8 +717,8 @@ export default function AdminDashboard() {
     if (!current) return;
     const nextValue = !current.homepageDisplay;
 
-    setTestimonials(testimonials.map(t => t._id === id ? { 
-      ...t, 
+    setTestimonials(testimonials.map(t => t._id === id ? {
+      ...t,
       homepageDisplay: nextValue,
       status: nextValue ? "Published" : "Disabled"
     } : t));
@@ -776,24 +867,69 @@ export default function AdminDashboard() {
     }
   };
 
+  // Profile Settings handler
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    setProfileMessage({ type: "", text: "" });
+
+    if (!profileForm.currentPassword) {
+      setProfileMessage({ type: "error", text: "Please enter your current password." });
+      return;
+    }
+    if (profileForm.newPassword && profileForm.newPassword !== profileForm.confirmPassword) {
+      setProfileMessage({ type: "error", text: "New password and confirmation don't match." });
+      return;
+    }
+
+    const payload = { currentPassword: profileForm.currentPassword };
+    if (profileForm.newEmail.trim()) payload.newEmail = profileForm.newEmail.trim();
+    if (profileForm.newPassword) payload.newPassword = profileForm.newPassword;
+
+    if (!payload.newEmail && !payload.newPassword) {
+      setProfileMessage({ type: "error", text: "Enter a new email or password to update." });
+      return;
+    }
+
+    setSavingProfile(true);
+    try {
+      const token = getAuthToken();
+      const res = await fetch(`${API_URL}/api/auth/profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to update profile");
+
+      // Keep the token/user in whichever storage was already being used
+      const storage = localStorage.getItem("nexa_token") ? localStorage : sessionStorage;
+      storage.setItem("nexa_token", data.token);
+      storage.setItem("nexa_user", JSON.stringify(data));
+
+      setUser(data);
+      setProfileForm({ currentPassword: "", newEmail: "", newPassword: "", confirmPassword: "" });
+      setProfileMessage({ type: "success", text: "Profile updated successfully." });
+    } catch (err) {
+      setProfileMessage({ type: "error", text: err.message || "Could not update profile." });
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
   const publishedCount = testimonials.filter(t => t.status === "Published").length;
   const disabledCount = testimonials.filter(t => t.status === "Disabled").length;
 
   return (
     <div className="nexa-dashboard-page">
-      {/* Botanical Watercolor Leaf Branches (Matching Login page) */}
       <img src={branchTL} alt="Botanical Branch Top Left" className="botanical-branch branch-top-left" />
       <img src={branchTL} alt="Botanical Branch Bottom Right" className="botanical-branch branch-bottom-right" />
 
-      {/* Sidebar Mobile Backdrop Overlay */}
       {sidebarOpen && (
         <div className="sidebar-overlay show" onClick={() => setSidebarOpen(false)}></div>
       )}
 
-      {/* LEFT SIDEBAR NAVIGATION */}
       <aside className={`nexa-sidebar ${sidebarOpen ? "open" : ""} ${sidebarCollapsed ? "collapsed" : ""}`}>
 
-        {/* Desktop Collapse/Expand Toggle */}
         <button
           className="sidebar-collapse-toggle"
           onClick={toggleSidebarCollapse}
@@ -803,7 +939,6 @@ export default function AdminDashboard() {
           {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
 
-        {/* Sidebar Brand Header - Top End Logo */}
         <div className="sidebar-brand">
           <img src={nexaLogo} alt="NEXA24 Healthcare Logo" className="sidebar-brand-logo" />
           <div className="sidebar-brand-text">
@@ -812,7 +947,6 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* Sidebar Nav Links */}
         <nav className="sidebar-nav">
           <button
             className={`nav-item ${activeNav === "dashboard" ? "active" : ""}`}
@@ -849,9 +983,17 @@ export default function AdminDashboard() {
             <Mail size={18} className="nav-icon" />
             <span>Contact Inquiries</span>
           </button>
+
+          <button
+            className={`nav-item ${activeNav === "profile" ? "active" : ""}`}
+            onClick={() => handleNavClick("profile")}
+            title="Profile Settings"
+          >
+            <User size={18} className="nav-icon" />
+            <span>Profile Settings</span>
+          </button>
         </nav>
 
-        {/* Sidebar Footer Banner & Copyright */}
         <div className="sidebar-footer">
           <div className="sidebar-security-badge">
             <ShieldCheck size={16} className="badge-shield-icon" />
@@ -861,9 +1003,7 @@ export default function AdminDashboard() {
         </div>
       </aside>
 
-      {/* RIGHT MAIN PANEL */}
       <main className="nexa-main-content">
-        {/* Mobile Top Responsive Bar */}
         <div className="dash-mobile-bar">
           <button className="mobile-sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle Navigation Drawer">
             {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
@@ -874,14 +1014,12 @@ export default function AdminDashboard() {
           </div>
         </div>
 
-        {/* TOP BAR HEADER */}
         <header className="dash-top-header">
           <div className="header-titles">
             <h1 className="dash-heading">Dashboard Overview</h1>
             <p className="dash-subheading">Welcome back, {user?.name || "Admin"}</p>
           </div>
 
-          {/* User Profile Pill & Dropdown */}
           <div className="admin-profile-container">
             <button
               className="admin-user-pill"
@@ -901,6 +1039,14 @@ export default function AdminDashboard() {
                   <span className="user-display-email">{user?.email || "admin@nexa24.com"}</span>
                 </div>
                 <div className="dropdown-divider"></div>
+                <button
+                  className="dropdown-btn-logout"
+                  style={{ background: "#f3e8ff", color: "#7c3aed", marginBottom: "0.4rem" }}
+                  onClick={() => { setUserMenuOpen(false); handleNavClick("profile"); }}
+                >
+                  <User size={16} />
+                  <span>Profile Settings</span>
+                </button>
                 <button className="dropdown-btn-logout" onClick={handleLogout}>
                   <LogOut size={16} />
                   <span>Sign Out</span>
@@ -910,14 +1056,9 @@ export default function AdminDashboard() {
           </div>
         </header>
 
-        {/* TAB CONTENT RENDERING */}
-
-        {/* DASHBOARD OVERVIEW TAB */}
         {activeNav === "dashboard" && (
           <>
-            {/* METRICS / STAT CARDS ROW */}
             <section className="stats-row">
-              {/* Card 1: Total Services */}
               <div className="stat-card">
                 <div className="stat-icon-box purple">
                   <Package size={22} />
@@ -929,7 +1070,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Card 2: Total Testimonials */}
               <div className="stat-card">
                 <div className="stat-icon-box purple">
                   <Star size={22} />
@@ -949,7 +1089,6 @@ export default function AdminDashboard() {
                 </div>
               </div>
 
-              {/* Card 3: Total Contact Inquiries */}
               <div className="stat-card">
                 <div className="stat-icon-box purple">
                   <Mail size={22} />
@@ -962,7 +1101,6 @@ export default function AdminDashboard() {
               </div>
             </section>
 
-            {/* Dashboard Quick Summary or All Tables */}
             <div className="dash-welcome-banner">
               <h2>Welcome to the NEXA24 Control Center</h2>
               <p>Select a category from the sidebar to manage your services, client testimonials, and contact inquiries.</p>
@@ -970,7 +1108,6 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {/* SERVICES MANAGEMENT TAB */}
         {activeNav === "services" && (
           <section className="dash-section-card animate-fade-in">
             <div className="section-card-header">
@@ -1009,7 +1146,9 @@ export default function AdminDashboard() {
                       <td className="col-service-name">
                         <strong>{s.name}</strong>
                       </td>
-                      <td className="col-description">{s.description}</td>
+                      <td className="col-description">
+                        <span className="col-description-text" title={s.description}>{s.description}</span>
+                      </td>
                       <td className="col-order" style={{ textAlign: "center" }}>
                         <div className="order-drag-cell">
                           <GripVertical size={16} className="grip-icon" />
@@ -1053,18 +1192,17 @@ export default function AdminDashboard() {
           </section>
         )}
 
-        {/* TESTIMONIALS MANAGEMENT TAB */}
         {activeNav === "testimonials" && (
           <section className="dash-section-card animate-fade-in">
             <div className="section-card-header" style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '16px', marginBottom: '16px', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: '24px' }}>
-                <button 
+                <button
                   onClick={() => setTestimonialTab("admin")}
                   style={{ background: 'none', border: 'none', padding: '8px 4px', fontSize: '15px', fontWeight: testimonialTab === "admin" ? '600' : '500', color: testimonialTab === "admin" ? '#6d28d9' : '#64748b', borderBottom: testimonialTab === "admin" ? '2px solid #6d28d9' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-17px' }}
                 >
                   Testimonial Management
                 </button>
-                <button 
+                <button
                   onClick={() => setTestimonialTab("client")}
                   style={{ background: 'none', border: 'none', padding: '8px 4px', fontSize: '15px', fontWeight: testimonialTab === "client" ? '600' : '500', color: testimonialTab === "client" ? '#6d28d9' : '#64748b', borderBottom: testimonialTab === "client" ? '2px solid #6d28d9' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-17px' }}
                 >
@@ -1101,17 +1239,17 @@ export default function AdminDashboard() {
                       <td className="col-index">{idx + 1}</td>
                       <td className="col-image">
                         {t.image ? (
-                          <img 
+                          <img
                             src={t.image}
-                            alt={t.clientName} 
-                            className="service-table-thumb" 
+                            alt={t.clientName}
+                            className="service-table-thumb"
                             style={{ borderRadius: '50%', objectFit: 'cover' }}
                           />
                         ) : (
-                          <img 
+                          <img
                             src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.clientName || 'User')}&background=random&color=fff&size=128`}
-                            alt={t.clientName} 
-                            className="service-table-thumb" 
+                            alt={t.clientName}
+                            className="service-table-thumb"
                             style={{ borderRadius: '50%' }}
                           />
                         )}
@@ -1131,8 +1269,8 @@ export default function AdminDashboard() {
                       </td>
                       <td style={{ textAlign: "center" }}>
                         {t.homepageDisplay ? (
-                          <span 
-                            className="status-pill published" 
+                          <span
+                            className="status-pill published"
                             onClick={() => handleToggleHomepageDisplay(t._id)}
                             style={{ cursor: 'pointer' }}
                             title="Click to Disable"
@@ -1140,8 +1278,8 @@ export default function AdminDashboard() {
                             Published
                           </span>
                         ) : (
-                          <span 
-                            className="status-pill disabled" 
+                          <span
+                            className="status-pill disabled"
                             onClick={() => handleToggleHomepageDisplay(t._id)}
                             style={{ cursor: 'pointer' }}
                             title="Click to Publish"
@@ -1191,12 +1329,11 @@ export default function AdminDashboard() {
           </section>
         )}
 
-        {/* CONTACT INQUIRIES TAB */}
         {activeNav === "contacts" && (
           <section className="dash-section-card animate-fade-in">
             <div className="section-card-header" style={{ flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
               <h2 className="section-title" style={{ margin: 0 }}>Contact Form Inquiries</h2>
-              
+
               {/* Search & Filter Controls */}
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginLeft: 'auto' }}>
                 <div style={{ position: 'relative', width: '260px' }}>
@@ -1341,20 +1478,128 @@ export default function AdminDashboard() {
                     }
                     return true;
                   }).length === 0 && (
-                    <tr>
-                      <td colSpan="8" className="empty-row">
-                        {contactSearch || contactFilterStatus !== "all" ? "No inquiries match your search or filter." : "No contact inquiries found."}
-                      </td>
-                    </tr>
-                  )}
+                      <tr>
+                        <td colSpan="8" className="empty-row">
+                          {contactSearch || contactFilterStatus !== "all" ? "No inquiries match your search or filter." : "No contact inquiries found."}
+                        </td>
+                      </tr>
+                    )}
                 </tbody>
               </table>
             </div>
           </section>
         )}
+
+        {activeNav === "profile" && (
+          <section className="dash-section-card animate-fade-in profile-settings-section">
+            <div className="section-card-header">
+              <h2 className="section-title">Profile Settings</h2>
+            </div>
+
+            <form onSubmit={handleUpdateProfile} className="profile-settings-form" autoComplete="off">
+              <div className="profile-field">
+                <label>Current Email</label>
+                <input type="text" name="nexa_current_email" value={user?.email || ""} autoComplete="off" disabled />
+              </div>
+
+              <div className="profile-field">
+                <label>Current Password <span className="field-optional">(required to confirm changes)</span></label>
+                <div className="password-field-wrapper">
+                  <input
+                    type={showCurrentPassword ? "text" : "password"}
+                    name="nexa_current_password_confirm"
+                    required
+                    value={profileForm.currentPassword}
+                    onChange={(e) => setProfileForm({ ...profileForm, currentPassword: e.target.value })}
+                    autoComplete="off"
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-icon-btn"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                    aria-label={showCurrentPassword ? "Hide password" : "Show password"}
+                  >
+                    {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="profile-form-divider">
+                <span>Update Details</span>
+              </div>
+
+              <div className="profile-field">
+                <label>New Email <span className="field-optional"></span></label>
+                <input
+                  type="email"
+                  name="nexa_new_email"
+                  placeholder="Leave blank to keep current email"
+                  value={profileForm.newEmail}
+                  onChange={(e) => setProfileForm({ ...profileForm, newEmail: e.target.value })}
+                  autoComplete="off"
+                />
+              </div>
+
+              <div className="profile-field">
+                <label>New Password <span className="field-optional"></span></label>
+                <div className="password-field-wrapper">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    name="nexa_new_password"
+                    placeholder="Leave blank to keep current password"
+                    value={profileForm.newPassword}
+                    onChange={(e) => setProfileForm({ ...profileForm, newPassword: e.target.value })}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-icon-btn"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    aria-label={showNewPassword ? "Hide password" : "Show password"}
+                  >
+                    {showNewPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="profile-field">
+                <label>Confirm New Password</label>
+                <div className="password-field-wrapper">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="nexa_confirm_new_password"
+                    placeholder="Repeat new password"
+                    value={profileForm.confirmPassword}
+                    onChange={(e) => setProfileForm({ ...profileForm, confirmPassword: e.target.value })}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle-icon-btn"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+              </div>
+
+              {profileMessage.text && (
+                <p className={`profile-form-message ${profileMessage.type === "error" ? "error" : "success"}`}>
+                  {profileMessage.text}
+                </p>
+              )}
+
+              <div className="modal-actions-row profile-form-actions">
+                <button type="submit" className="btn-primary-purple" disabled={savingProfile}>
+                  {savingProfile ? "Saving..." : "Save Changes"}
+                </button>
+              </div>
+            </form>
+          </section>
+        )}
       </main>
 
-      {/* SERVICE MODAL */}
       {showServiceModal && (
         <div className="modal-backdrop" onClick={() => setShowServiceModal(false)}>
           <div className="nexa-modal" onClick={(e) => e.stopPropagation()}>
@@ -1396,13 +1641,47 @@ export default function AdminDashboard() {
                       <button
                         type="button"
                         className="btn-remove-image"
-                        onClick={() => setServiceForm({ ...serviceForm, image: "" })}
+                        disabled={uploadingServiceImage}
+                        onClick={async () => {
+                          const publicIdToRemove = serviceForm.imagePublicId;
+                          setServiceForm({ ...serviceForm, image: "", imagePublicId: "" });
+                          // Delete from Cloudinary right away instead of waiting
+                          // for the form to be saved, so it never sits around
+                          // as an orphaned upload.
+                          await deleteImageFile(publicIdToRemove);
+                        }}
                       >
                         <X size={14} /> Clear Image
                       </button>
                     </div>
                   ) : (
-                    <label className="file-upload-dropzone">
+                    <label
+                      className={`file-upload-dropzone${isServiceImageDragging ? " dropzone-active" : ""}`}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        setIsServiceImageDragging(true);
+                      }}
+                      onDragLeave={() => setIsServiceImageDragging(false)}
+                      onDrop={async (e) => {
+                        e.preventDefault();
+                        setIsServiceImageDragging(false);
+                        const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                        if (!file) return;
+                        if (!file.type.startsWith("image/")) {
+                          alert("Only image files are allowed.");
+                          return;
+                        }
+                        setUploadingServiceImage(true);
+                        try {
+                          const { url, publicId } = await uploadImageFile(file);
+                          setServiceForm((prev) => ({ ...prev, image: url, imagePublicId: publicId }));
+                        } catch (err) {
+                          alert(err.message || "Image upload failed. Please try again.");
+                        } finally {
+                          setUploadingServiceImage(false);
+                        }
+                      }}
+                    >
                       <Upload size={22} className="upload-icon" />
                       <div className="upload-text">
                         <strong>{uploadingServiceImage ? "Uploading..." : "Click or drag to upload image"}</strong>
@@ -1416,7 +1695,7 @@ export default function AdminDashboard() {
                         onChange={async (e) => {
                           const file = e.target.files && e.target.files[0];
                           if (!file) return;
-                          
+
                           if (file.size > 5 * 1024 * 1024) {
                             alert("Image is too large. Please upload an image under 5MB.");
                             e.target.value = "";
@@ -1425,8 +1704,8 @@ export default function AdminDashboard() {
 
                           setUploadingServiceImage(true);
                           try {
-                            const url = await uploadImageFile(file);
-                            setServiceForm((prev) => ({ ...prev, image: url }));
+                            const { url, publicId } = await uploadImageFile(file);
+                            setServiceForm((prev) => ({ ...prev, image: url, imagePublicId: publicId }));
                           } catch (err) {
                             alert(err.message || "Image upload failed. Please try again.");
                           } finally {
@@ -1450,6 +1729,86 @@ export default function AdminDashboard() {
                 />
               </div>
 
+              <div className="modal-field">
+                <label>Service Icon</label>
+                <select
+                  value={serviceForm.icon}
+                  onChange={(e) => setServiceForm({ ...serviceForm, icon: e.target.value })}
+                >
+                  <option value="">Auto-detect from name</option>
+                  {ICON_OPTIONS.map(({ key, label }) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
+                </select>
+                <span className="field-hint">
+                  Shown on the service card and detail page. Leave on auto-detect and
+                  we'll guess a sensible icon from the service name.
+                </span>
+              </div>
+
+              <div className="modal-field">
+                <label>Detail Page Highlight Line</label>
+                <input
+                  type="text"
+                  placeholder='e.g. "Real Results." — shown in purple next to the title'
+                  value={serviceForm.subtitle}
+                  onChange={(e) => setServiceForm({ ...serviceForm, subtitle: e.target.value })}
+                />
+              </div>
+
+              <div className="modal-field">
+                <label>Detail Page Benefit Pills</label>
+                <span className="field-hint">
+                  Each benefit shows up in two places on the service detail page: as a pill
+                  under the title, and as a full card further down (in "What Our ... Handle").
+                  Add a short detail sentence so the card below isn't empty.
+                </span>
+                <div className="benefits-repeater">
+                  {serviceForm.benefits.map((benefit, idx) => {
+                    const BenefitIcon = getIcon(benefit.icon);
+                    return (
+                      <div className="benefit-row-card" key={idx}>
+                        <div className="benefit-row">
+                          <span className="benefit-row-icon"><BenefitIcon size={16} /></span>
+                          <input
+                            type="text"
+                            placeholder="e.g. HIPAA Compliant"
+                            value={benefit.label}
+                            onChange={(e) => handleUpdateBenefit(idx, "label", e.target.value)}
+                          />
+                          <select
+                            value={benefit.icon || "check"}
+                            onChange={(e) => handleUpdateBenefit(idx, "icon", e.target.value)}
+                          >
+                            {ICON_OPTIONS.map(({ key, label }) => (
+                              <option key={key} value={key}>{label}</option>
+                            ))}
+                          </select>
+                          <button
+                            type="button"
+                            className="benefit-row-remove"
+                            onClick={() => handleRemoveBenefit(idx)}
+                            aria-label="Remove benefit"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                        <textarea
+                          className="benefit-row-desc"
+                          placeholder="Detail shown on the card below (optional) — e.g. Your data security is our priority."
+                          rows={2}
+                          value={benefit.description || ""}
+                          onChange={(e) => handleUpdateBenefit(idx, "description", e.target.value)}
+                        />
+                      </div>
+                    );
+                  })}
+                  <button type="button" className="btn-secondary btn-add-benefit" onClick={handleAddBenefit}>
+                    <Plus size={14} /> Add Benefit
+                  </button>
+                </div>
+              </div>
+
               <div className="modal-actions-row">
                 <button type="button" className="btn-secondary" onClick={() => setShowServiceModal(false)}>
                   Cancel
@@ -1463,7 +1822,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* TESTIMONIAL MODAL */}
       {showTestimonialModal && (
         <div className="modal-backdrop" onClick={() => setShowTestimonialModal(false)}>
           <div className="nexa-modal" onClick={(e) => e.stopPropagation()}>
@@ -1481,8 +1839,8 @@ export default function AdminDashboard() {
               <div className="modal-field">
                 <label>Testimonial Type</label>
                 <div style={{ display: 'flex', gap: '10px' }}>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className={`btn-primary-purple ${testimonialForm.type === 'text' ? '' : 'btn-outline'}`}
                     style={{
                       padding: '8px 16px',
@@ -1496,8 +1854,8 @@ export default function AdminDashboard() {
                   >
                     Text Review
                   </button>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     className={`btn-primary-purple ${testimonialForm.type === 'video' ? '' : 'btn-outline'}`}
                     style={{
                       padding: '8px 16px',
@@ -1545,6 +1903,51 @@ export default function AdminDashboard() {
                 />
               </div>
 
+              <div className="modal-field">
+                <label>Client Photo</label>
+                <div className="image-upload-wrapper">
+                  {testimonialForm.image ? (
+                    <div className="image-preview-box">
+                      <img src={testimonialForm.image} alt="Client Preview" className="service-img-preview" />
+                      <button
+                        type="button"
+                        className="btn-remove-image"
+                        onClick={() => setTestimonialForm({ ...testimonialForm, image: "", imagePublicId: "" })}
+                      >
+                        <X size={14} /> Clear Image
+                      </button>
+                    </div>
+                  ) : (
+                    <label className="file-upload-dropzone">
+                      <Upload size={22} className="upload-icon" />
+                      <div className="upload-text">
+                        <strong>{uploadingTestimonialImage ? "Uploading..." : "Click or drag to upload photo"}</strong>
+                        <span>PNG, JPG, WEBP up to 5MB</span>
+                      </div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="file-input-hidden"
+                        disabled={uploadingTestimonialImage}
+                        onChange={async (e) => {
+                          const file = e.target.files && e.target.files[0];
+                          if (!file) return;
+                          setUploadingTestimonialImage(true);
+                          try {
+                            const { url, publicId } = await uploadImageFile(file);
+                            setTestimonialForm((prev) => ({ ...prev, image: url, imagePublicId: publicId }));
+                          } catch (err) {
+                            alert(err.message || "Image upload failed. Please try again.");
+                          } finally {
+                            setUploadingTestimonialImage(false);
+                          }
+                        }}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+
               {testimonialForm.type === 'text' && (
                 <div className="modal-field">
                   <label>Client Image (Optional)</label>
@@ -1561,8 +1964,8 @@ export default function AdminDashboard() {
                         </button>
                       </div>
                     ) : (
-                      <label 
-                        className={`file-upload-dropzone ${isDraggingTestimonialImage ? 'dragging' : ''}`} 
+                      <label
+                        className={`file-upload-dropzone ${isDraggingTestimonialImage ? 'dragging' : ''}`}
                         style={{ minHeight: '100px', padding: '1rem', borderColor: isDraggingTestimonialImage ? '#7c3aed' : undefined, backgroundColor: isDraggingTestimonialImage ? '#f3e8ff' : undefined }}
                         onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialImage(true); }}
                         onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialImage(false); }}
@@ -1625,51 +2028,51 @@ export default function AdminDashboard() {
                   <div style={{ textAlign: 'center', color: '#64748b', fontSize: '13px', fontWeight: '600', margin: '0' }}>OR UPLOAD A FILE</div>
                   <div className="modal-field">
                     <div className="image-upload-wrapper">
-                    {testimonialForm.videoUrl ? (
-                      <div className="image-preview-box" style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
-                        <p style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: '500' }}>Video Uploaded</p>
-                        <button
-                          type="button"
-                          className="btn-remove-image"
-                          onClick={() => setTestimonialForm({ ...testimonialForm, videoUrl: "" })}
-                        >
-                          <X size={14} /> Delete Video
-                        </button>
-                      </div>
-                    ) : (
-                      <label 
-                        className={`file-upload-dropzone ${isDraggingTestimonialVideo ? 'dragging' : ''}`}
-                        style={{ borderColor: isDraggingTestimonialVideo ? '#7c3aed' : undefined, backgroundColor: isDraggingTestimonialVideo ? '#f3e8ff' : undefined }}
-                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialVideo(true); }}
-                        onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialVideo(false); }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setIsDraggingTestimonialVideo(false);
-                          const file = e.dataTransfer.files && e.dataTransfer.files[0];
-                          if (file) processAdminTestimonialVideo(file);
-                        }}
-                      >
-                        <Upload size={24} className="upload-icon" />
-                        <div className="upload-text">
-                          <strong>{uploadingTestimonialVideo ? "Uploading Video..." : isDraggingTestimonialVideo ? "Drop video here!" : "Click or drag to upload video"}</strong>
-                          <span>MP4, WebM up to 50MB</span>
+                      {testimonialForm.videoUrl ? (
+                        <div className="image-preview-box" style={{ background: '#f8fafc', padding: '1rem', borderRadius: '12px' }}>
+                          <p style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: '500' }}>Video Uploaded</p>
+                          <button
+                            type="button"
+                            className="btn-remove-image"
+                            onClick={() => setTestimonialForm({ ...testimonialForm, videoUrl: "" })}
+                          >
+                            <X size={14} /> Delete Video
+                          </button>
                         </div>
-                        <input
-                          type="file"
-                          accept="video/*"
-                          className="file-input-hidden"
-                          disabled={uploadingTestimonialVideo}
-                          onChange={(e) => {
-                            const file = e.target.files && e.target.files[0];
+                      ) : (
+                        <label
+                          className={`file-upload-dropzone ${isDraggingTestimonialVideo ? 'dragging' : ''}`}
+                          style={{ borderColor: isDraggingTestimonialVideo ? '#7c3aed' : undefined, backgroundColor: isDraggingTestimonialVideo ? '#f3e8ff' : undefined }}
+                          onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialVideo(true); }}
+                          onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialVideo(false); }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setIsDraggingTestimonialVideo(false);
+                            const file = e.dataTransfer.files && e.dataTransfer.files[0];
                             if (file) processAdminTestimonialVideo(file);
-                            e.target.value = "";
                           }}
-                        />
-                      </label>
-                    )}
+                        >
+                          <Upload size={24} className="upload-icon" />
+                          <div className="upload-text">
+                            <strong>{uploadingTestimonialVideo ? "Uploading Video..." : isDraggingTestimonialVideo ? "Drop video here!" : "Click or drag to upload video"}</strong>
+                            <span>MP4, WebM up to 50MB</span>
+                          </div>
+                          <input
+                            type="file"
+                            accept="video/*"
+                            className="file-input-hidden"
+                            disabled={uploadingTestimonialVideo}
+                            onChange={(e) => {
+                              const file = e.target.files && e.target.files[0];
+                              if (file) processAdminTestimonialVideo(file);
+                              e.target.value = "";
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
                   </div>
-                </div>
                 </>
               )}
 
@@ -1731,7 +2134,6 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* CONTACT INQUIRY VIEW DETAIL MODAL */}
       {selectedInquiry && (
         <div className="modal-backdrop" onClick={() => setSelectedInquiry(null)}>
           <div className="nexa-modal" onClick={(e) => e.stopPropagation()}>
@@ -1756,7 +2158,7 @@ export default function AdminDashboard() {
                   {selectedInquiry.receivedOn}
                 </div>
               </div>
-              
+
               <div className="inquiry-meta-grid">
                 <div className="meta-card">
                   <span className="meta-label">Subject</span>
@@ -1800,7 +2202,7 @@ export default function AdminDashboard() {
                   const orgMatch = msg.match(/Organization:\s*([^\n]*)/);
                   const srvMatch = msg.match(/Service Interested In:\s*([^\n]*)/);
                   const msgMatch = msg.match(/Message:\n([\s\S]*)$/);
-                  
+
                   if (orgMatch) org = orgMatch[1];
                   if (srvMatch) srv = srvMatch[1];
                   if (msgMatch) msg = msgMatch[1];

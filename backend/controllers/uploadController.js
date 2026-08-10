@@ -54,3 +54,20 @@ export const uploadVideo = async (req, res) => {
     }
   }
 };
+
+// admin only - deletes an image from Cloudinary immediately (used by the
+// "Clear Image" button so removed images don't sit around as orphaned
+// uploads until the parent form happens to be saved).
+export const deleteImage = async (req, res) => {
+  try {
+    const { publicId } = req.body || {};
+    if (!publicId) {
+      return res.status(400).json({ message: "publicId is required" });
+    }
+
+    await cloudinary.uploader.destroy(publicId);
+    res.json({ message: "Image deleted" });
+  } catch (error) {
+    res.status(500).json({ message: error.message || "Image delete failed" });
+  }
+};

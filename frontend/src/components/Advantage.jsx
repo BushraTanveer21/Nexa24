@@ -1,42 +1,14 @@
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
-import { Clock, Users, ShieldCheck, Layers, TrendingUp } from 'lucide-react';
-
-const ADVANTAGES = [
-  {
-    icon: Clock,
-    title: "24/7 Support",
-    description: "We work while you sleep"
-  },
-  {
-    icon: Users,
-    title: "Healthcare Experts",
-    description: "Team with real billing + credentialing experience"
-  },
-  {
-    icon: ShieldCheck,
-    title: "HIPAA Compliant",
-    description: "Your data security is our priority"
-  },
-  {
-    icon: Layers,
-    title: "One Partner, All Solutions",
-    description: "No need to juggle multiple vendors"
-  },
-  {
-    icon: TrendingUp,
-    title: "Scalable",
-    description: "Services that grow with your practice"
-  }
-];
+import WHY_CHOOSE_US from '../data/whyChooseUs';
 
 const Advantage = () => {
   return (
     <section className="advantage-exact container" id="solutions" style={{ position: 'relative', overflow: 'hidden' }}>
       {/* Right Corner Decorative Watercolor Leaves */}
-      <img 
-        src="/watercolor_leaves.png" 
-        alt="Decorative Watercolor Leaves Right" 
+      <img
+        src="/watercolor_leaves.png"
+        alt="Decorative Watercolor Leaves Right"
         style={{
           position: 'absolute',
           top: 0,
@@ -55,18 +27,30 @@ const Advantage = () => {
         <div className="eyebrow-exact">WHY CHOOSE NEXA24</div>
         <h2>Why Choose <span className="purple-text">NEXA24.</span></h2>
       </div>
-      
+
       <div className="advantage-grid-exact" style={{ position: 'relative', zIndex: 1 }}>
         <div className="advantage-cards-exact">
-          {ADVANTAGES.map((adv, idx) => (
-            <Tilt key={idx} tiltMaxAngleX={10} tiltMaxAngleY={10} perspective={1000} scale={1.02} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.15} glareColor="white" glarePosition="all" className="adv-card-tilt-wrapper">
+          {WHY_CHOOSE_US.map(({ title, description, Icon }) => (
+            <Tilt
+              key={title}
+              tiltMaxAngleX={10}
+              tiltMaxAngleY={10}
+              perspective={1000}
+              scale={1.02}
+              transitionSpeed={1000}
+              glareEnable={true}
+              glareMaxOpacity={0.15}
+              glareColor="white"
+              glarePosition="all"
+              className="adv-card-tilt-wrapper"
+            >
               <div className="adv-card-exact">
                 <div className="adv-icon-exact">
-                   <adv.icon size={24} strokeWidth={2} />
+                  <Icon size={22} />
                 </div>
                 <div>
-                  <h4>{adv.title}</h4>
-                  <p>{adv.description}</p>
+                  <h4>{title}</h4>
+                  <p>{description}</p>
                 </div>
               </div>
             </Tilt>

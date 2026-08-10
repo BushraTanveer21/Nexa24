@@ -26,7 +26,12 @@ const seedAdmin = async () => {
         });
         console.log(`🔐 Admin account created for ${normalizedEmail}.`);
       } else {
-        console.log(`🔐 Admin already exists for ${normalizedEmail}, skipping seed.`);
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(adminData.password, salt);
+        
+        existing.password = hashedPassword;
+        await existing.save();
+        console.log(`🔐 Admin already exists for ${normalizedEmail}. Password updated from .env!`);
       }
     }
   } catch (error) {

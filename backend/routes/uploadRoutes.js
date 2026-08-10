@@ -1,6 +1,7 @@
 import express from "express";
 import multer from "multer";
-import { uploadImage } from "../controllers/uploadController.js";
+import { uploadImage, uploadVideo, deleteImage } from "../controllers/uploadController.js";
+import { publicUploadLimiter } from "../middleware/rateLimiter.js";
 import protect from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -29,9 +30,6 @@ const uploadVideoLimit = multer({
   },
 });
 
-import { uploadVideo } from "../controllers/uploadController.js";
-import { publicUploadLimiter } from "../middleware/rateLimiter.js";
-
 // Wrap routes with error handling for Multer size limit / type errors
 const handleUpload = (multerMiddleware) => (req, res, next) => {
   multerMiddleware(req, res, (err) => {
@@ -49,6 +47,7 @@ const handleUpload = (multerMiddleware) => (req, res, next) => {
 
 router.post("/", protect, handleUpload(upload.single("image")), uploadImage);
 router.post("/video", protect, handleUpload(uploadVideoLimit.single("video")), uploadVideo);
+router.delete("/", protect, deleteImage);
 
 router.post("/public/image", publicUploadLimiter, handleUpload(upload.single("image")), uploadImage);
 router.post("/public/video", publicUploadLimiter, handleUpload(uploadVideoLimit.single("video")), uploadVideo);
