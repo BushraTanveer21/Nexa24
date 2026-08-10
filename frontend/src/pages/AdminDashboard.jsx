@@ -165,6 +165,8 @@ export default function AdminDashboard() {
 
   // Modals state
   const [showServiceModal, setShowServiceModal] = useState(false);
+  const [serviceIconDropdownOpen, setServiceIconDropdownOpen] = useState(false);
+  const [openBenefitDropdown, setOpenBenefitDropdown] = useState(null);
   const [editingService, setEditingService] = useState(null);
   const [serviceForm, setServiceForm] = useState({
     name: "",
@@ -199,11 +201,16 @@ export default function AdminDashboard() {
   const [uploadingServiceImage, setUploadingServiceImage] = useState(false);
   const [uploadingTestimonialVideo, setUploadingTestimonialVideo] = useState(false);
   const [uploadingTestimonialImage, setUploadingTestimonialImage] = useState(false);
-  const [isDraggingTestimonialImage, setIsDraggingTestimonialImage] = useState(false);
+
   const [isDraggingTestimonialVideo, setIsDraggingTestimonialVideo] = useState(false);
 
   const [contactSearch, setContactSearch] = useState("");
   const [contactFilterStatus, setContactFilterStatus] = useState("all");
+  const [contactFilterDropdownOpen, setContactFilterDropdownOpen] = useState(false);
+  const [testimonialRatingDropdownOpen, setTestimonialRatingDropdownOpen] = useState(false);
+  const [testimonialStatusDropdownOpen, setTestimonialStatusDropdownOpen] = useState(false);
+  const [inquiryStatusDropdownOpen, setInquiryStatusDropdownOpen] = useState(false);
+  const [inquiryReadDropdownOpen, setInquiryReadDropdownOpen] = useState(false);
 
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [confirmDialog, setConfirmDialog] = useState({ show: false, title: '', onConfirm: null });
@@ -261,6 +268,13 @@ export default function AdminDashboard() {
     };
 
     verifyAndLoad();
+
+    // Poll for live updates every 15 seconds so new testimonials/inquiries show up without refresh
+    const pollInterval = setInterval(() => {
+      fetchBackendData();
+    }, 15000);
+
+    return () => clearInterval(pollInterval);
   }, [navigate]);
 
   const fetchBackendData = async () => {
@@ -516,26 +530,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const processAdminTestimonialImage = async (file) => {
-    if (!file) return;
-    if (!file.type.startsWith("image/")) {
-      showToast("Please select a valid image file (JPG, PNG, WebP).", "error");
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      showToast("Image is too large. Maximum size limit is 5MB.", "error");
-      return;
-    }
-    setUploadingTestimonialImage(true);
-    try {
-      const url = await uploadImageFile(file);
-      setTestimonialForm((prev) => ({ ...prev, image: url }));
-    } catch (err) {
-      showToast(err.message || "Image upload failed. Please try again.", "error");
-    } finally {
-      setUploadingTestimonialImage(false);
-    }
-  };
+
 
   const processAdminTestimonialVideo = async (file) => {
     if (!file) return;
@@ -703,7 +698,11 @@ export default function AdminDashboard() {
             throw new Error(err.message || "Failed to delete testimonial");
           }
 
-          setTestimonials(testimonials.filter(t => t._id !== id));
+          const updated = testimonials
+            .filter(t => t._id !== id)
+            .sort((a, b) => a.order - b.order)
+            .map((t, idx) => ({ ...t, order: idx }));
+          setTestimonials(updated);
           showToast("Testimonial deleted successfully.");
         } catch (err) {
           showToast(err.message || "Could not delete testimonial. Please try again.", "error");
@@ -743,15 +742,29 @@ export default function AdminDashboard() {
 
     // Instant local state update so changes reflect live without page refresh!
     const currentList = [...testimonials].sort((a, b) => (a.order !== undefined ? a.order : 0) - (b.order !== undefined ? b.order : 0));
-    const targetIndex = currentList.findIndex(t => t._id === id);
-    if (targetIndex !== -1) {
-      const [targetItem] = currentList.splice(targetIndex, 1);
-      const insertAt = Math.min(requestedOrder, currentList.length);
-      currentList.splice(insertAt, 0, targetItem);
+    const targetItem = currentList.find(t => t._id === id);
+    if (!targetItem) return;
 
-      const optimisticList = currentList.map((t, idx) => ({ ...t, order: idx }));
-      setTestimonials(optimisticList);
-    }
+    const oldOrder = targetItem.order !== undefined ? targetItem.order : 0;
+    if (oldOrder === requestedOrder) return;
+
+    const otherItem = currentList.find(t => t.order === requestedOrder);
+
+    // 1. Perform pairwise swap
+    // 2. Sort by order
+    // 3. Re-index completely to wipe out any existing duplicate bugs (like two 4's)
+    const optimisticList = currentList.map((t) => {
+      if (t._id === id) {
+        return { ...t, order: requestedOrder };
+      }
+      if (otherItem && t._id === otherItem._id) {
+        return { ...t, order: oldOrder };
+      }
+      return t;
+    }).sort((a, b) => (a.order !== undefined ? a.order : 0) - (b.order !== undefined ? b.order : 0))
+      .map((t, idx) => ({ ...t, order: idx }));
+
+    setTestimonials(optimisticList);
 
     try {
       const token = getAuthToken();
@@ -1365,17 +1378,56 @@ export default function AdminDashboard() {
                   )}
                 </div>
 
-                <select
-                  value={contactFilterStatus}
-                  onChange={(e) => setContactFilterStatus(e.target.value)}
-                  style={{ padding: '7px 14px', borderRadius: '20px', border: '1px solid #cbd5e1', fontSize: '13px', background: '#fff', color: '#334155', outline: 'none', cursor: 'pointer' }}
+                <div 
+                  className={`custom-dropdown-container ${contactFilterDropdownOpen ? 'open' : ''}`}
+                  onClick={() => setContactFilterDropdownOpen(!contactFilterDropdownOpen)}
+                  onBlur={() => setTimeout(() => setContactFilterDropdownOpen(false), 150)}
+                  tabIndex="0"
+                  style={{ width: '170px', margin: 0 }}
                 >
-                  <option value="all">All Inquiries ({contacts.length})</option>
-                  <option value="New">New ({contacts.filter(c => c.status === 'New').length})</option>
-                  <option value="Handled">Handled / Done</option>
-                  <option value="unread">Unread ({contacts.filter(c => !c.isRead).length})</option>
-                  <option value="read">Read</option>
-                </select>
+                  <div className="custom-dropdown-selected" style={{ padding: '7px 14px', paddingRight: '32px', borderRadius: '20px', fontSize: '13px', border: '1px solid #cbd5e1', color: '#334155' }}>
+                    {(() => {
+                      if (contactFilterStatus === 'all') return `All Inquiries (${contacts.length})`;
+                      if (contactFilterStatus === 'New') return `New (${contacts.filter(c => c.status === 'New').length})`;
+                      if (contactFilterStatus === 'Handled') return 'Handled / Done';
+                      if (contactFilterStatus === 'unread') return `Unread (${contacts.filter(c => !c.isRead).length})`;
+                      if (contactFilterStatus === 'read') return 'Read';
+                      return 'Filter';
+                    })()}
+                    <svg className={`select-icon ${contactFilterDropdownOpen ? 'open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '12px' }}>
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  {contactFilterDropdownOpen && (
+                    <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '6px', borderRadius: '12px', fontSize: '13px', zIndex: 50 }}>
+                      {[
+                        { value: 'all', label: `All Inquiries (${contacts.length})` },
+                        { value: 'New', label: `New (${contacts.filter(c => c.status === 'New').length})` },
+                        { value: 'Handled', label: 'Handled / Done' },
+                        { value: 'unread', label: `Unread (${contacts.filter(c => !c.isRead).length})` },
+                        { value: 'read', label: 'Read' }
+                      ].map((opt) => (
+                        <li 
+                          key={opt.value} 
+                          className={`custom-dropdown-item ${contactFilterStatus === opt.value ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setContactFilterStatus(opt.value);
+                            setContactFilterDropdownOpen(false);
+                          }}
+                          style={{ padding: '8px 12px', borderRadius: '8px' }}
+                        >
+                          {opt.label}
+                          {contactFilterStatus === opt.value && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '12px' }}>
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -1386,7 +1438,7 @@ export default function AdminDashboard() {
                     <th style={{ width: "32px" }}>#</th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Subject</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Contact No</th>
                     <th>Received On</th>
                     <th style={{ textAlign: "center" }}>Status</th>
                     <th style={{ textAlign: "center" }}>Read Status</th>
@@ -1419,8 +1471,8 @@ export default function AdminDashboard() {
                       </td>
                       <td><strong>{c.name}</strong></td>
                       <td><a href={`mailto:${c.email}`} className="email-text-link">{c.email}</a></td>
-                      <td>{c.subject}</td>
-                      <td className="col-date">{c.receivedOn}</td>
+                      <td style={{ whiteSpace: 'nowrap' }}>{c.phone || '-'}</td>
+                      <td className="col-date" style={{ fontSize: '13px', color: '#475569' }}>{c.receivedOn}</td>
                       <td style={{ textAlign: "center" }}>
                         {c.status === "New" && (
                           <span className="status-pill new">New</span>
@@ -1731,15 +1783,58 @@ export default function AdminDashboard() {
 
               <div className="modal-field">
                 <label>Service Icon</label>
-                <select
-                  value={serviceForm.icon}
-                  onChange={(e) => setServiceForm({ ...serviceForm, icon: e.target.value })}
+                <div 
+                  className={`custom-dropdown-container ${serviceIconDropdownOpen ? 'open' : ''}`}
+                  onClick={() => setServiceIconDropdownOpen(!serviceIconDropdownOpen)}
+                  onBlur={() => setTimeout(() => setServiceIconDropdownOpen(false), 150)}
+                  tabIndex="0"
                 >
-                  <option value="">Auto-detect from name</option>
-                  {ICON_OPTIONS.map(({ key, label }) => (
-                    <option key={key} value={key}>{label}</option>
-                  ))}
-                </select>
+                  <div className="custom-dropdown-selected" style={{ padding: '10px 14px', borderRadius: '8px', fontSize: '14px', border: '1px solid #cbd5e1' }}>
+                    {serviceForm.icon ? (ICON_OPTIONS.find(o => o.key === serviceForm.icon)?.label || "Auto-detect from name") : "Auto-detect from name"}
+                    <svg className={`select-icon ${serviceIconDropdownOpen ? 'open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '14px' }}>
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  {serviceIconDropdownOpen && (
+                    <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '6px', borderRadius: '8px', zIndex: 10, maxHeight: '200px', overflowY: 'auto' }}>
+                      <li 
+                        className={`custom-dropdown-item ${!serviceForm.icon ? 'selected' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setServiceForm({ ...serviceForm, icon: "" });
+                          setServiceIconDropdownOpen(false);
+                        }}
+                        style={{ padding: '8px 12px', borderRadius: '6px' }}
+                      >
+                        Auto-detect from name
+                        {!serviceForm.icon && (
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '12px' }}>
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                          </svg>
+                        )}
+                      </li>
+                      {ICON_OPTIONS.map(({ key, label }) => (
+                        <li 
+                          key={key} 
+                          className={`custom-dropdown-item ${serviceForm.icon === key ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setServiceForm({ ...serviceForm, icon: key });
+                            setServiceIconDropdownOpen(false);
+                          }}
+                          style={{ padding: '8px 12px', borderRadius: '6px' }}
+                        >
+                          {label}
+                          {serviceForm.icon === key && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '12px' }}>
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
                 <span className="field-hint">
                   Shown on the service card and detail page. Leave on auto-detect and
                   we'll guess a sensible icon from the service name.
@@ -1776,14 +1871,43 @@ export default function AdminDashboard() {
                             value={benefit.label}
                             onChange={(e) => handleUpdateBenefit(idx, "label", e.target.value)}
                           />
-                          <select
-                            value={benefit.icon || "check"}
-                            onChange={(e) => handleUpdateBenefit(idx, "icon", e.target.value)}
+                          <div 
+                            className={`custom-dropdown-container ${openBenefitDropdown === idx ? 'open' : ''}`}
+                            onClick={() => setOpenBenefitDropdown(openBenefitDropdown === idx ? null : idx)}
+                            onBlur={() => setTimeout(() => { if (openBenefitDropdown === idx) setOpenBenefitDropdown(null) }, 150)}
+                            tabIndex="0"
+                            style={{ flex: 1, margin: 0 }}
                           >
-                            {ICON_OPTIONS.map(({ key, label }) => (
-                              <option key={key} value={key}>{label}</option>
-                            ))}
-                          </select>
+                            <div className="custom-dropdown-selected" style={{ padding: '8px 12px', borderRadius: '8px', fontSize: '13px', border: '1px solid #cbd5e1' }}>
+                              {ICON_OPTIONS.find(o => o.key === (benefit.icon || "check"))?.label || "Check / Done"}
+                              <svg className={`select-icon ${openBenefitDropdown === idx ? 'open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '10px' }}>
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                              </svg>
+                            </div>
+                            {openBenefitDropdown === idx && (
+                              <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '6px', borderRadius: '8px', zIndex: 10, maxHeight: '200px', overflowY: 'auto', width: '100%', minWidth: '180px' }}>
+                                {ICON_OPTIONS.map(({ key, label }) => (
+                                  <li 
+                                    key={key} 
+                                    className={`custom-dropdown-item ${(benefit.icon || "check") === key ? 'selected' : ''}`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleUpdateBenefit(idx, "icon", key);
+                                      setOpenBenefitDropdown(null);
+                                    }}
+                                    style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '13px' }}
+                                  >
+                                    {label}
+                                    {(benefit.icon || "check") === key && (
+                                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '10px' }}>
+                                        <polyline points="20 6 9 17 4 12"></polyline>
+                                      </svg>
+                                    )}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
                           <button
                             type="button"
                             className="benefit-row-remove"
@@ -1903,54 +2027,9 @@ export default function AdminDashboard() {
                 />
               </div>
 
-              <div className="modal-field">
-                <label>Client Photo</label>
-                <div className="image-upload-wrapper">
-                  {testimonialForm.image ? (
-                    <div className="image-preview-box">
-                      <img src={testimonialForm.image} alt="Client Preview" className="service-img-preview" />
-                      <button
-                        type="button"
-                        className="btn-remove-image"
-                        onClick={() => setTestimonialForm({ ...testimonialForm, image: "", imagePublicId: "" })}
-                      >
-                        <X size={14} /> Clear Image
-                      </button>
-                    </div>
-                  ) : (
-                    <label className="file-upload-dropzone">
-                      <Upload size={22} className="upload-icon" />
-                      <div className="upload-text">
-                        <strong>{uploadingTestimonialImage ? "Uploading..." : "Click or drag to upload photo"}</strong>
-                        <span>PNG, JPG, WEBP up to 5MB</span>
-                      </div>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="file-input-hidden"
-                        disabled={uploadingTestimonialImage}
-                        onChange={async (e) => {
-                          const file = e.target.files && e.target.files[0];
-                          if (!file) return;
-                          setUploadingTestimonialImage(true);
-                          try {
-                            const { url, publicId } = await uploadImageFile(file);
-                            setTestimonialForm((prev) => ({ ...prev, image: url, imagePublicId: publicId }));
-                          } catch (err) {
-                            alert(err.message || "Image upload failed. Please try again.");
-                          } finally {
-                            setUploadingTestimonialImage(false);
-                          }
-                        }}
-                      />
-                    </label>
-                  )}
-                </div>
-              </div>
-
               {testimonialForm.type === 'text' && (
                 <div className="modal-field">
-                  <label>Client Image (Optional)</label>
+                  <label>Client Photo</label>
                   <div className="image-upload-wrapper">
                     {testimonialForm.image ? (
                       <div className="image-preview-box">
@@ -1958,39 +2037,35 @@ export default function AdminDashboard() {
                         <button
                           type="button"
                           className="btn-remove-image"
-                          onClick={() => setTestimonialForm({ ...testimonialForm, image: "" })}
+                          onClick={() => setTestimonialForm({ ...testimonialForm, image: "", imagePublicId: "" })}
                         >
                           <X size={14} /> Clear Image
                         </button>
                       </div>
                     ) : (
-                      <label
-                        className={`file-upload-dropzone ${isDraggingTestimonialImage ? 'dragging' : ''}`}
-                        style={{ minHeight: '100px', padding: '1rem', borderColor: isDraggingTestimonialImage ? '#7c3aed' : undefined, backgroundColor: isDraggingTestimonialImage ? '#f3e8ff' : undefined }}
-                        onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialImage(true); }}
-                        onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingTestimonialImage(false); }}
-                        onDrop={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          setIsDraggingTestimonialImage(false);
-                          const file = e.dataTransfer.files && e.dataTransfer.files[0];
-                          if (file) processAdminTestimonialImage(file);
-                        }}
-                      >
-                        <Upload size={20} className="upload-icon" />
+                      <label className="file-upload-dropzone">
+                        <Upload size={22} className="upload-icon" />
                         <div className="upload-text">
-                          <strong>{uploadingTestimonialImage ? "Uploading..." : isDraggingTestimonialImage ? "Drop photo here!" : "Click or drag to upload image"}</strong>
-                          <span style={{ fontSize: '11px' }}>JPG, PNG up to 5MB</span>
+                          <strong>{uploadingTestimonialImage ? "Uploading..." : "Click or drag to upload photo"}</strong>
+                          <span>PNG, JPG, WEBP up to 5MB</span>
                         </div>
                         <input
                           type="file"
                           accept="image/*"
                           className="file-input-hidden"
                           disabled={uploadingTestimonialImage}
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const file = e.target.files && e.target.files[0];
-                            if (file) processAdminTestimonialImage(file);
-                            e.target.value = "";
+                            if (!file) return;
+                            setUploadingTestimonialImage(true);
+                            try {
+                              const { url, publicId } = await uploadImageFile(file);
+                              setTestimonialForm((prev) => ({ ...prev, image: url, imagePublicId: publicId }));
+                            } catch (err) {
+                              alert(err.message || "Image upload failed. Please try again.");
+                            } finally {
+                              setUploadingTestimonialImage(false);
+                            }
                           }}
                         />
                       </label>
@@ -1999,18 +2074,46 @@ export default function AdminDashboard() {
                 </div>
               )}
 
+
+
               <div className="modal-field">
                 <label>Rating (1-5)</label>
-                <select
-                  value={testimonialForm.rating}
-                  onChange={(e) => setTestimonialForm({ ...testimonialForm, rating: e.target.value })}
+                <div 
+                  className={`custom-dropdown-container ${testimonialRatingDropdownOpen ? 'open' : ''}`}
+                  onClick={() => setTestimonialRatingDropdownOpen(!testimonialRatingDropdownOpen)}
+                  onBlur={() => setTimeout(() => setTestimonialRatingDropdownOpen(false), 150)}
+                  tabIndex="0"
                 >
-                  <option value="5">5 Stars</option>
-                  <option value="4">4 Stars</option>
-                  <option value="3">3 Stars</option>
-                  <option value="2">2 Stars</option>
-                  <option value="1">1 Star</option>
-                </select>
+                  <div className="custom-dropdown-selected" style={{ padding: '10px 14px', borderRadius: '8px', fontSize: '14px', border: '1px solid #cbd5e1' }}>
+                    {testimonialForm.rating} Stars
+                    <svg className={`select-icon ${testimonialRatingDropdownOpen ? 'open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '14px' }}>
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  {testimonialRatingDropdownOpen && (
+                    <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '6px', borderRadius: '8px', zIndex: 10 }}>
+                      {[5, 4, 3, 2, 1].map((val) => (
+                        <li 
+                          key={val} 
+                          className={`custom-dropdown-item ${String(testimonialForm.rating) === String(val) ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTestimonialForm({ ...testimonialForm, rating: String(val) });
+                            setTestimonialRatingDropdownOpen(false);
+                          }}
+                          style={{ padding: '8px 12px', borderRadius: '6px' }}
+                        >
+                          {val} Stars
+                          {String(testimonialForm.rating) === String(val) && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '12px' }}>
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
               {testimonialForm.type === 'video' && (
@@ -2101,13 +2204,42 @@ export default function AdminDashboard() {
 
               <div className="modal-field">
                 <label>Status</label>
-                <select
-                  value={testimonialForm.status}
-                  onChange={(e) => setTestimonialForm({ ...testimonialForm, status: e.target.value })}
+                <div 
+                  className={`custom-dropdown-container ${testimonialStatusDropdownOpen ? 'open' : ''}`}
+                  onClick={() => setTestimonialStatusDropdownOpen(!testimonialStatusDropdownOpen)}
+                  onBlur={() => setTimeout(() => setTestimonialStatusDropdownOpen(false), 150)}
+                  tabIndex="0"
                 >
-                  <option value="Published">Published</option>
-                  <option value="Disabled">Disabled</option>
-                </select>
+                  <div className="custom-dropdown-selected" style={{ padding: '10px 14px', borderRadius: '8px', fontSize: '14px', border: '1px solid #cbd5e1' }}>
+                    {testimonialForm.status}
+                    <svg className={`select-icon ${testimonialStatusDropdownOpen ? 'open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '14px' }}>
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </div>
+                  {testimonialStatusDropdownOpen && (
+                    <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '6px', borderRadius: '8px', zIndex: 10 }}>
+                      {["Published", "Disabled"].map((val) => (
+                        <li 
+                          key={val} 
+                          className={`custom-dropdown-item ${testimonialForm.status === val ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setTestimonialForm({ ...testimonialForm, status: val });
+                            setTestimonialStatusDropdownOpen(false);
+                          }}
+                          style={{ padding: '8px 12px', borderRadius: '6px' }}
+                        >
+                          {val}
+                          {testimonialForm.status === val && (
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '12px' }}>
+                              <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               </div>
 
               <div className="modal-checkbox-field">
@@ -2147,7 +2279,7 @@ export default function AdminDashboard() {
               <div className="inquiry-header-info">
                 <div className="inquiry-user-meta">
                   <div className="inquiry-avatar">
-                    {selectedInquiry.name.charAt(0).toUpperCase()}
+                    {selectedInquiry.name.trim().charAt(0).toUpperCase()}
                   </div>
                   <div className="inquiry-user-text">
                     <strong>{selectedInquiry.name}</strong>
@@ -2170,26 +2302,81 @@ export default function AdminDashboard() {
                 </div>
                 <div className="meta-card">
                   <span className="meta-label">Status</span>
-                  <select
-                    className="status-select-inline"
-                    value={selectedInquiry.status}
-                    onChange={(e) => handleUpdateInquiryStatus(selectedInquiry._id, e.target.value)}
+                  <div 
+                    className={`custom-dropdown-container ${inquiryStatusDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setInquiryStatusDropdownOpen(!inquiryStatusDropdownOpen)}
+                    onBlur={() => setTimeout(() => setInquiryStatusDropdownOpen(false), 150)}
+                    tabIndex="0"
                   >
-                    <option value="New">New</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="Handled">Handled</option>
-                  </select>
+                    <div className="custom-dropdown-selected status-select-inline" style={{ padding: '4px 10px', paddingRight: '24px', borderRadius: '12px', fontSize: '12px', border: '1px solid #cbd5e1' }}>
+                      {selectedInquiry.status}
+                      <svg className={`select-icon ${inquiryStatusDropdownOpen ? 'open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '6px' }}>
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+                    {inquiryStatusDropdownOpen && (
+                      <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '4px', borderRadius: '8px', zIndex: 10 }}>
+                        {["New", "In Progress", "Handled"].map((val) => (
+                          <li 
+                            key={val} 
+                            className={`custom-dropdown-item ${selectedInquiry.status === val ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleUpdateInquiryStatus(selectedInquiry._id, val);
+                              setInquiryStatusDropdownOpen(false);
+                            }}
+                            style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '12px' }}
+                          >
+                            {val}
+                            {selectedInquiry.status === val && (
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '8px' }}>
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
                 <div className="meta-card">
                   <span className="meta-label">Read Status</span>
-                  <select
-                    className="status-select-inline"
-                    value={selectedInquiry.isRead ? "Read" : "Unread"}
-                    onChange={(e) => handleMarkAsRead(selectedInquiry._id, e.target.value === "Read")}
+                  <div 
+                    className={`custom-dropdown-container ${inquiryReadDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setInquiryReadDropdownOpen(!inquiryReadDropdownOpen)}
+                    onBlur={() => setTimeout(() => setInquiryReadDropdownOpen(false), 150)}
+                    tabIndex="0"
                   >
-                    <option value="Unread">Unread</option>
-                    <option value="Read">Read</option>
-                  </select>
+                    <div className="custom-dropdown-selected status-select-inline" style={{ padding: '4px 10px', paddingRight: '24px', borderRadius: '12px', fontSize: '12px', border: '1px solid #cbd5e1' }}>
+                      {selectedInquiry.isRead ? "Read" : "Unread"}
+                      <svg className={`select-icon ${inquiryReadDropdownOpen ? 'open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '6px' }}>
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+                    {inquiryReadDropdownOpen && (
+                      <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '4px', borderRadius: '8px', zIndex: 10 }}>
+                        {["Unread", "Read"].map((val) => (
+                          <li 
+                            key={val} 
+                            className={`custom-dropdown-item ${(selectedInquiry.isRead ? "Read" : "Unread") === val ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMarkAsRead(selectedInquiry._id, val === "Read");
+                              setInquiryReadDropdownOpen(false);
+                            }}
+                            style={{ padding: '6px 10px', borderRadius: '6px', fontSize: '12px' }}
+                          >
+                            {val}
+                            {(selectedInquiry.isRead ? "Read" : "Unread") === val && (
+                              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '8px' }}>
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                              </svg>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 </div>
               </div>
 

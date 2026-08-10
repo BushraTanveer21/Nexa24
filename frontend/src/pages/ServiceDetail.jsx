@@ -28,8 +28,8 @@ const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 const SERVICE_DETAILS = {
   "virtual-assistance-services": {
     eyebrow: "VIRTUAL ASSISTANCE SERVICES",
-    title: "Virtual Assistance.",
-    highlightTitle: "Real Impact.",
+    title: "Virtual Assistance",
+    highlightTitle: "Real Impact",
     description:
       "Free your staff from admin work. Our trained healthcare VAs handle scheduling, patient follow-ups, prior authorizations, charting support, and front-desk tasks remotely.",
     heroImage:
@@ -88,8 +88,8 @@ const SERVICE_DETAILS = {
 
   "medical-billing-services": {
     eyebrow: "MEDICAL BILLING SERVICES",
-    title: "Medical Billing.",
-    highlightTitle: "Maximized Revenue.",
+    title: "Medical Billing",
+    highlightTitle: "Maximized Revenue",
     description:
       "Complete Revenue Cycle Management designed to maximize reimbursements and reduce denials. From claims submission to payment posting, we handle every step with accuracy and speed.",
     heroImage:
@@ -128,8 +128,8 @@ const SERVICE_DETAILS = {
 
   "credentialing-services": {
     eyebrow: "CREDENTIALING SERVICES",
-    title: "Credentialing.",
-    highlightTitle: "Made Simple.",
+    title: "Credentialing",
+    highlightTitle: "Made Simple",
     description:
       "Get providers enrolled and paid faster. We handle the entire credentialing lifecycle with accuracy and speed, so you never miss a payer deadline.",
     heroImage:
@@ -168,8 +168,8 @@ const SERVICE_DETAILS = {
 
   "marketing-services": {
     eyebrow: "MARKETING SERVICES",
-    title: "Practice Marketing.",
-    highlightTitle: "Real Growth.",
+    title: "Practice Marketing",
+    highlightTitle: "Real Growth",
     description:
       "Grow your practice online and attract more patients. We build your brand so you stand out — from your website to your social presence.",
     heroImage:
@@ -209,7 +209,7 @@ const SERVICE_DETAILS = {
   "additional-billing-rcm-solutions": {
     eyebrow: "ADDITIONAL BILLING & RCM SOLUTIONS",
     title: "Specialized Billing",
-    highlightTitle: "& RCM Support.",
+    highlightTitle: "& RCM Support",
     description:
       "Need support in specific areas? We've got you. Prior authorization, patient statements, collections, denial analysis & custom reports — handled with precision.",
     heroImage:
@@ -253,8 +253,8 @@ function buildFallbackServiceData(backendService) {
   const name = backendService?.title || backendService?.name || "Healthcare Service";
   return {
     eyebrow: name.toUpperCase(),
-    title: `${name}.`,
-    highlightTitle: "Real Results.",
+    title: name,
+    highlightTitle: "Real Results",
     description:
       backendService?.description ||
       "Streamline your healthcare practice operations with NEXA24's dedicated managed solutions.",

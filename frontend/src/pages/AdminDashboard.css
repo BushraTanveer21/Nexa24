@@ -618,6 +618,7 @@
 .col-description-text {
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -721,6 +722,7 @@
   border-radius: 12px;
   font-size: 0.75rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .status-pill.published {
@@ -818,7 +820,8 @@ input:checked+.slider:before {
 .email-text-link {
   color: #1e1b4b;
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 400;
+  font-size: 13px;
 }
 
 .email-text-link:hover {
@@ -1185,7 +1188,7 @@ input:checked+.slider:before {
 
 .meta-value {
   color: #1e293b;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .status-select-inline {

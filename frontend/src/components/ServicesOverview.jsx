@@ -4,29 +4,6 @@ import FallingPetals from './FallingPetals';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-const DEFAULT_SERVICES = [
-  { 
-    title: 'Virtual Assistance Services', 
-    description: 'Smart support for scheduling, admin and daily operations.',
-  },
-  { 
-    title: 'Medical Billing Services', 
-    description: 'Accurate coding, claim management and faster reimbursements.',
-  },
-  { 
-    title: 'Credentialing Services', 
-    description: 'Faster credentialing and CAQH maintenance.',
-  },
-  { 
-    title: 'Marketing Services', 
-    description: 'Digital strategies that grow your practice online.',
-  },
-  { 
-    title: 'Additional Billing & RCM Solutions', 
-    description: 'End-to-end revenue cycle management that improves cash flow.',
-  }
-];
-
 const ICON_RULES = [
   { test: /virtual|assist/i, Icon: Users },
   { test: /billing/i, Icon: FileText },
@@ -46,7 +23,7 @@ function renderServiceIcon(service) {
 
 const ServicesOverview = () => {
   const [activeIndex, setActiveIndex] = useState(null);
-  const [services, setServices] = useState(DEFAULT_SERVICES);
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     fetch(`${API_URL}/api/services`)

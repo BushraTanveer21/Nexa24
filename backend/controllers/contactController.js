@@ -1,16 +1,9 @@
 import Contact from "../models/Contact.js";
 
-// public - visitor submits the contact form
-// Expects: { name, email, phone, message, subject?, website }
-// "website" is the honeypot field - must stay empty. Give it a real-looking
-// name and hide it with CSS (display:none / off-screen), NOT type="hidden",
-// since some bots skip type="hidden" inputs.
 export const submitContact = async (req, res) => {
   try {
     const { name, email, phone, message, website } = req.body || {};
 
-    // Honeypot check: if filled, pretend success so the bot doesn't learn
-    // its submission was rejected. Nothing gets saved.
     if (website) {
       return res.status(201).json({ message: "Message sent successfully." });
     }
@@ -36,32 +29,11 @@ export const submitContact = async (req, res) => {
   }
 };
 
-// admin only - view all inquiries with search & filter support
+// admin only - view all inquiries (optional ?status=New|Contacted|Done filter)
 export const getContacts = async (req, res) => {
   try {
-    const { search, status, isRead } = req.query || {};
     const filter = {};
-
-    if (status && status !== "all") {
-      filter.status = status;
-    }
-
-    if (isRead !== undefined && isRead !== "") {
-      filter.isRead = isRead === "true";
-    }
-
-    if (search && search.trim()) {
-      const regex = new RegExp(search.trim(), "i");
-      filter.$or = [
-        { name: regex },
-        { email: regex },
-        { phone: regex },
-        { organization: regex },
-        { service: regex },
-        { subject: regex },
-        { message: regex },
-      ];
-    }
+    if (req.query.status) filter.status = req.query.status;
 
     const contacts = await Contact.find(filter).sort({ createdAt: -1 });
     res.json(contacts);

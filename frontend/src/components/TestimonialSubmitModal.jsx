@@ -20,6 +20,7 @@ export default function TestimonialSubmitModal({ onClose }) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(null);
+  const [ratingDropdownOpen, setRatingDropdownOpen] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -281,13 +282,42 @@ export default function TestimonialSubmitModal({ onClose }) {
 
           <div className="modal-field">
             <label>Rating (1-5)</label>
-            <select value={formState.rating} onChange={e => setFormState({ ...formState, rating: e.target.value })}>
-              <option value="5">5 Stars</option>
-              <option value="4">4 Stars</option>
-              <option value="3">3 Stars</option>
-              <option value="2">2 Stars</option>
-              <option value="1">1 Star</option>
-            </select>
+            <div 
+              className={`custom-dropdown-container ${ratingDropdownOpen ? 'open' : ''}`}
+              onClick={() => setRatingDropdownOpen(!ratingDropdownOpen)}
+              onBlur={() => setTimeout(() => setRatingDropdownOpen(false), 150)}
+              tabIndex="0"
+            >
+              <div className="custom-dropdown-selected" style={{ padding: '10px 14px', borderRadius: '8px', fontSize: '14px', border: '1px solid #cbd5e1' }}>
+                {formState.rating} {String(formState.rating) === '1' ? 'Star' : 'Stars'}
+                <svg className={`select-icon ${ratingDropdownOpen ? 'open' : ''}`} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ right: '14px' }}>
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </div>
+              {ratingDropdownOpen && (
+                <ul className="custom-dropdown-list" style={{ top: 'calc(100% + 4px)', padding: '6px', borderRadius: '8px', zIndex: 10 }}>
+                  {[5, 4, 3, 2, 1].map((val) => (
+                    <li 
+                      key={val} 
+                      className={`custom-dropdown-item ${String(formState.rating) === String(val) ? 'selected' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setFormState({ ...formState, rating: String(val) });
+                        setRatingDropdownOpen(false);
+                      }}
+                      style={{ padding: '8px 12px', borderRadius: '6px' }}
+                    >
+                      {val} {val === 1 ? 'Star' : 'Stars'}
+                      {String(formState.rating) === String(val) && (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="check-mark" style={{ right: '12px' }}>
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
 
           {formState.type === 'text' && (

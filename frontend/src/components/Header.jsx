@@ -198,7 +198,7 @@ export default function Header() {
     >
       <div className="header-inner">
         <Link to="/" className="logo-mark">
-          <img src={nexaLogo} alt="NEXA24 Healthcare" />
+          <img src={nexaLogo} alt="NEXA24 Healthcare" height="48" style={{ height: '48px', width: 'auto' }} />
         </Link>
 
         <nav className="nav-links">

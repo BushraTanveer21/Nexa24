@@ -153,6 +153,18 @@ export const deleteTestimonial = async (req, res) => {
     await deleteFromCloudinary(testimonial.image, false);
     await deleteFromCloudinary(testimonial.videoUrl, true);
 
+    // Re-index remaining testimonials sequentially
+    const remaining = await Testimonial.find().sort({ order: 1 });
+    const bulkOps = remaining.map((t, index) => ({
+      updateOne: {
+        filter: { _id: t._id },
+        update: { order: index },
+      },
+    }));
+    if (bulkOps.length > 0) {
+      await Testimonial.bulkWrite(bulkOps);
+    }
+
     res.json({ message: "Testimonial deleted" });
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -207,16 +219,30 @@ export const setTestimonialOrder = async (req, res) => {
     const target = all.find((t) => t._id.toString() === req.params.id);
     if (!target) return res.status(404).json({ message: "Testimonial not found" });
 
-    // Pull the target out, clamp the requested position to a valid index,
-    // then re-insert it there.
-    const rest = all.filter((t) => t._id.toString() !== req.params.id);
-    const insertAt = Math.min(requestedOrder, rest.length);
-    rest.splice(insertAt, 0, target);
+    const oldOrder = target.order !== undefined ? target.order : 0;
+    if (oldOrder === requestedOrder) {
+      return res.json(all);
+    }
 
-    // Re-index everyone sequentially — this is what guarantees uniqueness.
-    const bulkOps = rest.map((t, index) => ({
-      updateOne: { filter: { _id: t._id }, update: { order: index } },
+    // Step 1: Perform pairwise swap in memory
+    const updatedAll = all.map(t => {
+      if (t._id.toString() === req.params.id) {
+        return { ...t.toObject(), order: requestedOrder };
+      }
+      if (t.order === requestedOrder) {
+        return { ...t.toObject(), order: oldOrder };
+      }
+      return t.toObject();
+    });
+
+    // Step 2: Re-sort the mapped array by order to maintain sequential placement
+    updatedAll.sort((a, b) => a.order - b.order);
+
+    // Step 3: Re-index 0, 1, 2, 3... to scrub out any existing duplicate bugs (like two 4's)
+    const bulkOps = updatedAll.map((t, index) => ({
+      updateOne: { filter: { _id: t._id }, update: { order: index } }
     }));
+
     await Testimonial.bulkWrite(bulkOps);
 
     const testimonials = await Testimonial.find({}).sort({ order: 1 });
