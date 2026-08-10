@@ -1,6 +1,31 @@
 import Testimonial from "../models/Testimonial.js";
 import cloudinary from "../config/cloudinary.js";
 
+// Helper function to remove media from Cloudinary
+const deleteFromCloudinary = async (url, isVideo = false) => {
+  if (!url || !url.includes("cloudinary.com")) return;
+  const splitUrl = url.split("/upload/");
+  if (splitUrl.length === 2) {
+    let path = splitUrl[1];
+    if (path.match(/^v\d+\//)) {
+      path = path.replace(/^v\d+\//, "");
+    }
+    const lastDotIndex = path.lastIndexOf(".");
+    const publicId = lastDotIndex !== -1 ? path.substring(0, lastDotIndex) : path;
+    if (publicId) {
+      try {
+        if (isVideo) {
+          await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
+        } else {
+          await cloudinary.uploader.destroy(publicId);
+        }
+      } catch (err) {
+        console.error(`Failed to delete ${isVideo ? 'video' : 'image'} from Cloudinary:`, err.message);
+      }
+    }
+  }
+};
+
 export const getTestimonials = async (req, res) => {
   try {
     const testimonials = await Testimonial.find({ isEnabled: true });
@@ -41,16 +66,24 @@ export const updateTestimonial = async (req, res) => {
     if (req.body?.name !== undefined && !req.body.name.trim()) {
       return res.status(400).json({ message: "Client name cannot be empty" });
     }
-    if (req.body?.message !== undefined && !req.body.message.trim() && !req.body.videoUrl) {
-      // It's allowed to be empty if they provide a video
-      // But if they empty it out and have no video, we could block it. Let's just let the schema handle it.
+
+    const existing = await Testimonial.findById(req.params.id);
+    if (!existing) return res.status(404).json({ message: "Testimonial not found" });
+
+    // If image is being updated or cleared, delete the old Cloudinary image
+    if (req.body.image !== undefined && req.body.image !== existing.image) {
+      await deleteFromCloudinary(existing.image, false);
+    }
+
+    // If videoUrl is being updated or cleared, delete the old Cloudinary video
+    if (req.body.videoUrl !== undefined && req.body.videoUrl !== existing.videoUrl) {
+      await deleteFromCloudinary(existing.videoUrl, true);
     }
 
     const testimonial = await Testimonial.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
     });
-    if (!testimonial) return res.status(404).json({ message: "Testimonial not found" });
     res.json(testimonial);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -62,45 +95,9 @@ export const deleteTestimonial = async (req, res) => {
     const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
     if (!testimonial) return res.status(404).json({ message: "Testimonial not found" });
 
-    // If testimonial has an image hosted on Cloudinary, delete it from there too
-    if (testimonial.image && testimonial.image.includes("cloudinary.com")) {
-      const splitUrl = testimonial.image.split("/upload/");
-      if (splitUrl.length === 2) {
-        let path = splitUrl[1];
-        if (path.match(/^v\d+\//)) {
-          path = path.replace(/^v\d+\//, "");
-        }
-        const lastDotIndex = path.lastIndexOf(".");
-        const publicId = lastDotIndex !== -1 ? path.substring(0, lastDotIndex) : path;
-        if (publicId) {
-          try {
-            await cloudinary.uploader.destroy(publicId);
-          } catch (cloudinaryErr) {
-            console.error("Failed to delete image from Cloudinary:", cloudinaryErr.message);
-          }
-        }
-      }
-    }
-
-    // If testimonial has a video hosted on Cloudinary, delete it from there too
-    if (testimonial.videoUrl && testimonial.videoUrl.includes("cloudinary.com")) {
-      const splitUrl = testimonial.videoUrl.split("/upload/");
-      if (splitUrl.length === 2) {
-        let path = splitUrl[1];
-        if (path.match(/^v\d+\//)) {
-          path = path.replace(/^v\d+\//, "");
-        }
-        const lastDotIndex = path.lastIndexOf(".");
-        const publicId = lastDotIndex !== -1 ? path.substring(0, lastDotIndex) : path;
-        if (publicId) {
-          try {
-            await cloudinary.uploader.destroy(publicId, { resource_type: "video" });
-          } catch (cloudinaryErr) {
-            console.error("Failed to delete video from Cloudinary:", cloudinaryErr.message);
-          }
-        }
-      }
-    }
+    // Delete image and video from Cloudinary if hosted there
+    await deleteFromCloudinary(testimonial.image, false);
+    await deleteFromCloudinary(testimonial.videoUrl, true);
 
     res.json({ message: "Testimonial deleted" });
   } catch (error) {
