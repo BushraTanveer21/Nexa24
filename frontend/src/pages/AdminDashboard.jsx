@@ -1731,6 +1731,7 @@ export default function AdminDashboard() {
                       <div className="upload-text">
                         <strong>{uploadingServiceImage ? "Uploading..." : "Click or drag to upload image"}</strong>
                         <span>PNG, JPG, WEBP up to 5MB</span>
+                        <span>Recommended size: 1536 × 1024px (3:2)</span>
                       </div>
                       <input
                         type="file"

@@ -225,7 +225,7 @@ export default function Services() {
             </div>
           </div>
           <a className="btn-primary cta-btn" href="#contact">
-            Book a Demo
+            Contact Us
             <ArrowRight size={16} style={{ display: "inline", verticalAlign: "-2px", marginLeft: 8 }} />
           </a>
         </div>

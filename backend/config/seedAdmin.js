@@ -1,41 +1,30 @@
 import bcrypt from "bcryptjs";
 import Admin from "../models/Admin.js";
 
-const defaultAdmins = [
-  {
-    name: "NEXA24 Admin",
-    email: process.env.DEFAULT_ADMIN_EMAIL || "admin@nexa24.com",
-    password: process.env.DEFAULT_ADMIN_PASSWORD || "admin123",
-  },
-];
-
+const defaultAdmin = {
+  name: "NEXA24 Admin",
+  email: process.env.DEFAULT_ADMIN_EMAIL || "admin@nexa24.com",
+  password: process.env.DEFAULT_ADMIN_PASSWORD || "admin123",
+};
 const seedAdmin = async () => {
   try {
-    for (const adminData of defaultAdmins) {
-      const normalizedEmail = adminData.email.toLowerCase().trim();
-      const existing = await Admin.findOne({ email: normalizedEmail });
-
-      if (!existing) {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(adminData.password, salt);
-
-        await Admin.create({
-          name: adminData.name,
-          email: normalizedEmail,
-          password: hashedPassword,
-        });
-        console.log(`🔐 Admin account created for ${normalizedEmail}.`);
-      } else {
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(adminData.password, salt);
-        
-        existing.password = hashedPassword;
-        await existing.save();
-        console.log(`🔐 Admin already exists for ${normalizedEmail}. Password updated from .env!`);
-      }
+    const anyAdminExists = await Admin.exists({});
+    if (anyAdminExists) {
+      return; // Real admin account(s) already exist — never touch them.
     }
+
+    const normalizedEmail = defaultAdmin.email.toLowerCase().trim();
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(defaultAdmin.password, salt);
+
+    await Admin.create({
+      name: defaultAdmin.name,
+      email: normalizedEmail,
+      password: hashedPassword,
+    });
+    console.log(`🔐 Initial admin account created for ${normalizedEmail}.`);
   } catch (error) {
-    console.error("Failed to seed admin users:", error.message);
+    console.error("Failed to seed admin user:", error.message);
   }
 };
 
