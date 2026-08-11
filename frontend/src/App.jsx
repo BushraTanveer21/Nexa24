@@ -18,8 +18,27 @@ function ScrollAnimations() {
   const location = useLocation();
 
   useEffect(() => {
-    // Scroll to top on route change
-    window.scrollTo(0, 0);
+    // Scroll to top on route change, unless the URL has a hash target
+    // (e.g. "Contact Us" / "Schedule a Consultation" buttons linking to
+    // /contact#contact-form) — in that case scroll to that section instead.
+    if (location.hash) {
+      const scrollToHash = () => {
+        const el = document.querySelector(location.hash);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          return true;
+        }
+        return false;
+      };
+      // Content (esp. on Contact page) may render slightly after route
+      // change, so retry briefly instead of giving up on the first try.
+      if (!scrollToHash()) {
+        const retry = setTimeout(scrollToHash, 150);
+        return () => clearTimeout(retry);
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {

@@ -224,10 +224,10 @@ export default function Services() {
               <p>Let NEXA24 handle the complexity, so you can focus on care.</p>
             </div>
           </div>
-          <a className="btn-primary cta-btn" href="#contact">
+          <Link className="btn-primary cta-btn" to="/contact#contact-form">
             Contact Us
             <ArrowRight size={16} style={{ display: "inline", verticalAlign: "-2px", marginLeft: 8 }} />
-          </a>
+          </Link>
         </div>
       </section>
     </div>

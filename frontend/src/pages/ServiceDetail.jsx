@@ -441,10 +441,10 @@ export default function ServiceDetail() {
               <p>{data.ctaDesc}</p>
             </div>
           </div>
-          <a className="btn-primary cta-btn" href="#contact">
+          <Link className="btn-primary cta-btn" to="/contact#contact-form">
             Schedule a Consultation
             <ArrowRight size={16} style={{ display: "inline", verticalAlign: "-2px", marginLeft: 8 }} />
-          </a>
+          </Link>
         </div>
       </section>
     </div>

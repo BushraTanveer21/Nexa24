@@ -706,6 +706,12 @@ img {
   display: flex;
   flex-direction: column;
   position: relative;
+  /* Without this, a grid item defaults to a min-width based on its
+     content's min-content size. A long, unbroken title/description
+     (e.g. no spaces to wrap on) would then force this card -- and the
+     whole grid column -- wider than the others instead of wrapping to a
+     new line, breaking the uniform card size across the row. */
+  min-width: 0;
 }
 
 .service-card:hover {
@@ -740,12 +746,10 @@ img {
   color: var(--text-dark);
   margin-bottom: 8px;
   line-height: 1.35;
-  /* Clamp to 2 lines (with a matching min-height) so every "What We
-     Handle" card reserves the exact same title space no matter how short
-     or long its text is. Combined with the description clamp below, this
-     makes every handle-card the same fixed height on every service page
-     -- old or newly added from the admin panel -- instead of sizing
-     itself to whatever content that particular page happens to have. */
+  /* Clamp to 2 lines with a matching min-height, so every card reserves
+     the exact same title space -- short titles don't leave a card
+     shorter than the row's standard size, and a longer title is cut off
+     with "..." at 2 lines instead of growing the card taller. */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   line-clamp: 2;
@@ -753,6 +757,10 @@ img {
   overflow: hidden;
   text-overflow: ellipsis;
   min-height: calc(15px * 1.35 * 2);
+  /* Long words with no natural break point (e.g. "AAAAAAAAAAAAAAAAAAAA")
+     must wrap onto the next line instead of stretching the card wider. */
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .service-card p {
@@ -761,10 +769,11 @@ img {
   line-height: 1.6;
   margin-bottom: 24px;
   flex-grow: 1;
-  /* Clamp to a fixed number of lines so every card in the grid stays the
-     same height no matter how long an individual service's description
-     is — a long description used to stretch its whole grid row (and every
-     card in it) instead of just that one card. Full text is still shown
+  /* Clamp to 4 lines with a matching min-height, so every card reserves
+     the exact same description space regardless of content -- a short
+     description doesn't leave its card shorter than the row's standard
+     size, and a longer description is cut off cleanly with "..." at 4
+     lines instead of growing the card taller. Full text is still shown
      on the service's own detail page. */
   display: -webkit-box;
   -webkit-line-clamp: 4;
@@ -774,6 +783,7 @@ img {
   text-overflow: ellipsis;
   overflow-wrap: anywhere;
   word-break: break-word;
+  min-height: calc(12.5px * 1.6 * 4);
 }
 
 .service-card-link {
