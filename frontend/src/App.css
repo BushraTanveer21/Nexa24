@@ -584,6 +584,16 @@ img {
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
+.detail-badge-pill svg {
+  /* Flex children shrink below their own size by default when a sibling
+     (here, a long admin-entered label) needs the space — without this, a
+     very long/unbroken benefit label squeezed the icon smaller than its
+     actual 14x14 size instead of leaving it a fixed, standard size. */
+  flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+}
+
 .detail-badge-pill:hover {
   background: var(--primary);
   color: var(--white);
