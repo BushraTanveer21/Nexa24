@@ -65,7 +65,7 @@ export default function Services() {
         if (!cancelled && Array.isArray(data)) {
           setServices(data);
         }
-      } catch (err) {
+      } catch {
         // Real backend state (empty) is preferred over fake data — leave
         // services as-is (whatever it already was, or empty) on failure.
       } finally {

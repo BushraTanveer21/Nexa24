@@ -248,6 +248,7 @@ export default function TestimonialSubmitModal({ onClose }) {
                   <label 
                     className={`file-upload-dropzone ${isDraggingImage ? 'dragging' : ''}`} 
                     style={{ minHeight: '80px', padding: '1rem', borderColor: isDraggingImage ? '#7c3aed' : undefined, backgroundColor: isDraggingImage ? '#f3e8ff' : undefined }}
+                    onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImage(true); }}
                     onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImage(false); }}
                     onDrop={(e) => {
@@ -359,6 +360,7 @@ export default function TestimonialSubmitModal({ onClose }) {
                   <label 
                     className={`file-upload-dropzone ${isDraggingVideo ? 'dragging' : ''}`}
                     style={{ borderColor: isDraggingVideo ? '#7c3aed' : undefined, backgroundColor: isDraggingVideo ? '#f3e8ff' : undefined }}
+                    onDragEnter={(e) => { e.preventDefault(); e.stopPropagation(); }}
                     onDragOver={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingVideo(true); }}
                     onDragLeave={(e) => { e.preventDefault(); e.stopPropagation(); setIsDraggingVideo(false); }}
                     onDrop={(e) => {

@@ -1,10 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import md5 from 'md5';
+
+
+const ExpandableText = ({ text, maxLength = 150 }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  if (!text) return null;
+  
+  if (text.length <= maxLength) {
+    return <p className="testimonial-content">{text}</p>;
+  }
+
+  return (
+    <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
+      <p className="testimonial-content" style={{ flexGrow: 0, marginBottom: '8px' }}>
+        {isExpanded ? text : `${text.substring(0, maxLength)}...`}
+      </p>
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)} 
+        style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: '#7c3aed', fontWeight: 'bold', cursor: 'pointer', padding: '0', fontSize: '0.95rem' }}
+      >
+        {isExpanded ? "View Less" : "View More"}
+      </button>
+    </div>
+  );
+};
+
 import Tilt from 'react-parallax-tilt';
 import { Star } from 'lucide-react';
 import '../pages/TestimonialPage.css';
 
-const renderVideoPlayer = (url) => {
+const InteractiveVideoPlayer = ({ url }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  
   if (!url || typeof url !== 'string') return null;
   const trimmed = url.trim();
 
@@ -13,32 +39,56 @@ const renderVideoPlayer = (url) => {
     return null;
   }
 
-  const ytRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+  const ytRegex = /(?:youtube\.com\/(?:[^/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?/\s]{11})/;
   const ytMatch = trimmed.match(ytRegex);
   if (ytMatch && ytMatch[1]) {
+    const src = `https://www.youtube.com/embed/${ytMatch[1]}` + (isPlaying ? "?autoplay=1" : "");
     return (
-      <iframe
-        src={`https://www.youtube.com/embed/${ytMatch[1]}`}
-        title="YouTube video player"
-        frameBorder="0"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-        allowFullScreen
-        style={{ width: '100%', height: '280px', borderRadius: '12px', border: 'none', display: 'block' }}
-      ></iframe>
+      <div style={{ position: 'relative', width: '100%', height: '280px', borderRadius: '12px', overflow: 'hidden' }} onClick={() => setIsPlaying(true)}>
+        <iframe
+          src={src}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', border: 'none', display: 'block', pointerEvents: isPlaying ? 'auto' : 'none' }}
+        ></iframe>
+        {!isPlaying && (
+           <div className="video-play-overlay">
+              <div className="play-button-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+           </div>
+        )}
+      </div>
     );
   }
 
   const vimeoMatch = trimmed.match(/(?:vimeo\.com\/)(\d+)/);
   if (vimeoMatch && vimeoMatch[1]) {
+    const src = `https://player.vimeo.com/video/${vimeoMatch[1]}` + (isPlaying ? "?autoplay=1" : "");
     return (
-      <iframe
-        src={`https://player.vimeo.com/video/${vimeoMatch[1]}`}
-        title="Vimeo video player"
-        frameBorder="0"
-        allow="autoplay; fullscreen; picture-in-picture"
-        allowFullScreen
-        style={{ width: '100%', height: '280px', borderRadius: '12px', border: 'none', display: 'block' }}
-      ></iframe>
+      <div style={{ position: 'relative', width: '100%', height: '280px', borderRadius: '12px', overflow: 'hidden' }} onClick={() => setIsPlaying(true)}>
+        <iframe
+          src={src}
+          title="Vimeo video player"
+          frameBorder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowFullScreen
+          style={{ width: '100%', height: '100%', border: 'none', display: 'block', pointerEvents: isPlaying ? 'auto' : 'none' }}
+        ></iframe>
+        {!isPlaying && (
+           <div className="video-play-overlay">
+              <div className="play-button-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </div>
+           </div>
+        )}
+      </div>
     );
   }
 
@@ -46,14 +96,23 @@ const renderVideoPlayer = (url) => {
   const instaMatch = trimmed.match(instaRegex);
   if (instaMatch && instaMatch[1]) {
     return (
-      <iframe
-        src={`https://www.instagram.com/p/${instaMatch[1]}/embed`}
-        title="Instagram video player"
-        frameBorder="0"
-        scrolling="no"
-        allowTransparency="true"
-        style={{ width: '100%', height: '360px', borderRadius: '12px', border: 'none', display: 'block', overflow: 'hidden' }}
-      ></iframe>
+      <div style={{ position: 'relative', width: '100%', height: '360px', borderRadius: '12px', overflow: 'hidden' }} onClick={() => window.open(trimmed, '_blank')}>
+        <iframe
+          src={`https://www.instagram.com/p/${instaMatch[1]}/embed`}
+          title="Instagram video player"
+          frameBorder="0"
+          scrolling="no"
+          allowTransparency="true"
+          style={{ width: '100%', height: '100%', border: 'none', display: 'block', pointerEvents: 'none' }}
+        ></iframe>
+        <div className="video-play-overlay">
+          <div className="play-button-icon" title="Watch on Instagram">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -61,13 +120,22 @@ const renderVideoPlayer = (url) => {
   const tiktokMatch = trimmed.match(tiktokRegex);
   if (tiktokMatch && tiktokMatch[1]) {
     return (
-      <iframe
-        src={`https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`}
-        title="TikTok video player"
-        frameBorder="0"
-        allow="fullscreen"
-        style={{ width: '100%', height: '380px', borderRadius: '12px', border: 'none', display: 'block' }}
-      ></iframe>
+      <div style={{ position: 'relative', width: '100%', height: '380px', borderRadius: '12px', overflow: 'hidden' }} onClick={() => window.open(trimmed, '_blank')}>
+        <iframe
+          src={`https://www.tiktok.com/embed/v2/${tiktokMatch[1]}`}
+          title="TikTok video player"
+          frameBorder="0"
+          allow="fullscreen"
+          style={{ width: '100%', height: '100%', border: 'none', display: 'block', pointerEvents: 'none' }}
+        ></iframe>
+        <div className="video-play-overlay">
+          <div className="play-button-icon" title="Watch on TikTok">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
     );
   }
 
@@ -75,45 +143,69 @@ const renderVideoPlayer = (url) => {
   const xMatch = trimmed.match(xRegex);
   if (xMatch && xMatch[1]) {
     return (
-      <iframe
-        src={`https://platform.twitter.com/embed/Tweet.html?id=${xMatch[1]}`}
-        title="X/Twitter video player"
-        frameBorder="0"
-        scrolling="no"
-        style={{ width: '100%', height: '360px', borderRadius: '12px', border: 'none', display: 'block' }}
-      ></iframe>
+      <div style={{ position: 'relative', width: '100%', height: '360px', borderRadius: '12px', overflow: 'hidden' }} onClick={() => window.open(trimmed, '_blank')}>
+        <iframe
+          src={`https://platform.twitter.com/embed/Tweet.html?id=${xMatch[1]}`}
+          title="X/Twitter video player"
+          frameBorder="0"
+          scrolling="no"
+          style={{ width: '100%', height: '100%', border: 'none', display: 'block', pointerEvents: 'none' }}
+        ></iframe>
+        <div className="video-play-overlay">
+          <div className="play-button-icon" title="Watch on X">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+              <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z" />
+            </svg>
+          </div>
+        </div>
+      </div>
     );
   }
 
   return (
-    <video
-      src={trimmed}
-      controls
-      onError={(e) => {
-        if (e.currentTarget.parentElement) {
-          e.currentTarget.parentElement.style.display = 'none';
-        }
-      }}
-      style={{ width: '100%', height: '280px', display: 'block', objectFit: 'cover', borderRadius: '12px' }}
-    />
+    <div style={{ position: 'relative', width: '100%', height: '280px', borderRadius: '12px', overflow: 'hidden', backgroundColor: '#000' }} onClick={(e) => {
+      if(!isPlaying) {
+        setIsPlaying(true);
+        const video = e.currentTarget.querySelector('video');
+        if (video) video.play();
+      }
+    }}>
+      <video
+        controls={isPlaying}
+        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', pointerEvents: isPlaying ? 'auto' : 'none' }}
+        onError={(e) => {
+          if (e.currentTarget.parentElement) {
+            e.currentTarget.parentElement.style.display = 'none';
+          }
+        }}
+      >
+        <source src={trimmed} />
+        Your browser does not support the video tag.
+      </video>
+      {!isPlaying && (
+         <div className="video-play-overlay">
+            <div className="play-button-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+         </div>
+      )}
+    </div>
   );
 };
 
-const hasValidVideo = (t) => {
-  return t && t.videoUrl && typeof t.videoUrl === 'string' && /^(https?:\/\/|\/|blob:)/i.test(t.videoUrl.trim());
-};
+
 
 const TestimonialsPreview = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/testimonials`);
+        const response = await fetch(`${API_URL}/api/testimonials/featured`);
         if (!response.ok) {
           throw new Error('Failed to fetch testimonials');
         }
@@ -127,9 +219,8 @@ const TestimonialsPreview = () => {
         
         // Take the top 3
         setTestimonials(activeTestimonials.slice(0, 3));
-      } catch (err) {
+      } catch {
         setTestimonials([]);
-        setError(null);
       } finally {
         setLoading(false);
       }
@@ -189,7 +280,7 @@ const TestimonialsPreview = () => {
                         if (t.image) {
                           return <img src={t.image} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />;
                         }
-                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'User')}&background=random&color=fff&size=128`;
+                        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name || 'User')}&background=random&color=fff&size=128&length=1`;
                         
                         return (
                           <img src={fallbackUrl} alt={t.name} className="testimonial-author-image" style={{ borderRadius: '50%', objectFit: 'cover' }} />
@@ -207,13 +298,13 @@ const TestimonialsPreview = () => {
                     </div>
                     {t.videoUrl && (
                       <div className="testimonial-video-container" style={{ marginTop: '16px', marginBottom: '0', marginLeft: '-20px', marginRight: '-20px', borderRadius: '12px', overflow: 'hidden' }}>
-                        {renderVideoPlayer(t.videoUrl)}
+                        <InteractiveVideoPlayer url={t.videoUrl} />
                       </div>
                     )}
                     {t.message && (
                       <>
                         <div className="quote-icon">"</div>
-                        <p className="testimonial-content">{t.message}</p>
+                        <ExpandableText text={t.message} />
                       </>
                     )}
                   </div>

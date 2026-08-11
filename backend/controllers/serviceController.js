@@ -1,6 +1,5 @@
 import Service from "../models/Service.js";
-// Adjust this import path to match wherever your Cloudinary instance is
-// configured (e.g. the same one used for testimonials / other uploads).
+
 import cloudinary from "../config/cloudinary.js";
 
 // Fields clients are allowed to set. Keeps req.body from mass-assigning

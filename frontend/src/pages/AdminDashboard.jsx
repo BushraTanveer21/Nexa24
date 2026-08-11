@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Home,
@@ -16,9 +16,6 @@ import {
   LogOut,
   X,
   CheckCircle2,
-  Clock,
-  AlertCircle,
-  Check,
   Quote,
   Upload,
   Image as ImageIcon,
@@ -26,9 +23,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Search,
+  User,
   Video,
-  Camera,
-  User
+  FileText,
+  AlertCircle
 } from "lucide-react";
 import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
@@ -150,9 +148,6 @@ export default function AdminDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // References for scrolling to sections
-  const servicesRef = useRef(null);
-  const testimonialsRef = useRef(null);
-  const contactsRef = useRef(null);
 
   // Starts empty — real data comes from the backend via fetchBackendData().
   const [services, setServices] = useState([]);
@@ -200,6 +195,7 @@ export default function AdminDashboard() {
   const [uploadingTestimonialImage, setUploadingTestimonialImage] = useState(false);
 
   const [isDraggingTestimonialVideo, setIsDraggingTestimonialVideo] = useState(false);
+  const [isDraggingTestimonialImage, setIsDraggingTestimonialImage] = useState(false);
 
   const [contactSearch, setContactSearch] = useState("");
   const [contactFilterStatus, setContactFilterStatus] = useState("all");
@@ -211,6 +207,7 @@ export default function AdminDashboard() {
 
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const [confirmDialog, setConfirmDialog] = useState({ show: false, title: '', onConfirm: null });
+  const [alertModal, setAlertModal] = useState({ show: false, message: '' });
   const [testimonialTab, setTestimonialTab] = useState("admin");
 
   const showToast = (message, type = 'success') => {
@@ -259,7 +256,7 @@ export default function AdminDashboard() {
         const data = await res.json();
         setUser(data);
         fetchBackendData();
-      } catch (e) {
+      } catch {
         navigate("/login");
       }
     };
@@ -290,8 +287,8 @@ export default function AdminDashboard() {
               _id: t._id || `t_${idx}`,
               clientName: t.name || t.clientName || "Client",
               designation: t.position || t.designation || "Healthcare Client",
-              status: t.status || (t.isEnabled !== false ? "Published" : "Disabled"),
-              homepageDisplay: t.homepageDisplay !== undefined ? t.homepageDisplay : (t.isEnabled !== false),
+              status: t.isEnabled !== false ? "Published" : "Disabled",
+              homepageDisplay: t.isFeatured === true,
               message: t.message || "",
               rating: t.rating || 5,
               email: t.email || "",
@@ -607,6 +604,18 @@ export default function AdminDashboard() {
       }
     }
 
+    if (testimonialForm.homepageDisplay) {
+      const isEditing = !!editingTestimonial;
+      const currentlyEnabledCount = testimonials.filter(t => 
+        t.homepageDisplay && (!isEditing || t._id !== editingTestimonial._id)
+      ).length;
+      
+      if (currentlyEnabledCount >= 3) {
+        setAlertModal({ show: true, message: "Only 3 testimonials can be shown on the home page. First disable one from the dashboard, then try again." });
+        return;
+      }
+    }
+
     // Backend model fields are name/position/isEnabled — dashboard form uses
     // clientName/designation/status+homepageDisplay. Map here.
     const payload = {
@@ -619,7 +628,8 @@ export default function AdminDashboard() {
       imagePublicId: testimonialForm.imagePublicId,
       rating: Number(testimonialForm.rating),
       order: testimonialForm.order !== undefined ? Number(testimonialForm.order) : testimonials.length,
-      isEnabled: testimonialForm.status !== "Disabled" && testimonialForm.homepageDisplay,
+      isEnabled: testimonialForm.status !== "Disabled",
+      isFeatured: testimonialForm.homepageDisplay,
     };
 
     try {
@@ -649,7 +659,7 @@ export default function AdminDashboard() {
         clientName: saved.name,
         designation: saved.position || "",
         status: saved.isEnabled !== false ? "Published" : "Disabled",
-        homepageDisplay: saved.isEnabled !== false,
+        homepageDisplay: saved.isFeatured === true,
         message: saved.message || "",
         rating: saved.rating || 5,
         email: saved.email || "",
@@ -704,20 +714,20 @@ export default function AdminDashboard() {
     });
   };
 
-  const handleToggleHomepageDisplay = async (id) => {
+  const handleToggleStatus = async (id) => {
     const current = testimonials.find(t => t._id === id);
     if (!current) return;
-    const nextValue = !current.homepageDisplay;
+    const isCurrentlyPublished = current.status === "Published";
+    const nextValue = !isCurrentlyPublished;
 
     setTestimonials(testimonials.map(t => t._id === id ? {
       ...t,
-      homepageDisplay: nextValue,
       status: nextValue ? "Published" : "Disabled"
     } : t));
 
     try {
       const token = getAuthToken();
-      await fetch(`${API_URL}/api/testimonials/${id}`, {
+      const res = await fetch(`${API_URL}/api/testimonials/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -725,8 +735,49 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({ isEnabled: nextValue }),
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.message || "Status toggle failed", "error");
+        setTestimonials(testimonials.map(t => t._id === id ? current : t));
+      }
     } catch (err) {
-      console.warn("Homepage display toggle failed to persist:", err.message);
+      showToast(err.message, "error");
+      setTestimonials(testimonials.map(t => t._id === id ? current : t));
+    }
+  };
+
+  const handleToggleHomepageDisplay = async (id) => {
+    const current = testimonials.find(t => t._id === id);
+    if (!current) return;
+    const nextValue = !current.homepageDisplay;
+
+    if (nextValue) {
+      const currentlyEnabledCount = testimonials.filter(t => t.homepageDisplay).length;
+      if (currentlyEnabledCount >= 3) {
+        setAlertModal({ show: true, message: "Only 3 testimonials can be shown on the home page. First disable one, then enable another." });
+        return;
+      }
+    }
+
+    setTestimonials(testimonials.map(t => t._id === id ? {
+      ...t,
+      homepageDisplay: nextValue,
+    } : t));
+
+    try {
+      const token = getAuthToken();
+      const res = await fetch(`${API_URL}/api/testimonials/admin/${id}/toggle-featured`, {
+        method: "PATCH",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        showToast(errData.message || "Featured toggle failed", "error");
+        setTestimonials(testimonials.map(t => t._id === id ? current : t));
+      }
+    } catch (err) {
+      showToast(err.message, "error");
+      setTestimonials(testimonials.map(t => t._id === id ? current : t));
     }
   };
 
@@ -778,7 +829,7 @@ export default function AdminDashboard() {
             clientName: t.name || t.clientName || "Client",
             designation: t.position || t.designation || "Healthcare Client",
             status: t.status || (t.isEnabled !== false ? "Published" : "Disabled"),
-            homepageDisplay: t.homepageDisplay !== undefined ? t.homepageDisplay : (t.isEnabled !== false),
+            homepageDisplay: t.isFeatured === true,
             message: t.message || "",
             rating: t.rating || 5,
             email: t.email || "",
@@ -1232,11 +1283,10 @@ export default function AdminDashboard() {
                     <th>Client Name</th>
                     <th>Designation</th>
                     <th>Date</th>
-                    <th style={{ textAlign: "center", width: "70px" }}>Order</th>
                     <th>Review</th>
                     <th style={{ textAlign: "center" }}>Status</th>
                     <th style={{ textAlign: "center" }}>Actions</th>
-                    <th style={{ textAlign: "center" }}>Homepage Display</th>
+                    <th style={{ textAlign: "center", whiteSpace: "nowrap" }}>On Home</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1253,31 +1303,38 @@ export default function AdminDashboard() {
                           />
                         ) : (
                           <img
-                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.clientName || 'User')}&background=random&color=fff&size=128`}
+                            src={`https://ui-avatars.com/api/?name=${encodeURIComponent(t.clientName || 'User')}&background=random&color=fff&size=128&length=1`}
                             alt={t.clientName}
                             className="service-table-thumb"
                             style={{ borderRadius: '50%' }}
                           />
                         )}
                       </td>
-                      <td><strong>{t.clientName}</strong></td>
+                      <td style={{ whiteSpace: "nowrap" }}><strong>{t.clientName}</strong></td>
                       <td className="col-designation">{t.designation}</td>
                       <td style={{ fontSize: '13px', color: '#64748b', whiteSpace: 'nowrap' }}>
                         {t.date || t.createdAt ? new Date(t.date || t.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-'}
                       </td>
-                      <td style={{ textAlign: "center" }}>
-                        <TestimonialOrderInput item={t} idx={idx} onOrderChange={handleTestimonialOrderChange} />
-                      </td>
-                      <td style={{ textAlign: "center" }}>
-                        <span className="quote-icon-cell">
-                          <Quote size={15} />
+                      <td style={{ textAlign: "center", whiteSpace: "nowrap" }}>
+                        <span className="quote-icon-cell" title={t.videoUrl ? "Video Review" : "Text Review"} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px', borderRadius: '20px', backgroundColor: t.videoUrl ? '#faf5ff' : '#f8fafc', border: `1px solid ${t.videoUrl ? '#e9d5ff' : '#e2e8f0'}`, color: t.videoUrl ? '#9333ea' : '#64748b', whiteSpace: 'nowrap' }}>
+                          {t.videoUrl ? (
+                            <>
+                              <Video size={14} />
+                              <span style={{ fontSize: '12px', fontWeight: '600' }}>Video</span>
+                            </>
+                          ) : (
+                            <>
+                              <FileText size={14} />
+                              <span style={{ fontSize: '12px', fontWeight: '600' }}>Text</span>
+                            </>
+                          )}
                         </span>
                       </td>
                       <td style={{ textAlign: "center" }}>
-                        {t.homepageDisplay ? (
+                        {t.status === "Published" ? (
                           <span
                             className="status-pill published"
-                            onClick={() => handleToggleHomepageDisplay(t._id)}
+                            onClick={() => handleToggleStatus(t._id)}
                             style={{ cursor: 'pointer' }}
                             title="Click to Disable"
                           >
@@ -1286,7 +1343,7 @@ export default function AdminDashboard() {
                         ) : (
                           <span
                             className="status-pill disabled"
-                            onClick={() => handleToggleHomepageDisplay(t._id)}
+                            onClick={() => handleToggleStatus(t._id)}
                             style={{ cursor: 'pointer' }}
                             title="Click to Publish"
                           >
@@ -1702,13 +1759,23 @@ export default function AdminDashboard() {
                   ) : (
                     <label
                       className={`file-upload-dropzone${isServiceImageDragging ? " dropzone-active" : ""}`}
+                      onDragEnter={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                      }}
                       onDragOver={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         setIsServiceImageDragging(true);
                       }}
-                      onDragLeave={() => setIsServiceImageDragging(false)}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setIsServiceImageDragging(false);
+                      }}
                       onDrop={async (e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         setIsServiceImageDragging(false);
                         const file = e.dataTransfer.files && e.dataTransfer.files[0];
                         if (!file) return;
@@ -2027,7 +2094,39 @@ export default function AdminDashboard() {
                         </button>
                       </div>
                     ) : (
-                      <label className="file-upload-dropzone">
+                      <label 
+                        className={`file-upload-dropzone${isDraggingTestimonialImage ? " dropzone-active" : ""}`}
+                        onDragEnter={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                        }}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsDraggingTestimonialImage(true);
+                        }}
+                        onDragLeave={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsDraggingTestimonialImage(false);
+                        }}
+                        onDrop={async (e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setIsDraggingTestimonialImage(false);
+                          const file = e.dataTransfer.files && e.dataTransfer.files[0];
+                          if (!file) return;
+                          setUploadingTestimonialImage(true);
+                          try {
+                            const { url, publicId } = await uploadImageFile(file);
+                            setTestimonialForm((prev) => ({ ...prev, image: url, imagePublicId: publicId }));
+                          } catch (err) {
+                            alert(err.message || "Image upload failed. Please try again.");
+                          } finally {
+                            setUploadingTestimonialImage(false);
+                          }
+                        }}
+                      >
                         <Upload size={22} className="upload-icon" />
                         <div className="upload-text">
                           <strong>{uploadingTestimonialImage ? "Uploading..." : "Click or drag to upload photo"}</strong>
@@ -2433,6 +2532,22 @@ export default function AdminDashboard() {
                 if (confirmDialog.onConfirm) confirmDialog.onConfirm();
                 setConfirmDialog({ show: false, title: '', onConfirm: null });
               }}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Alert Modal */}
+      {alertModal.show && (
+        <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={() => setAlertModal({ show: false, message: '' })}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center', padding: '30px' }}>
+            <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#fee2e2', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <AlertCircle size={24} color="#ef4444" />
+            </div>
+            <h3 style={{ marginBottom: '10px' }}>Limit Reached</h3>
+            <p style={{ color: '#64748b', marginBottom: '24px', lineHeight: '1.5' }}>{alertModal.message}</p>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <button className="btn-primary" onClick={() => setAlertModal({ show: false, message: '' })}>Got it</button>
             </div>
           </div>
         </div>

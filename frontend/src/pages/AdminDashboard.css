@@ -248,6 +248,8 @@
 /* MAIN CONTENT AREA */
 .nexa-main-content {
   flex: 1;
+  min-width: 0;
+  width: 100%;
   margin-left: 280px;
   padding: 2.5rem 3rem;
   z-index: 10;
@@ -581,6 +583,12 @@
 .table-responsive-wrapper {
   width: 100%;
   overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.table-responsive-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 .nexa-table {
@@ -1283,11 +1291,13 @@ input:checked+.slider:before {
 .upload-icon {
   color: #7c3aed;
   flex-shrink: 0;
+  pointer-events: none;
 }
 
 .upload-text {
   display: flex;
   flex-direction: column;
+  pointer-events: none;
 }
 
 .upload-text strong {
