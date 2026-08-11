@@ -288,9 +288,11 @@ img {
 /* ===== HERO SECTION ===== */
 .hero-wrap {
   position: relative;
-  /* top padding clears the fixed header's own height (~76px) plus a
-     small buffer, since the header no longer reserves space in flow */
-  padding: 96px 60px 70px;
+  /* Top padding clears the fixed header's own height (~76px), with extra
+     buffer so hero content — including the hero image, which itself has
+     a small negative margin pulling it upward — can never sit high
+     enough to visually reach into the navbar strip. */
+  padding: 130px 60px 70px;
   z-index: 2;
 }
 
@@ -607,7 +609,10 @@ img {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  margin-top: -10px;
+  /* No negative top margin here anymore — pulling the image upward
+     brought it closer to the navbar. Sitting flush with the rest of the
+     hero row keeps it safely clear of the header at all times. */
+  margin-top: 0;
 }
 
 /* Soft purple glow behind the framed photo */
@@ -704,6 +709,18 @@ img {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 18px;
+}
+
+.service-card:only-child {
+  /* Span the full grid width and center within it, rather than pinning
+     to a specific column index — that way a lone card stays centered
+     the same way at every breakpoint (5-col, 3-col, 2-col), not just
+     desktop, without touching the column count/sizing used whenever
+     there's more than one card. */
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 100%;
+  max-width: 220px;
 }
 
 .service-card {
@@ -828,6 +845,17 @@ img {
      being absorbed into the existing cards' width. */
   grid-template-columns: repeat(5, 1fr);
   gap: 16px;
+}
+
+.handle-card:only-child {
+  /* Same as .service-card:only-child — center a lone benefit card
+     across the full row instead of leaving it pinned to column 1,
+     without changing the 5-column layout used whenever there's more
+     than one benefit. */
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 100%;
+  max-width: 220px;
 }
 
 .handle-card {
