@@ -1251,17 +1251,17 @@ export default function AdminDashboard() {
 
         {activeNav === "testimonials" && (
           <section className="dash-section-card animate-fade-in">
-            <div className="section-card-header" style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '16px', marginBottom: '16px', alignItems: 'center' }}>
-              <div style={{ display: 'flex', gap: '24px' }}>
+            <div className="dash-tabs-header">
+              <div className="dash-tabs-nav">
                 <button
+                  className={`dash-tab-btn ${testimonialTab === "admin" ? "active" : ""}`}
                   onClick={() => setTestimonialTab("admin")}
-                  style={{ background: 'none', border: 'none', padding: '8px 4px', fontSize: '15px', fontWeight: testimonialTab === "admin" ? '600' : '500', color: testimonialTab === "admin" ? '#6d28d9' : '#64748b', borderBottom: testimonialTab === "admin" ? '2px solid #6d28d9' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-17px' }}
                 >
                   Testimonial Management
                 </button>
                 <button
+                  className={`dash-tab-btn ${testimonialTab === "client" ? "active" : ""}`}
                   onClick={() => setTestimonialTab("client")}
-                  style={{ background: 'none', border: 'none', padding: '8px 4px', fontSize: '15px', fontWeight: testimonialTab === "client" ? '600' : '500', color: testimonialTab === "client" ? '#6d28d9' : '#64748b', borderBottom: testimonialTab === "client" ? '2px solid #6d28d9' : '2px solid transparent', cursor: 'pointer', transition: 'all 0.2s', marginBottom: '-17px' }}
                 >
                   Client Testimonials
                 </button>
@@ -1486,7 +1486,7 @@ export default function AdminDashboard() {
                 <thead>
                   <tr>
                     <th style={{ width: "32px" }}>#</th>
-                    <th style={{ whiteSpace: 'nowrap', minWidth: '130px' }}>Name</th>
+                    <th style={{ minWidth: '80px' }}>Name</th>
                     <th>Email</th>
                     <th style={{ whiteSpace: 'nowrap' }}>Contact No</th>
                     <th style={{ whiteSpace: 'nowrap' }}>Received On</th>
@@ -1519,8 +1519,8 @@ export default function AdminDashboard() {
                       <td className="col-index">
                         {idx + 1}
                       </td>
-                      <td style={{ whiteSpace: 'nowrap' }}><strong>{c.name}</strong></td>
-                      <td><a href={`mailto:${c.email}`} className="email-text-link">{c.email}</a></td>
+                      <td style={{ minWidth: '80px', wordBreak: 'break-word' }}><strong>{c.name}</strong></td>
+                      <td style={{ wordBreak: 'break-all', minWidth: '120px' }}><a href={`mailto:${c.email}`} className="email-text-link">{c.email}</a></td>
                       <td style={{ whiteSpace: 'nowrap' }}>{c.phone || '-'}</td>
                       <td className="col-date" style={{ fontSize: '13px', color: '#475569', whiteSpace: 'nowrap' }}>
                         {(() => {
