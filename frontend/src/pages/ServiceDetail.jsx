@@ -290,6 +290,16 @@ export default function ServiceDetail() {
     };
   }, [slug]);
 
+  // A slug is only "real" if it's one of the 5 hand-designed services OR it
+  // matched an actual service record from the backend. Anything else (a
+  // mistyped/old/bookmarked URL, or a slug that was never properly built
+  // with slugify()) used to silently render fake "Healthcare Service"
+  // placeholder content via buildFallbackServiceData — this made a broken
+  // link look like a real page instead of telling the visitor it doesn't
+  // exist.
+  const isKnownSlug = Boolean(SERVICE_DETAILS[slug]);
+  const notFound = !loading && !isKnownSlug && !backendService;
+
   const data = getServiceData(slug, backendService);
   // Prefer the real image uploaded in the admin panel (Cloudinary URL) over
   // the generic stock photo, when one has actually been uploaded for this
@@ -298,6 +308,37 @@ export default function ServiceDetail() {
     data.heroImage = backendService.image;
   }
   useScrollReveal([loading, slug]);
+
+  if (notFound) {
+    return (
+      <div className="main-wrapper">
+        <section
+          className="hero-wrap"
+          style={{ minHeight: "50vh", display: "flex", alignItems: "center" }}
+        >
+          <div
+            className="hero-content reveal"
+            style={{ textAlign: "center", margin: "0 auto" }}
+          >
+            <span className="eyebrow" style={{ justifyContent: "center" }}>
+              <span className="dot" />
+              SERVICE NOT FOUND
+            </span>
+            <h1>This service doesn't exist</h1>
+            <p>
+              The service you're looking for may have been removed, renamed,
+              or the link is incorrect.
+            </p>
+            <div className="hero-ctas" style={{ justifyContent: "center" }}>
+              <Link to="/services" className="btn-primary">
+                Back to Services
+              </Link>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
 
   return (
     <div className="main-wrapper">
