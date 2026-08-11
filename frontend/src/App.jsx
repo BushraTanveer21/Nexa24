@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import ContactPage from './pages/ContactPage';
+import WhatsAppButton from './components/WhatsAppButton';
 
 import TestimonialPage from './pages/TestimonialPage';
 
@@ -148,6 +149,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
+        <WhatsAppButton />
         <Footer />
       </div>
     </Router>
