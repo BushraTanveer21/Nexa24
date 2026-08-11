@@ -807,11 +807,16 @@ img {
 
 .handles-grid {
   display: grid;
-  /* Auto-fit instead of a hardcoded 5 columns — this grid is now driven by
-     however many benefits the admin has added for the service (see
-     ServiceDetail.jsx), which won't always be exactly 5. Min width kept low
-     so 5 cards still comfortably fit on one row at normal desktop widths. */
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  /* Fixed 5 columns (same pattern as .services-grid) instead of auto-fit.
+     With auto-fit, a sparse grid (fewer than 5 benefits) would either
+     stretch the remaining card(s) to fill the row or resize columns based
+     on the container width — neither guarantees 5 cards fit on one row
+     when there ARE 5, and neither keeps a lone card at the same
+     "standard" width as the rest. Fixed columns solve both: 5 always fit
+     per row when present, and if only 1-4 benefits exist, the unused
+     column tracks just stay empty (no item placed in them) instead of
+     being absorbed into the existing cards' width. */
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
 }
 

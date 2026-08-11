@@ -8,10 +8,10 @@ import nexaLogo from "../assets/nexa24-logo.png";
 // click nahi karega (logo pe click kar ke "/" pe jaya ja sakta hai).
 const LINKS = [
   { id: "home", to: "/", label: "HOME", enabled: true },
+  { id: "about", to: "/about", label: "ABOUT US", enabled: true },
   { id: "services", to: "/services", label: "SERVICES", enabled: true },
   { id: "testimonials", to: "/testimonial", label: "TESTIMONIALS", enabled: true },
   { id: "contact", to: "/contact", label: "CONTACT", enabled: true },
-  { id: "about", to: "/about", label: "ABOUT US", enabled: true },
 ];
 
 const GET_STARTED_TARGET = "/contact#contact-form";

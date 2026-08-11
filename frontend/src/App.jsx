@@ -43,9 +43,15 @@ function ScrollAnimations() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
+          // No unobserve, and the class is removed when the element leaves
+          // the viewport (not just added once) — so every element replays
+          // its reveal animation each time it's scrolled into view again,
+          // whether scrolling down past it or back up to it, instead of
+          // only animating the first time it's ever seen.
           if (entry.isIntersecting) {
             entry.target.classList.add('in-view');
-            observer.unobserve(entry.target);
+          } else {
+            entry.target.classList.remove('in-view');
           }
         });
       },

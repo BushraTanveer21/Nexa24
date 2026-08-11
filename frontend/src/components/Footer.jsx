@@ -39,9 +39,9 @@ export default function Footer() {
         <div>
           <h5>QUICK LINKS</h5>
           <Link to="/">Home</Link>
+          <Link to="/about">About Us</Link>
           <Link to="/services">Services</Link>
           <Link to="/testimonial">Testimonials</Link>
-          <Link to="/about">About Us</Link>
           <Link to="/contact">Contact</Link>
         </div>
 
