@@ -288,17 +288,19 @@ img {
 /* ===== HERO SECTION ===== */
 .hero-wrap {
   position: relative;
-  /* Top padding clears the fixed header's own height (~76px), with extra
-     buffer so hero content — including the hero image, which itself has
-     a small negative margin pulling it upward — can never sit high
-     enough to visually reach into the navbar strip. */
-  padding: 130px 60px 70px;
+  /* Reduced top padding to bring hero content (and the orbit cards)
+     closer to the header, while still clearing it comfortably. */
+  padding: 90px 60px 70px;
   z-index: 2;
 }
 
 .hero-inner {
   display: flex;
-  align-items: center;
+  /* Top-align instead of center: with align-items:center, the (taller)
+     520px orbit container was forcing the whole row - including the
+     shorter text column - to vertically center against it, which pushed
+     everything down and left a big gap under the header. */
+  align-items: flex-start;
   justify-content: space-between;
   gap: 40px;
   max-width: var(--content-max);
@@ -377,6 +379,9 @@ img {
   width: 520px;
   height: 520px;
   flex-shrink: 0;
+  /* Nudge the whole orbit cluster up slightly so it sits closer to the
+     header, matching the tightened .hero-wrap top padding above. */
+  margin-top: -15px;
 }
 
 /* Center Logo Node */
@@ -1490,7 +1495,9 @@ img {
 
   .orbit-card {
     width: 108px;
-    height: 56px;
+    /* Length (height) increased only — width stays the same so cards
+       don't get any wider, just a bit taller for breathing room. */
+    height: 64px;
     box-sizing: border-box;
     padding: 6px 8px;
     gap: 6px;
