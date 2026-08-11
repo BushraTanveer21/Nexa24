@@ -175,9 +175,6 @@ export default function AdminDashboard() {
     image: "",
     imagePublicId: "",
     icon: "",
-    // Purple highlight line on the detail page (was hardcoded "Real Results.")
-    subtitle: "",
-    // Single benefit sentence shown under the description on the detail page
     // Benefit pills shown on the detail page — each has its own icon
     benefits: [],
   });
@@ -325,7 +322,6 @@ export default function AdminDashboard() {
             imagePublicId: s.imagePublicId || "",
             isActive: s.isActive !== false,
             icon: s.icon || "",
-            subtitle: s.subtitle || "",
             benefits: Array.isArray(s.benefits) ? s.benefits : [],
           }));
           setServices(mappedS);
@@ -389,7 +385,6 @@ export default function AdminDashboard() {
       image: "",
       imagePublicId: "",
       icon: "",
-      subtitle: "",
       benefits: [],
     });
     setShowServiceModal(true);
@@ -404,7 +399,6 @@ export default function AdminDashboard() {
       image: service.image || "",
       imagePublicId: service.imagePublicId || "",
       icon: service.icon || "",
-      subtitle: service.subtitle || "",
       benefits: Array.isArray(service.benefits) ? service.benefits : [],
     });
     setShowServiceModal(true);
@@ -443,7 +437,6 @@ export default function AdminDashboard() {
       imagePublicId: serviceForm.imagePublicId,
       isActive: true,
       icon: serviceForm.icon,
-      subtitle: serviceForm.subtitle,
       // Drop any empty benefit rows before saving
       benefits: serviceForm.benefits.filter((b) => b.label && b.label.trim()),
     };
@@ -1839,16 +1832,6 @@ export default function AdminDashboard() {
                   Shown on the service card and detail page. Leave on auto-detect and
                   we'll guess a sensible icon from the service name.
                 </span>
-              </div>
-
-              <div className="modal-field">
-                <label>Detail Page Highlight Line</label>
-                <input
-                  type="text"
-                  placeholder='e.g. "Real Results." — shown in purple next to the title'
-                  value={serviceForm.subtitle}
-                  onChange={(e) => setServiceForm({ ...serviceForm, subtitle: e.target.value })}
-                />
               </div>
 
               <div className="modal-field">

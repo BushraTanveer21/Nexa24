@@ -29,46 +29,13 @@ const SERVICE_DETAILS = {
   "virtual-assistance-services": {
     eyebrow: "VIRTUAL ASSISTANCE SERVICES",
     title: "Virtual Assistance",
-    highlightTitle: "Real Impact",
     description:
       "Free your staff from admin work. Our trained healthcare VAs handle scheduling, patient follow-ups, prior authorizations, charting support, and front-desk tasks remotely.",
     heroImage:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=800&auto=format&fit=crop&q=80",
-    badges: [
-      { text: "Scheduling & Appointments", Icon: Calendar },
-      { text: "Patient Follow-ups", Icon: UserCheck },
-      { text: "Prior Authorizations", Icon: ShieldCheck },
-      { text: "Charting Support", Icon: FileCheck2 },
-      { text: "Front-desk Support", Icon: PhoneCall },
-    ],
+    badges: [],
     handlesHeading: "What Our Virtual Assistants Handle",
-    handles: [
-      {
-        Icon: Calendar,
-        title: "Scheduling & Appointments",
-        desc: "Manage calendars, book appointments, and reduce no-shows.",
-      },
-      {
-        Icon: UserCheck,
-        title: "Patient Follow-ups",
-        desc: "Handle reminders, follow-ups, and patient communication.",
-      },
-      {
-        Icon: ShieldCheck,
-        title: "Prior Authorizations",
-        desc: "Verify eligibility and manage prior auth requests efficiently.",
-      },
-      {
-        Icon: FileCheck2,
-        title: "Charting Support",
-        desc: "Update records, manage EHR tasks, and ensure accurate documentation.",
-      },
-      {
-        Icon: PhoneCall,
-        title: "Front-desk Support",
-        desc: "Answer calls, manage inboxes, and handle day-to-day inquiries.",
-      },
-    ],
+    handles: [],
     process: [
       { num: "01", Icon: MessageSquare, title: "Understand", desc: "We learn your workflow and requirements." },
       { num: "02", Icon: UserPlus, title: "Assign", desc: "We match you with the right trained VA." },
@@ -89,26 +56,13 @@ const SERVICE_DETAILS = {
   "medical-billing-services": {
     eyebrow: "MEDICAL BILLING SERVICES",
     title: "Medical Billing",
-    highlightTitle: "Maximized Revenue",
     description:
       "Complete Revenue Cycle Management designed to maximize reimbursements and reduce denials. From claims submission to payment posting, we handle every step with accuracy and speed.",
     heroImage:
       "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&auto=format&fit=crop&q=80",
-    badges: [
-      { text: "Claims Submission", Icon: FileCheck2 },
-      { text: "Denial Management", Icon: ShieldCheck },
-      { text: "Payment Posting", Icon: DollarSign },
-      { text: "Eligibility Verification", Icon: UserCheck },
-      { text: "Revenue Reporting", Icon: TrendingUp },
-    ],
+    badges: [],
     handlesHeading: "What Our Billing Team Handles",
-    handles: [
-      { Icon: FileCheck2, title: "Claims Submission & Follow-up", desc: "Accurate, timely claim filing with active tracking until paid." },
-      { Icon: ShieldCheck, title: "Denial Management & Appeals", desc: "We identify, correct, and appeal denied claims quickly." },
-      { Icon: DollarSign, title: "Payment Posting & Reconciliation", desc: "Precise posting of payments and adjustments to keep books clean." },
-      { Icon: UserCheck, title: "Insurance Eligibility Verification", desc: "Verify coverage upfront to prevent avoidable denials." },
-      { Icon: TrendingUp, title: "Revenue Cycle Reporting", desc: "Clear, actionable reports on your practice's financial health." },
-    ],
+    handles: [],
     process: [
       { num: "01", Icon: MessageSquare, title: "Assess", desc: "We review your current billing workflow and gaps." },
       { num: "02", Icon: UserPlus, title: "Set Up", desc: "We configure billing processes matched to your practice." },
@@ -129,26 +83,13 @@ const SERVICE_DETAILS = {
   "credentialing-services": {
     eyebrow: "CREDENTIALING SERVICES",
     title: "Credentialing",
-    highlightTitle: "Made Simple",
     description:
       "Get providers enrolled and paid faster. We handle the entire credentialing lifecycle with accuracy and speed, so you never miss a payer deadline.",
     heroImage:
       "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&auto=format&fit=crop&q=80",
-    badges: [
-      { text: "Payer Enrollment", Icon: FileCheck2 },
-      { text: "CAQH Management", Icon: ShieldCheck },
-      { text: "Re-credentialing", Icon: Calendar },
-      { text: "Application Tracking", Icon: UserCheck },
-      { text: "Contract Support", Icon: UsersRound },
-    ],
+    badges: [],
     handlesHeading: "What Our Credentialing Team Handles",
-    handles: [
-      { Icon: FileCheck2, title: "Payer Enrollment", desc: "Complete enrollment with commercial and government payers." },
-      { Icon: ShieldCheck, title: "CAQH Profile Management", desc: "We keep your CAQH profile accurate and current." },
-      { Icon: Calendar, title: "Re-credentialing & Renewals", desc: "Never miss a renewal deadline or lapse in participation." },
-      { Icon: UserCheck, title: "Application Tracking", desc: "Full visibility into every application's status." },
-      { Icon: UsersRound, title: "Contract Negotiation Support", desc: "Guidance through payer contract terms and rates." },
-    ],
+    handles: [],
     process: [
       { num: "01", Icon: MessageSquare, title: "Gather", desc: "We collect provider documents and credentials." },
       { num: "02", Icon: UserPlus, title: "Submit", desc: "Applications go out to every required payer." },
@@ -169,26 +110,13 @@ const SERVICE_DETAILS = {
   "marketing-services": {
     eyebrow: "MARKETING SERVICES",
     title: "Practice Marketing",
-    highlightTitle: "Real Growth",
     description:
       "Grow your practice online and attract more patients. We build your brand so you stand out — from your website to your social presence.",
     heroImage:
       "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&auto=format&fit=crop&q=80",
-    badges: [
-      { text: "Website & SEO", Icon: TrendingUp },
-      { text: "Social Media", Icon: UsersRound },
-      { text: "Paid Ads (Google/Meta)", Icon: DollarSign },
-      { text: "Google Business Profile", Icon: Calendar },
-      { text: "Branding & Content", Icon: FileCheck2 },
-    ],
+    badges: [],
     handlesHeading: "What Our Marketing Team Handles",
-    handles: [
-      { Icon: TrendingUp, title: "Website & SEO", desc: "A modern site optimized to rank and convert visitors." },
-      { Icon: UsersRound, title: "Social Media Management", desc: "Consistent, engaging content across your channels." },
-      { Icon: DollarSign, title: "Paid Ads: Google + Meta", desc: "Targeted ad campaigns that bring in new patients directly." },
-      { Icon: Calendar, title: "Google Business Profile", desc: "Optimized local listings to bring in nearby patients." },
-      { Icon: FileCheck2, title: "Branding, Logo & Content Creation", desc: "Cohesive messaging that reflects your practice's identity." },
-    ],
+    handles: [],
     process: [
       { num: "01", Icon: MessageSquare, title: "Discover", desc: "We learn your practice, patients, and goals." },
       { num: "02", Icon: UserPlus, title: "Strategize", desc: "We build a marketing plan tailored to your growth." },
@@ -209,26 +137,13 @@ const SERVICE_DETAILS = {
   "additional-billing-rcm-solutions": {
     eyebrow: "ADDITIONAL BILLING & RCM SOLUTIONS",
     title: "Specialized Billing",
-    highlightTitle: "& RCM Support",
     description:
       "Need support in specific areas? We've got you. Prior authorization, patient statements, collections, denial analysis & custom reports — handled with precision.",
     heroImage:
       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&auto=format&fit=crop&q=80",
-    badges: [
-      { text: "Prior Authorization", Icon: ShieldCheck },
-      { text: "Patient Statements", Icon: FileCheck2 },
-      { text: "Collections Support", Icon: DollarSign },
-      { text: "Denial Analysis", Icon: TrendingUp },
-      { text: "Custom Reports", Icon: UserCheck },
-    ],
+    badges: [],
     handlesHeading: "What Our RCM Team Handles",
-    handles: [
-      { Icon: ShieldCheck, title: "Prior Authorization", desc: "Timely authorization requests to avoid treatment delays." },
-      { Icon: FileCheck2, title: "Patient Statements", desc: "Clear, accurate statements that reduce billing confusion." },
-      { Icon: DollarSign, title: "Collections Support", desc: "Respectful, effective follow-up on outstanding balances." },
-      { Icon: TrendingUp, title: "Denial Analysis", desc: "Root-cause analysis to prevent recurring denials." },
-      { Icon: UserCheck, title: "Custom Reports", desc: "Reporting built around the metrics that matter to you." },
-    ],
+    handles: [],
     process: [
       { num: "01", Icon: MessageSquare, title: "Identify", desc: "We pinpoint the exact gaps in your revenue cycle." },
       { num: "02", Icon: UserPlus, title: "Customize", desc: "We build a solution around your specific needs." },
@@ -254,25 +169,14 @@ function buildFallbackServiceData(backendService) {
   return {
     eyebrow: name.toUpperCase(),
     title: name,
-    highlightTitle: "Real Results",
     description:
       backendService?.description ||
       "Streamline your healthcare practice operations with NEXA24's dedicated managed solutions.",
     heroImage:
       "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=800&auto=format&fit=crop&q=80",
-    badges: [
-      { text: "Seamless Workflow", Icon: Calendar },
-      { text: "HIPAA Compliant", Icon: Lock },
-      { text: "Dedicated Team", Icon: UsersRound },
-      { text: "24/7 Vigilance", Icon: ShieldCheck },
-    ],
+    badges: [],
     handlesHeading: `What Our ${name} Team Handles`,
-    handles: [
-      { Icon: Calendar, title: "Workflow Management", desc: "End-to-end management tailored to your practice." },
-      { Icon: ShieldCheck, title: "Quality Assurance", desc: "Thorough verification and compliance checks." },
-      { Icon: Clock, title: "Time Optimization", desc: "Faster processing times and reduced administrative burden." },
-      { Icon: UsersRound, title: "Dedicated Support", desc: "Direct access to skilled healthcare specialists." },
-    ],
+    handles: [],
     process: [
       { num: "01", Icon: MessageSquare, title: "Consult", desc: "We analyze your specific practice needs." },
       { num: "02", Icon: UserPlus, title: "Setup", desc: "Customized workflow design and setup." },
@@ -294,16 +198,22 @@ function buildFallbackServiceData(backendService) {
 // Builds the final data used to render the page. Starts from either the
 // hand-designed content (for the 5 core services) or the generic fallback
 // (for any service added later from the admin panel), then layers the
-// admin-entered subtitle / benefits on top whenever they're set —
-// so nothing about the highlight line or the benefit pills stays hardcoded
-// once an admin fills those fields in.
+// real backend title/description/benefits on top — so nothing on the page
+// stays hardcoded once the admin has entered the real data.
 function getServiceData(slug, backendService) {
   const base = SERVICE_DETAILS[slug]
     ? { ...SERVICE_DETAILS[slug] }
     : buildFallbackServiceData(backendService);
 
-  if (backendService?.subtitle?.trim()) {
-    base.highlightTitle = backendService.subtitle.trim();
+  // Title, eyebrow, and description now always come from the real service
+  // record in the DB — not the hardcoded SERVICE_DETAILS copy. Eyebrow is
+  // just the title in caps, so there's no separate field to keep in sync.
+  if (backendService?.title?.trim()) {
+    base.title = backendService.title.trim();
+    base.eyebrow = backendService.title.trim().toUpperCase();
+  }
+  if (backendService?.description?.trim()) {
+    base.description = backendService.description.trim();
   }
 
   // Benefits entered in the admin dashboard drive BOTH the pill row under the
@@ -404,9 +314,7 @@ export default function ServiceDetail() {
               <span className="dot" />
               {data.eyebrow}
             </span>
-            <h1>
-              {data.title} <br /><span>{data.highlightTitle}</span>
-            </h1>
+            <h1>{data.title}</h1>
             <p>{data.description}</p>
             {data.badges && data.badges.length > 0 && (
               <div className="detail-badges-row">
@@ -439,30 +347,34 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {/* ===== WHAT WE HANDLE SECTION ===== */}
-      <section className="services-section">
-        <h2 className="section-heading text-center reveal">{data.handlesHeading}</h2>
+      {/* ===== WHAT WE HANDLE SECTION =====
+          Only rendered once the admin has added real benefits for this
+          service — no hardcoded fallback content is shown. */}
+      {data.handles && data.handles.length > 0 && (
+        <section className="services-section">
+          <h2 className="section-heading text-center reveal">{data.handlesHeading}</h2>
 
-        <div className="handles-grid">
-          {data.handles.map((item, idx) => {
-            const ItemIcon = item.Icon;
-            return (
-              <div
-                key={idx}
-                id={handleId(idx)}
-                className="service-card handle-card reveal"
-                style={{ transitionDelay: `${idx * 90}ms` }}
-              >
-                <div className="service-card-icon">
-                  <ItemIcon size={22} />
+          <div className="handles-grid">
+            {data.handles.map((item, idx) => {
+              const ItemIcon = item.Icon;
+              return (
+                <div
+                  key={idx}
+                  id={handleId(idx)}
+                  className="service-card handle-card reveal"
+                  style={{ transitionDelay: `${idx * 90}ms` }}
+                >
+                  <div className="service-card-icon">
+                    <ItemIcon size={22} />
+                  </div>
+                  <h3>{item.title}</h3>
+                  <p>{item.desc}</p>
                 </div>
-                <h3>{item.title}</h3>
-                <p>{item.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ===== OUR SIMPLE PROCESS SECTION ===== */}
       <section className="how-section">

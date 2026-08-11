@@ -17,34 +17,6 @@ import { resolveIcon } from "../utils/iconMap";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-const DEFAULT_SERVICES = [
-  {
-    _id: "s1",
-    title: "Virtual Assistance Services",
-    description: "Smart support for scheduling, admin and daily operations.",
-  },
-  {
-    _id: "s2",
-    title: "Medical Billing Services",
-    description: "Accurate coding, claim management and faster reimbursements.",
-  },
-  {
-    _id: "s3",
-    title: "Credentialing Services",
-    description: "Faster credentialing and CAQH maintenance.",
-  },
-  {
-    _id: "s4",
-    title: "Marketing Services",
-    description: "Digital strategies that grow your practice online.",
-  },
-  {
-    _id: "s5",
-    title: "Additional Billing & RCM Solutions",
-    description: "End-to-end revenue cycle management that improves cash flow.",
-  },
-];
-
 function slugify(title = "") {
   return title
     .toLowerCase()
@@ -90,13 +62,12 @@ export default function Services() {
         const res = await fetch(`${API_URL}/api/services`);
         if (!res.ok) throw new Error("Request failed");
         const data = await res.json();
-        if (!cancelled && Array.isArray(data) && data.length > 0) {
+        if (!cancelled && Array.isArray(data)) {
           setServices(data);
-        } else if (!cancelled) {
-          setServices(DEFAULT_SERVICES);
         }
       } catch (err) {
-        if (!cancelled) setServices(DEFAULT_SERVICES);
+        // Real backend state (empty) is preferred over fake data — leave
+        // services as-is (whatever it already was, or empty) on failure.
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -108,8 +79,7 @@ export default function Services() {
     };
   }, []);
 
-  const displayServices = services.length > 0 ? services : DEFAULT_SERVICES;
-  const sortedServices = displayServices
+  const sortedServices = services
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 

@@ -13,7 +13,6 @@ const ALLOWED_FIELDS = [
   "imagePublicId",
   "order",
   "isActive",
-  "subtitle",
   "benefits",
 ];
 

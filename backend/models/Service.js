@@ -11,10 +11,6 @@ const serviceSchema = new mongoose.Schema(
     imagePublicId: { type: String },
     order: { type: Number, default: 0 },
     isActive: { type: Boolean, default: true },
-    // Detail-page fields (previously hardcoded in the frontend):
-    // The short purple highlight line next to the service title
-    // (e.g. "Real Results.") — admin can now customize this per service.
-    subtitle: { type: String, default: "" },
     // The row of benefit "pills" shown on the detail page, each with its
     // own label + icon key (see frontend/src/utils/iconMap.js for the
     // list of supported icon keys).
