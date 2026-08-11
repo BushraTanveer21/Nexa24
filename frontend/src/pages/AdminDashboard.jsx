@@ -1486,10 +1486,10 @@ export default function AdminDashboard() {
                 <thead>
                   <tr>
                     <th style={{ width: "32px" }}>#</th>
-                    <th>Name</th>
+                    <th style={{ whiteSpace: 'nowrap', minWidth: '130px' }}>Name</th>
                     <th>Email</th>
                     <th style={{ whiteSpace: 'nowrap' }}>Contact No</th>
-                    <th>Received On</th>
+                    <th style={{ whiteSpace: 'nowrap' }}>Received On</th>
                     <th style={{ textAlign: "center" }}>Status</th>
                     <th style={{ textAlign: "center" }}>Read Status</th>
                     <th style={{ textAlign: "center" }}>Actions</th>
@@ -1519,10 +1519,40 @@ export default function AdminDashboard() {
                       <td className="col-index">
                         {idx + 1}
                       </td>
-                      <td><strong>{c.name}</strong></td>
+                      <td style={{ whiteSpace: 'nowrap' }}><strong>{c.name}</strong></td>
                       <td><a href={`mailto:${c.email}`} className="email-text-link">{c.email}</a></td>
                       <td style={{ whiteSpace: 'nowrap' }}>{c.phone || '-'}</td>
-                      <td className="col-date" style={{ fontSize: '13px', color: '#475569' }}>{c.receivedOn}</td>
+                      <td className="col-date" style={{ fontSize: '13px', color: '#475569', whiteSpace: 'nowrap' }}>
+                        {(() => {
+                          if (c.createdAt) {
+                            const d = new Date(c.createdAt);
+                            if (!isNaN(d.getTime())) {
+                              return (
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                  <span style={{ fontWeight: 600, color: '#334155' }}>
+                                    {d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                                  </span>
+                                  <span style={{ fontSize: '11px', color: '#64748b' }}>
+                                    {d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+                                  </span>
+                                </div>
+                              );
+                            }
+                          }
+                          if (typeof c.receivedOn === 'string' && c.receivedOn.includes(',')) {
+                            const parts = c.receivedOn.split(',');
+                            const datePart = parts.slice(0, 2).join(',').trim();
+                            const timePart = parts.slice(2).join(',').trim();
+                            return (
+                              <div style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}>
+                                <span style={{ fontWeight: 600, color: '#334155' }}>{datePart}</span>
+                                {timePart && <span style={{ fontSize: '11px', color: '#64748b' }}>{timePart}</span>}
+                              </div>
+                            );
+                          }
+                          return <span>{c.receivedOn || '-'}</span>;
+                        })()}
+                      </td>
                       <td style={{ textAlign: "center" }}>
                         {c.status === "New" && (
                           <span className="status-pill new">New</span>
