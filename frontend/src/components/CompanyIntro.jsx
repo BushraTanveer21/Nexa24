@@ -2,31 +2,34 @@ import React from 'react';
 import Tilt from 'react-parallax-tilt';
 import FallingPetals from './FallingPetals';
 
-const AboutUs = () => {
+const CompanyIntro = () => {
   return (
-    <section className="about-exact container" id="about" style={{ position: 'relative', overflow: 'hidden', padding: '80px 5%', background: 'var(--white)' }}>
+    <section
+      className="company-intro-exact container"
+      style={{ position: 'relative', overflow: 'hidden', padding: '80px 5%', background: 'var(--white)' }}
+    >
       <FallingPetals />
 
-      {/* Attached to the top-left corner of the AboutUs section */}
-      <img 
-        src="/image.png?v=4" 
-        alt="Decorative leaf branch" 
+      {/* Attached to the top-left corner of the Company Introduction section */}
+      <img
+        src="/image.png?v=4"
+        alt="Decorative leaf branch"
         className="decorative-leaf-about"
-        style={{ 
-          position: 'absolute', 
+        style={{
+          position: 'absolute',
           top: 0,
           left: 0,
           opacity: 0.95,
           pointerEvents: 'none',
-          zIndex: 0
-        }} 
+          zIndex: 0,
+        }}
       />
 
       <div className="about-header" style={{ position: 'relative', zIndex: 1, marginBottom: '40px', textAlign: 'center' }}>
         <div className="eyebrow-exact" style={{ color: 'var(--primary-exact)', fontWeight: '600', letterSpacing: '1px', marginBottom: '16px' }}>COMPANY INTRODUCTION</div>
         <h2 style={{ fontSize: 'clamp(2rem, 4vw, 36px)', fontWeight: '800', color: 'var(--text-dark-exact)' }}>Welcome to <span className="purple-text">NEXA24 HEALTHCARE</span></h2>
       </div>
-      
+
       <div className="about-content" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px', alignItems: 'center', position: 'relative', zIndex: 1 }}>
         <div className="about-text" style={{ fontSize: '18px', lineHeight: '1.6', color: 'var(--text-muted-exact)' }}>
           <p style={{ marginBottom: '24px' }}>
@@ -42,7 +45,7 @@ const AboutUs = () => {
             Our Promise: <span style={{ color: 'var(--primary-exact)', fontStyle: 'italic' }}>Your Health. Our Priority. 24/7.</span>
           </p>
         </div>
-        
+
         <Tilt tiltMaxAngleX={3} tiltMaxAngleY={3} perspective={1000} scale={1.01} transitionSpeed={1000} glareEnable={true} glareMaxOpacity={0.1} glareColor="white" glarePosition="all" className="about-meaning-tilt-wrapper">
           <div className="about-meaning" style={{ background: 'lavender', padding: '40px', borderRadius: '24px', height: '100%' }}>
             <h3 style={{ fontSize: '24px', fontWeight: '700', marginBottom: '24px', color: 'var(--primary-exact)' }}>The Meaning of NEXA24</h3>
@@ -51,7 +54,7 @@ const AboutUs = () => {
                 <strong style={{ color: 'var(--text-dark-exact)' }}>NEXA</strong> = Derived from "Next" + "Excellence". It represents the next generation of healthcare — innovative, patient-first, and future-ready.
               </li>
               <li style={{ marginBottom: '16px', lineHeight: '1.6' }}>
-                <strong style={{ color: 'var(--text-dark-exact)' }}>24</strong> = Symbolizes round-the-clock care. We’re here for you 24/7, every day.
+                <strong style={{ color: 'var(--text-dark-exact)' }}>24</strong> = Symbolizes round-the-clock care. We're here for you 24/7, every day.
               </li>
               <li style={{ marginBottom: '24px', lineHeight: '1.6' }}>
                 <strong style={{ color: 'var(--text-dark-exact)' }}>HEALTHCARE</strong> = Our commitment to delivering accessible, reliable, and compassionate medical services.
@@ -67,4 +70,4 @@ const AboutUs = () => {
   );
 };
 
-export default AboutUs;
+export default CompanyIntro;

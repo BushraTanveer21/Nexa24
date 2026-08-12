@@ -1,7 +1,6 @@
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
 import WHY_CHOOSE_US from '../data/whyChooseUs';
-import ceoYamna from '../assets/ceo-yamna.jpg';
 
 const Advantage = () => {
   return (
@@ -25,7 +24,6 @@ const Advantage = () => {
       />
 
       <div className="advantage-header-exact" style={{ position: 'relative', zIndex: 1 }}>
-        <div className="eyebrow-exact">WHY CHOOSE NEXA24</div>
         <h2>Why Choose <span className="purple-text">NEXA24.</span></h2>
       </div>
 
@@ -56,14 +54,6 @@ const Advantage = () => {
               </div>
             </Tilt>
           ))}
-        </div>
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: '24px', maxWidth: '450px', margin: '0 auto', width: '100%' }}>
-          <div className="detail-photo-wrapper" style={{ width: '100%', maxWidth: '100%', flex: 1, maxHeight: 'none', display: 'flex', justifyContent: 'center' }}>
-            <img src={ceoYamna} alt="CEO Yamna" className="detail-hero-photo" style={{ width: '100%', maxWidth: '100%', height: '100%', objectFit: 'cover', maxHeight: 'none', borderRadius: '20px', boxShadow: 'var(--card-shadow)' }} />
-          </div>
-          <p style={{ textAlign: 'center', fontSize: '1.1rem', fontWeight: '600', color: 'var(--primary-exact)', fontStyle: 'italic', margin: 0, padding: '0 10px' }}>
-            "Our Promise: We handle the backend. You heal the frontline. 24/7."
-          </p>
         </div>
       </div>
     </section>
