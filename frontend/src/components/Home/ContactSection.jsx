@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import nexaLogo from '../assets/nexa24-logo.png';
+import nexaLogo from '../../assets/nexa24-logo.png';
 import FallingPetals from './FallingPetals';
 
 const ContactSection = () => {

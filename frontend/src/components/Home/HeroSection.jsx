@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
-import bgVideo from '../assets/final video.mp4';
+import bgVideo from '../../assets/final video.mp4';
 
 export default function HeroSection() {
   const video1Ref = useRef(null);

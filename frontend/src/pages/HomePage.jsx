@@ -1,11 +1,11 @@
 import React from 'react';
-import HeroSection from '../components/HeroSection';
-import CeoAboutUs from '../components/CeoAboutUs';
-import CompanyIntro from '../components/CompanyIntro';
-import Advantage from '../components/Advantage';
-import ServicesOverview from '../components/ServicesOverview';
-import TestimonialsPreview from '../components/TestimonialsPreview';
-import ContactSection from '../components/ContactSection';
+import HeroSection from '../components/Home/HeroSection';
+import CeoAboutUs from '../components/Home/CeoAboutUs';
+import CompanyIntro from '../components/Home/CompanyIntro';
+import Advantage from '../components/Home/Advantage';
+import ServicesOverview from '../components/Home/ServicesOverview';
+import TestimonialsPreview from '../components/Home/TestimonialsPreview';
+import ContactSection from '../components/Home/ContactSection';
 
 const HomePage = () => {
   return (

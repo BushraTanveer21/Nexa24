@@ -1,6 +1,6 @@
 import React from 'react';
 import Tilt from 'react-parallax-tilt';
-import WHY_CHOOSE_US from '../data/whyChooseUs';
+import WHY_CHOOSE_US from '../../data/whyChooseUs';
 
 const Advantage = () => {
   return (

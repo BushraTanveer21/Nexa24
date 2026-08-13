@@ -26,7 +26,7 @@ const ExpandableText = ({ text, maxLength = 150 }) => {
 
 import Tilt from 'react-parallax-tilt';
 import { Star } from 'lucide-react';
-import '../pages/TestimonialPage.css';
+import "../../pages/TestimonialPage.css";
 
 const InteractiveVideoPlayer = ({ url }) => {
   const [isPlaying, setIsPlaying] = useState(false);

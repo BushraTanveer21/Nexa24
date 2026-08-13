@@ -1,5 +1,5 @@
 import React from 'react';
-import ceoImage from '../assets/ceo-yamna.jpg';
+import ceoImage from '../../assets/ceo-yamna.jpg';
 
 const CeoAboutUs = () => {
   return (
