@@ -85,7 +85,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <div className="hero-section-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#ffffff', color: '#111827', minHeight: '780px', display: 'flex', alignItems: 'center' }}>
+    <div className="hero-section-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#ffffff', color: '#111827', minHeight: '620px', display: 'flex', alignItems: 'center' }}>
       
       {/* Background Video Layer */}
       <div className="hero-video-layer" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, backgroundColor: '#ffffff', overflow: 'hidden' }}>

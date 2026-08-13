@@ -1,7 +1,6 @@
 import React from 'react';
 import HeroSection from '../components/HeroSection';
 import CeoAboutUs from '../components/CeoAboutUs';
-import StatsBanner from '../components/StatsBanner';
 import CompanyIntro from '../components/CompanyIntro';
 import Advantage from '../components/Advantage';
 import ServicesOverview from '../components/ServicesOverview';
@@ -16,7 +15,6 @@ const HomePage = () => {
           <HeroSection />
         </div>
         <CeoAboutUs />
-        <StatsBanner />
         <CompanyIntro />
         <Advantage />
         <ServicesOverview />

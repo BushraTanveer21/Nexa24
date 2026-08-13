@@ -35,7 +35,7 @@ const CeoAboutUs = () => {
           </div>
 
           <h3 style={{ marginTop: '20px', fontSize: '22px', fontWeight: '800', color: 'var(--text-dark)' }}>
-            Yamna
+            Yamna Shahid
           </h3>
           <p className="about-info-role" style={{ color: 'var(--primary)' }}>
             CEO &amp; Founder, NEXA24 Healthcare LLC

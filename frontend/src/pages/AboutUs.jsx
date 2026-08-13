@@ -155,7 +155,7 @@ export default function AboutUs() {
               </div>
 
               <div className="about-info-card">
-                <h3>Yamna</h3>
+                <h3>Yamna Shahid</h3>
                 <p className="about-info-role">CEO &amp; Founder, NEXA24 Healthcare LLC</p>
 
                 <div className="about-info-quote">
