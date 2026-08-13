@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Upload, CheckCircle2 } from 'lucide-react';
-import '../pages/TestimonialPage.css'; // Reusing some CSS for the modal
+import '../pages/TestimonialPage.css'; 
 
 export default function TestimonialSubmitModal({ onClose }) {
   const [formState, setFormState] = useState({

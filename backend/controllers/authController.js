@@ -6,7 +6,7 @@ const generateToken = (id) =>
     expiresIn: "7d",
   });
 
-// @route   POST /api/auth/login
+
 export const loginAdmin = async (req, res) => {
   const { email, password } = req.body || {};
 
@@ -38,7 +38,7 @@ export const loginAdmin = async (req, res) => {
 };
 
 
-// @route   GET /api/auth/me
+
 export const getMe = async (req, res) => {
   try {
     if (!req.admin || !req.admin.id) {
@@ -56,10 +56,10 @@ export const getMe = async (req, res) => {
   }
 };
 
-// @route   PUT /api/auth/profile
-// Updates the logged-in admin's email and/or password. Requires the
-// admin's current password to confirm the change, so a stolen/leaked
-// JWT alone isn't enough to take over the account.
+
+
+
+
 export const updateProfile = async (req, res) => {
   try {
     if (!req.admin || !req.admin.id) {
@@ -103,7 +103,7 @@ export const updateProfile = async (req, res) => {
 
     await admin.save();
 
-    // Reissue token since identity may have changed
+    
     res.json({
       _id: admin._id,
       name: admin.name,

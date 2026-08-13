@@ -35,7 +35,7 @@ const InteractiveVideoPlayer = ({ url }) => {
   if (!url || typeof url !== 'string') return null;
   const trimmed = url.trim();
 
-  // Validate URL format
+  
   if (!/^(https?:\/\/|\/|blob:)/i.test(trimmed)) {
     return null;
   }
@@ -225,7 +225,7 @@ export default function TestimonialPage() {
         const activeTestimonials = data.filter(t => t.isEnabled !== false);
         setTestimonials(activeTestimonials);
       } catch {
-        // Silently catch the error on Vercel and just show the empty state instead of crashing
+        
         setTestimonials([]);
       } finally {
         setLoading(false);
@@ -237,7 +237,7 @@ export default function TestimonialPage() {
 
   return (
     <div className="main-wrapper">
-      {/* Background Decorative Botanical Leaves */}
+      {}
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-tl" />
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-br" />
 

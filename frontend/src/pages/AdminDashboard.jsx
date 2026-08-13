@@ -75,14 +75,14 @@ const TestimonialOrderInput = ({ item, idx, onOrderChange }) => {
   );
 };
 
-// Auth token for admin-only writes (create/update/delete). Reads (GET) stay public.
+
 const getAuthToken = () =>
   localStorage.getItem("nexa_token") || sessionStorage.getItem("nexa_token");
 
-// Uploads a file to the backend, which forwards it to Cloudinary and
-// returns a hosted image URL + the Cloudinary public_id. The public_id
-// is required later to delete the image from Cloudinary (the URL alone
-// isn't enough for that) — so we keep both instead of discarding it.
+
+
+
+
 const uploadImageFile = async (file) => {
   const token = getAuthToken();
   const formData = new FormData();
@@ -96,16 +96,16 @@ const uploadImageFile = async (file) => {
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || "Image upload failed");
-  // NOTE: this assumes /api/upload's response includes public_id alongside
-  // url (the standard shape for a Cloudinary upload response). If your
-  // upload route only returns { url }, add public_id to that response too —
-  // otherwise this will always come back undefined and cleanup can't work.
+  
+  
+  
+  
   return { url: data.url, publicId: data.public_id || data.publicId || "" };
 };
 
 // Deletes an already-uploaded image straight from Cloudinary. Used by the
 // "Clear Image" button so removing an image doesn't leave it orphaned on
-// Cloudinary until (or unless) the form is saved.
+
 const deleteImageFile = async (publicId) => {
   if (!publicId) return;
   const token = getAuthToken();
@@ -147,18 +147,18 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
-  // References for scrolling to sections
+  
 
-  // Starts empty — real data comes from the backend via fetchBackendData().
+  
   const [services, setServices] = useState([]);
 
-  // Starts empty — real data comes from the backend via fetchBackendData().
+  
   const [testimonials, setTestimonials] = useState([]);
 
-  // Starts empty — real data comes from the backend via fetchBackendData().
+  
   const [contacts, setContacts] = useState([]);
 
-  // Modals state
+  
   const [showServiceModal, setShowServiceModal] = useState(false);
   const [serviceIconDropdownOpen, setServiceIconDropdownOpen] = useState(false);
   const [openBenefitDropdown, setOpenBenefitDropdown] = useState(null);
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
 
   const [isServiceImageDragging, setIsServiceImageDragging] = useState(false);
 
-  // Profile Settings state
+  
   const [profileForm, setProfileForm] = useState({
     currentPassword: "",
     newEmail: "",
@@ -263,7 +263,7 @@ export default function AdminDashboard() {
 
     verifyAndLoad();
 
-    // Poll for live updates every 15 seconds so new testimonials/inquiries show up without refresh
+    
     const pollInterval = setInterval(() => {
       fetchBackendData();
     }, 15000);
@@ -372,7 +372,7 @@ export default function AdminDashboard() {
     setSidebarCollapsed((prev) => !prev);
   };
 
-  // Service handlers
+  
   const handleOpenAddService = () => {
     setEditingService(null);
     setServiceForm({
@@ -459,10 +459,10 @@ export default function AdminDashboard() {
         throw new Error(err.message || "Failed to save service");
       }
 
-      // A save can silently bump another service's order (swap logic on
-      // the backend), so refetch the full list instead of just patching
-      // this one entry — otherwise the other service's card would show
-      // a stale order until the page is reloaded.
+      
+      
+      
+      
       await fetchBackendData();
       setShowServiceModal(false);
       showToast(isEditing ? "Service updated successfully." : "Service created successfully.");
@@ -511,9 +511,9 @@ export default function AdminDashboard() {
         },
         body: JSON.stringify({ order }),
       });
-      // The backend may have swapped another service's order to make
-      // room for this one — refetch so that swap shows up immediately
-      // instead of only after a page reload.
+      
+      
+      
       await fetchBackendData();
     } catch (err) {
       console.warn("Order update failed to persist:", err.message);
@@ -543,7 +543,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Testimonial handlers
+  
   const handleOpenAddTestimonial = (type = 'text') => {
     setEditingTestimonial(null);
     setTestimonialForm({
@@ -616,8 +616,8 @@ export default function AdminDashboard() {
       }
     }
 
-    // Backend model fields are name/position/isEnabled — dashboard form uses
-    // clientName/designation/status+homepageDisplay. Map here.
+    
+    
     const payload = {
       name: testimonialForm.clientName,
       position: testimonialForm.designation,
@@ -784,7 +784,7 @@ export default function AdminDashboard() {
   const handleTestimonialOrderChange = async (id, newOrderInput) => {
     const requestedOrder = Math.max(0, parseInt(newOrderInput, 10) || 0);
 
-    // Instant local state update so changes reflect live without page refresh!
+    
     const currentList = [...testimonials].sort((a, b) => (a.order !== undefined ? a.order : 0) - (b.order !== undefined ? b.order : 0));
     const targetItem = currentList.find(t => t._id === id);
     if (!targetItem) return;
@@ -794,9 +794,9 @@ export default function AdminDashboard() {
 
     const otherItem = currentList.find(t => t.order === requestedOrder);
 
-    // 1. Perform pairwise swap
-    // 2. Sort by order
-    // 3. Re-index completely to wipe out any existing duplicate bugs (like two 4's)
+    
+    
+    
     const optimisticList = currentList.map((t) => {
       if (t._id === id) {
         return { ...t, order: requestedOrder };
@@ -924,7 +924,7 @@ export default function AdminDashboard() {
     }
   };
 
-  // Profile Settings handler
+  
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     setProfileMessage({ type: "", text: "" });
@@ -958,7 +958,7 @@ export default function AdminDashboard() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to update profile");
 
-      // Keep the token/user in whichever storage was already being used
+      
       const storage = localStorage.getItem("nexa_token") ? localStorage : sessionStorage;
       storage.setItem("nexa_token", data.token);
       storage.setItem("nexa_user", JSON.stringify(data));
@@ -1397,7 +1397,7 @@ export default function AdminDashboard() {
             <div className="section-card-header" style={{ flexWrap: 'wrap', gap: '16px', alignItems: 'center' }}>
               <h2 className="section-title" style={{ margin: 0 }}>Contact Form Inquiries</h2>
 
-              {/* Search & Filter Controls */}
+              {}
               <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap', marginLeft: 'auto' }}>
                 <div style={{ position: 'relative', width: '260px' }}>
                   <Search size={15} style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#94a3b8' }} />
@@ -2539,7 +2539,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Toast Notification */}
+      {}
       {toast.show && (
         <div className={`toast-notification ${toast.type}`} style={{ position: 'fixed', top: '20px', right: '20px', padding: '16px 24px', background: toast.type === 'error' ? '#ef4444' : '#6d28d9', color: '#fff', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', zIndex: 9999, display: 'flex', alignItems: 'center', gap: '12px', animation: 'slideDown 0.3s ease-out' }}>
           {toast.type === 'error' ? <X size={20} /> : <CheckCircle2 size={20} />}
@@ -2547,7 +2547,7 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Custom Confirm Modal */}
+      {}
       {confirmDialog.show && (
         <div className="modal-overlay" style={{ zIndex: 9999 }} onClick={() => setConfirmDialog({ show: false, title: '', onConfirm: null })}>
           <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '400px', textAlign: 'center', padding: '30px' }}>

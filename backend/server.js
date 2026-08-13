@@ -13,7 +13,7 @@ import uploadRoutes from "./routes/uploadRoutes.js";
 
 dotenv.config();
 
-// Connect DB & Seed Admin safely for Vercel Serverless
+
 connectDB().then(() => {
   seedAdmin();
 }).catch((err) => {
@@ -33,7 +33,7 @@ app.use("/api/upload", uploadRoutes);
 
 app.get("/", (req, res) => res.send("NEXA24 Healthcare API is running..."));
 
-// Error handling middleware
+
 app.use((err, req, res, next) => {
   if (err) {
     return res.status(err.status || 400).json({ message: err.message || "Something went wrong" });
@@ -41,11 +41,11 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Local development ke liye app.listen
+
 const PORT = process.env.PORT || 5000;
 if (process.env.NODE_ENV !== "production") {
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
 
-// Vercel deployment ke liye export app karna zaroori hai
+
 export default app;

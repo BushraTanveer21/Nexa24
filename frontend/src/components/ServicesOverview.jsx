@@ -44,7 +44,7 @@ const ServicesOverview = () => {
     <section className="services-exact container" id="services" style={{ position: 'relative', overflow: 'hidden' }}>
       <FallingPetals />
       
-      {/* Decorative leaf branch in the bottom-right space */}
+      {}
       <img 
         src="/image.png?v=5" 
         alt="Decorative leaf branch" 
@@ -113,7 +113,7 @@ const ServicesOverview = () => {
                   overflow: 'hidden',
                   transition: 'max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin-top 0.3s ease',
                   marginTop: activeIndex === i ? '14px' : '0px',
-                  paddingLeft: '52px', // aligns text cleanly with title
+                  paddingLeft: '52px', 
                   color: 'var(--text-muted-exact)',
                   fontSize: '14.5px',
                   lineHeight: '1.6'

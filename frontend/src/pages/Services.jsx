@@ -66,8 +66,8 @@ export default function Services() {
           setServices(data);
         }
       } catch {
-        // Real backend state (empty) is preferred over fake data — leave
-        // services as-is (whatever it already was, or empty) on failure.
+        
+        
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -83,19 +83,19 @@ export default function Services() {
     .slice()
     .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  // Top 5 services for the revolving orbit cards (dynamic from backend)
+  
   const orbitServices = sortedServices.slice(0, 5);
 
   useScrollReveal([loading, sortedServices.length]);
 
   return (
     <div className="main-wrapper">
-      {/* Background Decorative Botanical Leaves */}
+      {}
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-tl" />
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-mr" />
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-br" />
 
-      {/* ===== HERO SECTION ===== */}
+      {}
       <section id="home" className="hero-wrap">
         <div className="hero-inner">
           <div className="hero-content reveal">
@@ -121,14 +121,14 @@ export default function Services() {
             </div>
           </div>
 
-          {/* Orbit / Revolving Logo & Dynamic Orbit Cards Cluster */}
+          {}
           <div className="hero-orbit-container reveal">
-            {/* Center Logo Node */}
+            {}
             <div className="cluster-center">
               <img src={nexaLogo} alt="NEXA24 Healthcare" />
             </div>
 
-            {/* Dynamic Orbit Cards revolving around Center Logo */}
+            {}
             {orbitServices.map((service, index) => {
               const cardTitle = service.title || service.name;
               const Icon = resolveIcon(service.icon, cardTitle);
@@ -145,7 +145,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* ===== SPECIALIZED MANAGED SERVICES SECTION (DYNAMIC FROM BACKEND) ===== */}
+      {}
       <section id="services" className="services-section">
         <div className="eyebrow-label text-center">OUR SERVICES</div>
         <h2 className="section-heading text-center">Specialized Managed Services</h2>
@@ -171,7 +171,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* ===== WHY NEXA24 SECTION ===== */}
+      {}
       <section id="solutions" className="why-section">
         <div className="eyebrow-label text-center">WHY NEXA24?</div>
         <h2 className="section-heading text-center">Results that drive your practice forward.</h2>
@@ -191,7 +191,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* ===== HOW IT WORKS SECTION ===== */}
+      {}
       <section id="how-it-works" className="how-section">
         <div className="eyebrow-label text-center">HOW IT WORKS</div>
         <h2 className="section-heading text-center">Simple 4-Step Process</h2>
@@ -212,7 +212,7 @@ export default function Services() {
         </div>
       </section>
 
-      {/* ===== CALL TO ACTION STRIP ===== */}
+      {}
       <section id="get-started" className="cta-section">
         <div className="cta-strip reveal">
           <div className="cta-left">

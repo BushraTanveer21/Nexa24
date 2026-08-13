@@ -4,7 +4,7 @@
   overflow: hidden;
 }
 
-/* --- Hero Section --- */
+
 .contact-hero {
   position: relative;
   max-width: 1200px;
@@ -104,7 +104,7 @@
   line-height: 1.5;
 }
 
-/* --- Headset Graphic --- */
+
 .contact-hero-right {
   flex: 1;
   display: flex;
@@ -182,7 +182,7 @@
 .headset-dots span:nth-child(1) { animation-delay: -0.32s; }
 .headset-dots span:nth-child(2) { animation-delay: -0.16s; }
 
-/* Static particles */
+
 .hero-particles {
   position: absolute;
   top: 0;
@@ -207,7 +207,7 @@
 .p5 { width: 6px; height: 6px; top: 20%; right: 30%; }
 .p6 { width: 16px; height: 16px; bottom: 40%; right: 5%; background-color: #E9D5FF; }
 
-/* --- Form Section --- */
+
 .contact-form-section {
   max-width: 1200px;
   margin: 0 auto 80px;
@@ -224,7 +224,7 @@
   overflow: hidden;
 }
 
-/* Left Pane */
+
 .contact-card-left {
   flex: 0 0 350px;
   background: linear-gradient(135deg, #F3E7FF 0%, #E9D5FF 60%, #E2CFF7 100%);
@@ -290,7 +290,7 @@
   line-height: 1.4;
 }
 
-/* Right Pane (Form) */
+
 .contact-card-right {
   flex: 1;
   padding: 40px 50px;
@@ -436,7 +436,7 @@
   color: #6B7280;
 }
 
-/* --- Responsive Design --- */
+
 @media (max-width: 992px) {
   .contact-hero-content {
     flex-direction: column;
@@ -515,7 +515,7 @@
   }
 }
 
-/* --- Social Icons --- */
+
 .contact-social {
   margin-top: 40px;
   padding-top: 30px;
@@ -554,7 +554,7 @@
   box-shadow: 0 4px 12px rgba(76, 29, 149, 0.2);
 }
 
-/* --- Form Status Messages --- */
+
 .form-status {
   padding: 12px 16px;
   border-radius: 8px;
@@ -575,7 +575,7 @@
   border: 1px solid #FECACA;
 }
 
-/* --- Google Map Section --- */
+
 .contact-map-section {
   max-width: 1200px;
   margin: 0 auto 100px;

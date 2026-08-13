@@ -12,12 +12,12 @@ import nexaLogo from "../assets/nexa24-logo.png";
 import branchTL from "../assets/botanical-branch-tl.png";
 import ceoImage from "../assets/ceo-yamna.jpg";
 import useScrollReveal from "../hooks/useScrollReveal";
-// Shared "Why Choose Us" cards — same list shown on the Home page
-// (Advantage.jsx) and every Service Detail page, so it only needs editing
-// in one place (frontend/src/data/whyChooseUs.js).
+
+
+
 import WHY_CHOOSE_US from "../data/whyChooseUs";
 
-// 4 core values — same slot the mockup used for its 3 bullet items
+
 const CORE_VALUES = [
   {
     icon: Star,
@@ -46,12 +46,12 @@ export default function AboutUs() {
 
   return (
     <div className="main-wrapper">
-      {/* Background Decorative Botanical Leaves — same pattern as Services page */}
+      {}
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-tl" />
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-mr" />
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-br" />
 
-      {/* ===== ABOUT HERO — big logo blended straight into the page ===== */}
+      {}
       <section className="about-hero-wrap">
         <div className="about-logo-pulse reveal">
           <div className="about-logo-glow">
@@ -60,7 +60,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* ===== ABOUT US PARAGRAPH ===== */}
+      {}
       <section className="about-intro-section">
         <div className="about-intro-card reveal">
           <div className="about-divider-label">ABOUT US</div>
@@ -78,7 +78,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* ===== MISSION & VISION ===== */}
+      {}
       <section className="about-mv-section">
         <div className="about-mv-grid">
           <div className="about-mv-card reveal">
@@ -112,10 +112,10 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* ===== MEET OUR CEO — exact mockup two-column layout ===== */}
+      {}
       <section className="about-bio-section">
         <div className="about-bio-grid">
-          {/* LEFT: intro + core values */}
+          {}
           <div className="about-bio-left reveal">
             <span className="eyebrow-dot-label">
               <span className="dot" /> CEO &amp; FOUNDER
@@ -143,7 +143,7 @@ export default function AboutUs() {
             </div>
           </div>
 
-          {/* RIGHT: photo + overlapping info card with Yamna's real intro */}
+          {}
           <div className="about-bio-right reveal">
             <div className="about-bio-right-inner">
               <div className="about-photo-frame">
@@ -188,7 +188,7 @@ export default function AboutUs() {
         </div>
       </section>
 
-      {/* ===== WHY CHOOSE NEXA24 HEALTHCARE ===== */}
+      {}
       <section className="about-why-section">
         <h2 className="about-why-heading">Why Choose NEXA24 Healthcare</h2>
 

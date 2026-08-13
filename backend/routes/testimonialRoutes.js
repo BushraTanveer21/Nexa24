@@ -17,14 +17,14 @@ import { testimonialSubmissionLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 
-// ---------- Public ----------
-router.get("/", getTestimonials); // public
-router.get("/featured", getFeaturedTestimonials); // public, for Home page preview
-router.post("/public", testimonialSubmissionLimiter, submitTestimonial); // public submission
 
-// ---------- Admin only ----------
-// Note: put "/admin/reorder" above "/:id" routes so "reorder" isn't
-// swallowed as an :id param.
+router.get("/", getTestimonials); 
+router.get("/featured", getFeaturedTestimonials); 
+router.post("/public", testimonialSubmissionLimiter, submitTestimonial); 
+
+
+
+
 router.get("/admin", protect, getAdminTestimonials);
 router.patch("/admin/reorder", protect, reorderTestimonials);
 router.patch("/admin/:id/order", protect, setTestimonialOrder);

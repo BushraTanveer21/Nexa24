@@ -22,7 +22,6 @@
   background-color: var(--primary);
 }
 
-/* Add a subtle pulse animation for the outer ring effect shown in the screenshot */
 .whatsapp-float-btn::before {
   content: '';
   position: absolute;
@@ -51,7 +50,6 @@
   }
 }
 
-/* Adjustments for specific pages */
 .whatsapp-tucked-right {
   right: 12px;
 }

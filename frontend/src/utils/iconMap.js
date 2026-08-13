@@ -1,14 +1,14 @@
-// Central icon registry.
-//
-// Services and benefits are stored in the DB with a plain string "icon key"
-// (e.g. "calendar", "shield") instead of a component, since components can't
-// be saved to MongoDB. This file is the single place that maps those keys to
-// actual lucide-react icons, and the single place to add new options to the
-// admin's icon picker.
-//
-// Add a new icon: import it below, add a `{ key, label, Icon }` entry to
-// ICON_OPTIONS. It will automatically show up in both the service-icon and
-// benefit-icon pickers in the admin dashboard.
+
+
+
+
+
+
+
+
+
+
+
 import {
     Calendar,
     Users,
@@ -70,9 +70,9 @@ const ICON_MAP = ICON_OPTIONS.reduce((acc, { key, Icon }) => {
     return acc;
 }, {});
 
-// Fallback keyword-based guesses, used only when a service/benefit has no
-// explicit icon key saved yet (e.g. older records, or before the admin
-// picks one). Keeps things looking sensible out of the box.
+
+
+
 const KEYWORD_RULES = [
     { test: /virtual|assist|staff/i, key: "users" },
     { test: /billing|payment|revenue|rcm/i, key: "dollar" },
@@ -88,8 +88,8 @@ export function getIcon(key) {
     return ICON_MAP[key] || Package;
 }
 
-// Given a saved icon key AND a fallback title/label to guess from, return
-// the best icon component available.
+
+
 export function resolveIcon(iconKey, fallbackText = "") {
     if (iconKey && ICON_MAP[iconKey]) return ICON_MAP[iconKey];
     const match = KEYWORD_RULES.find((rule) => rule.test.test(fallbackText));

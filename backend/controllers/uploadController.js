@@ -1,7 +1,7 @@
 import cloudinary from "../config/cloudinary.js";
 
-// admin only - upload an image file to Cloudinary and return its URL.
-// Expects a single file under the "image" field (multipart/form-data).
+
+
 export const uploadImage = async (req, res) => {
   try {
     if (!req.file) {
@@ -55,9 +55,9 @@ export const uploadVideo = async (req, res) => {
   }
 };
 
-// admin only - deletes an image from Cloudinary immediately (used by the
-// "Clear Image" button so removed images don't sit around as orphaned
-// uploads until the parent form happens to be saved).
+
+
+
 export const deleteImage = async (req, res) => {
   try {
     const { publicId } = req.body || {};

@@ -29,7 +29,7 @@ export const submitContact = async (req, res) => {
   }
 };
 
-// admin only - view all inquiries (optional ?status=New|Contacted|Done filter)
+
 export const getContacts = async (req, res) => {
   try {
     const filter = {};
@@ -52,7 +52,7 @@ export const deleteContact = async (req, res) => {
   }
 };
 
-// admin only - update inquiry status (New / Contacted / Done) or read state
+
 export const updateContact = async (req, res) => {
   try {
     const contact = await Contact.findByIdAndUpdate(req.params.id, req.body, {

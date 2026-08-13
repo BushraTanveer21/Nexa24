@@ -10,7 +10,7 @@ const CompanyIntro = () => {
     >
       <FallingPetals />
 
-      {/* Attached to the top-left corner of the Company Introduction section */}
+      {}
       <img
         src="/image.png?v=4"
         alt="Decorative leaf branch"

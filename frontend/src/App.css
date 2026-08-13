@@ -49,19 +49,16 @@ img {
   display: block;
 }
 
-/* ===== MAIN WRAPPER & SEAMLESS PURPLE BLENDING ===== */
+
 .main-wrapper {
   position: relative;
   width: 100%;
-  /* Hero area (0%-20%) kept solid white so the hero section reads as a
-     clean white background; the purple blending resumes further down
-     the page. Branches sit above this gradient (z-index) so they stay
-     visible against the white. */
+  
   background: linear-gradient(180deg, #FFFFFF 0%, #FFFFFF 20%, #F6EFFD 38%, #FFFFFF 58%, #F6EFFD 78%, #FFFFFF 100%);
   overflow: hidden;
 }
 
-/* Botanical Leaf Accents */
+
 .botanical-branch {
   position: absolute;
   pointer-events: none;
@@ -91,12 +88,12 @@ img {
   transform: rotate(180deg);
 }
 
-/* Helper utilities */
+
 .text-center {
   text-align: center;
 }
 
-/* ===== SCROLL-REVEAL ANIMATIONS ===== */
+
 .reveal {
   opacity: 0;
   transform: translateY(28px) scale(0.98);
@@ -119,7 +116,7 @@ img {
   }
 }
 
-/* ===== HEADER ===== */
+
 .header {
   position: fixed;
   top: 0;
@@ -131,7 +128,7 @@ img {
   transition: background 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Transparent state: sits at the very top of the page */
+
 .header.header-transparent {
   background: transparent;
   backdrop-filter: none;
@@ -140,7 +137,7 @@ img {
   box-shadow: none;
 }
 
-/* Solid state: kicks in once the user scrolls, keeps nav links readable */
+
 .header.header-scrolled {
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px);
@@ -210,15 +207,9 @@ img {
   border-color: var(--accent-light);
 }
 
-/* NOTE: the mobile drawer (opened by the hamburger button) is now rendered
-   entirely with inline styles from Header.jsx, on purpose — it has no
-   CSS class here anymore. This avoids any conflict with rules in this
-   file (specificity, !important, cascade order, stale cache, etc.)
-   that were previously causing the drawer to render empty/invisible. */
 
-/* Once the drawer is open, force the header itself solid too — otherwise
-   a transparent header at the top of the page would let page content
-   show through above the drawer's top edge. */
+
+
 .header.header-menu-open {
   background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(16px);
@@ -285,21 +276,17 @@ img {
   border-color: var(--primary);
 }
 
-/* ===== HERO SECTION ===== */
+
 .hero-wrap {
   position: relative;
-  /* Reduced top padding to bring hero content (and the orbit cards)
-     closer to the header, while still clearing it comfortably. */
+  
   padding: 90px 60px 70px;
   z-index: 2;
 }
 
 .hero-inner {
   display: flex;
-  /* Top-align instead of center: with align-items:center, the (taller)
-     520px orbit container was forcing the whole row - including the
-     shorter text column - to vertically center against it, which pushed
-     everything down and left a big gap under the header. */
+  
   align-items: flex-start;
   justify-content: space-between;
   gap: 40px;
@@ -353,15 +340,12 @@ img {
   font-size: 16px;
   line-height: 1.7;
   max-width: 470px;
-  /* A very long, unbroken word (bad data, a URL, etc.) used to overflow
-     past this max-width and shove the hero image out of place instead of
-     wrapping. This forces it to break and wrap like normal text. */
+  
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-/* The service detail hero has more room and its description is the main
-   copy on the page, so give it a wider column than the generic hero. */
+
 .service-detail-hero .hero-content p {
   max-width: 560px;
 }
@@ -373,18 +357,17 @@ img {
   align-items: center;
 }
 
-/* ===== 5 UNIFORM FULL-DETAIL REVOLVING CARDS ORBIT (HERO) ===== */
+
 .hero-orbit-container {
   position: relative;
   width: 520px;
   height: 520px;
   flex-shrink: 0;
-  /* Nudge the whole orbit cluster up slightly so it sits closer to the
-     header, matching the tightened .hero-wrap top padding above. */
+  
   margin-top: -15px;
 }
 
-/* Center Logo Node */
+
 .cluster-center {
   position: absolute;
   top: 50%;
@@ -407,7 +390,7 @@ img {
   height: auto;
 }
 
-/* All 5 Orbiting Cards: name-only, compact size */
+
 .orbit-card {
   position: absolute;
   top: 50%;
@@ -471,7 +454,7 @@ img {
   margin: 0;
 }
 
-/* Orbit Motion Keyframes (Radius = 200px for full detail & space) */
+
 @keyframes orbit5_1 {
   0% {
     transform: translate(-50%, -50%) rotate(0deg) translate(200px) rotate(0deg);
@@ -542,7 +525,7 @@ img {
   animation: orbit5_5 32s linear infinite;
 }
 
-/* ===== SERVICE DETAIL HERO ===== */
+
 .service-detail-hero .hero-content {
   max-width: 640px;
 }
@@ -551,14 +534,12 @@ img {
   padding-bottom: 30px;
 }
 
-/* Top-align the row instead of centering it — otherwise a taller image
-   pushes both the image AND the text down to stay vertically centered
-   against each other, opening a large gap under the header. */
+
 .service-detail-hero .hero-inner {
   align-items: flex-start;
 }
 
-/* ===== SERVICE DETAIL: BADGES ===== */
+
 .detail-badges-row {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -578,13 +559,11 @@ img {
   font-size: 13px;
   font-weight: 600;
   border: 1px solid rgba(124, 58, 237, 0.15);
-  /* Benefit labels are admin-entered and can run long — let the pill wrap
-     onto a second line instead of forcing nowrap and blowing out the grid. */
+  
   white-space: normal;
   overflow-wrap: anywhere;
   word-break: break-word;
-  /* Now a <button> (clicking scrolls to the matching card below) — reset
-     the default button chrome so it still looks like a pill. */
+  
   font-family: inherit;
   cursor: pointer;
   text-align: left;
@@ -592,10 +571,7 @@ img {
 }
 
 .detail-badge-pill svg {
-  /* Flex children shrink below their own size by default when a sibling
-     (here, a long admin-entered label) needs the space — without this, a
-     very long/unbroken benefit label squeezed the icon smaller than its
-     actual 14x14 size instead of leaving it a fixed, standard size. */
+  
   flex-shrink: 0;
   width: 14px;
   height: 14px;
@@ -614,13 +590,11 @@ img {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  /* No negative top margin here anymore — pulling the image upward
-     brought it closer to the navbar. Sitting flush with the rest of the
-     hero row keeps it safely clear of the header at all times. */
+  
   margin-top: 0;
 }
 
-/* Soft purple glow behind the framed photo */
+
 .detail-hero-visual::before {
   content: "";
   position: absolute;
@@ -801,12 +775,7 @@ img {
   line-height: 1.6;
   margin-bottom: 24px;
   flex-grow: 1;
-  /* Clamp to 4 lines with a matching min-height, so every card reserves
-     the exact same description space regardless of content -- a short
-     description doesn't leave its card shorter than the row's standard
-     size, and a longer description is cut off cleanly with "..." at 4
-     lines instead of growing the card taller. Full text is still shown
-     on the service's own detail page. */
+  
   display: -webkit-box;
   -webkit-line-clamp: 4;
   line-clamp: 4;
@@ -839,24 +808,13 @@ img {
 
 .handles-grid {
   display: grid;
-  /* Fixed 5 columns (same pattern as .services-grid) instead of auto-fit.
-     With auto-fit, a sparse grid (fewer than 5 benefits) would either
-     stretch the remaining card(s) to fill the row or resize columns based
-     on the container width — neither guarantees 5 cards fit on one row
-     when there ARE 5, and neither keeps a lone card at the same
-     "standard" width as the rest. Fixed columns solve both: 5 always fit
-     per row when present, and if only 1-4 benefits exist, the unused
-     column tracks just stay empty (no item placed in them) instead of
-     being absorbed into the existing cards' width. */
+  
   grid-template-columns: repeat(5, 1fr);
   gap: 16px;
 }
 
 .handle-card:only-child {
-  /* Same as .service-card:only-child — center a lone benefit card
-     across the full row instead of leaving it pinned to column 1,
-     without changing the 5-column layout used whenever there's more
-     than one benefit. */
+  
   grid-column: 1 / -1;
   justify-self: center;
   width: 100%;
@@ -865,12 +823,11 @@ img {
 
 .handle-card {
   height: 100%;
-  /* Keeps a clicked benefit pill's target card clear of the fixed header
-     when the page scrolls to it (see ServiceDetail.jsx scrollToHandle). */
+  
   scroll-margin-top: 110px;
 }
 
-/* ===== WHY NEXA24 SECTION ===== */
+
 .why-section {
   position: relative;
   padding: 50px 60px 70px;
@@ -916,7 +873,7 @@ img {
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-/* Touch/click par icon purple fill ho jaye */
+
 .why-card:active .why-icon {
   background: var(--primary);
   color: var(--white);
@@ -925,11 +882,7 @@ img {
 
 .why-grid-4 {
   display: grid;
-  /* Auto-fit instead of a hardcoded 4 columns — the "Why Choose Us" list
-     (frontend/src/data/whyChooseUs.js) can have any number of cards. Min
-     width kept low and gap tightened so the current 5 cards comfortably
-     fit on one row at normal desktop widths instead of the 5th wrapping
-     onto its own line. */
+  
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 14px;
 }
@@ -954,7 +907,7 @@ img {
   line-height: 1.6;
 }
 
-/* ===== HOW IT WORKS SECTION (CENTERED & BALANCED) ===== */
+
 .how-section {
   position: relative;
   padding: 50px 60px 70px;
@@ -1004,7 +957,7 @@ img {
   transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
-/* Touch/click par icon purple fill ho jaye */
+
 .how-step-card:active .how-icon {
   background: var(--primary);
   color: var(--white);
@@ -1034,7 +987,7 @@ img {
   line-height: 1.65;
 }
 
-/* ===== CALL TO ACTION STRIP ===== */
+
 .cta-section {
   position: relative;
   padding: 40px 60px 80px;
@@ -1105,7 +1058,7 @@ img {
   font-size: 14.5px;
 }
 
-/* ===== FOOTER ===== */
+
 .footer {
   background: linear-gradient(180deg, #E9D8FD 0%, #E2CFF7 100%);
   padding: 56px 60px 30px;
@@ -1169,7 +1122,7 @@ img {
   letter-spacing: 0.5px;
 }
 
-/* ===== RESPONSIVE STYLES ===== */
+
 @media (max-width: 1100px) {
   .services-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -1367,9 +1320,7 @@ img {
     grid-template-columns: 1fr 1fr;
   }
 
-  /* FIX: was a fixed 400x400 square box forcing landscape photos to sit
-     at the top with empty space below (inside the box) before the next
-     section started. Now the box just wraps the photo's real height. */
+  
   .detail-hero-visual {
     width: 100%;
     max-width: 400px;
@@ -1457,8 +1408,7 @@ img {
     opacity: 0.35;
   }
 
-  /* FIX: same fixed-square issue as the 900px breakpoint above — cap the
-     width only, let height follow the photo's real aspect ratio. */
+  
   .detail-hero-visual {
     max-width: 320px;
   }
@@ -1495,8 +1445,7 @@ img {
 
   .orbit-card {
     width: 108px;
-    /* Length (height) increased only — width stays the same so cards
-       don't get any wider, just a bit taller for breathing room. */
+    
     height: 64px;
     box-sizing: border-box;
     padding: 6px 8px;
@@ -1574,9 +1523,9 @@ img {
   }
 }
 
-/* ===== ABOUT US PAGE — exact mockup layout ===== */
 
-/* --- Hero: logo blended straight into the page (real transparency, no plate) --- */
+
+
 .about-hero-wrap {
   position: relative;
   padding: 150px 60px 20px;
@@ -1588,10 +1537,7 @@ img {
     radial-gradient(circle at center, rgba(84, 70, 229, 0.08), transparent 45%);
 }
 
-/* Outer wrapper carries the pulse animation ONLY — keeping transform off
-   .about-logo-glow means it never creates its own stacking context, so
-   the img's mix-blend-mode below can see all the way through to the
-   actual page background instead of just the glow layer. */
+
 .about-logo-pulse {
   width: 380px;
   height: 380px;
@@ -2169,13 +2115,7 @@ img {
     max-width: 100%;
   }
 
-  /* FIX: previously used position:absolute + a guessed 130px padding-bottom
-     to fake the photo/card overlap. The card's real content (name, role,
-     full quote, two badges) is taller than 130px on narrow screens, so the
-     reserved space never matched the real card height — producing the
-     dead gap / mismatched sizing between the purple photo box and the
-     white card. Switching to normal document flow with a small deliberate
-     overlap fixes it regardless of how tall the card's content gets. */
+  
   .about-bio-right-inner {
     padding-bottom: 0 !important;
     margin: 10px auto 0 !important;
@@ -2234,12 +2174,10 @@ img {
   }
 }
 
-/* --- LOCAL APP.CSS --- */
 
 
-/* =========================================
-   EXACT MOCKUP STYLES
-   ========================================= */
+
+
 
 :root {
   --primary-exact: var(--primary);
@@ -2273,7 +2211,7 @@ html {
   color: var(--primary-exact);
 }
 
-/* HEADER EXACT */
+
 .header-exact {
   position: fixed;
   top: 16px;
@@ -2391,7 +2329,7 @@ html {
   box-shadow: 0 12px 28px rgba(109, 40, 217, 0.36);
 }
 
-/* HERO EXACT */
+
 .hero-exact {
   padding: 60px 5% 0;
   background: transparent;
@@ -2477,7 +2415,7 @@ html {
 }
 
 
-/* SERVICES EXACT */
+
 .services-exact {
   padding: 80px 5%;
   background: transparent;
@@ -2550,7 +2488,7 @@ html {
   color: var(--text-muted-exact);
 }
 
-/* ADVANTAGE EXACT */
+
 .advantage-exact {
   padding: 80px 5%;
   background: #F3E8FF;
@@ -2657,7 +2595,7 @@ html {
   object-fit: cover;
 }
 
-/* HOW IT WORKS EXACT */
+
 .how-it-works-exact {
   padding: 80px 5%;
   background: #F3E8FF;
@@ -2747,7 +2685,7 @@ html {
   color: var(--text-muted-exact);
 }
 
-/* CONTACT EXACT */
+
 .contact-exact {
   padding: 80px 5%;
   background: transparent;
@@ -2834,7 +2772,7 @@ html {
   width: 100%;
   padding: 12px 16px;
   border: 1px solid #D1D5DB;
-  /* slightly darker than E5E7EB for better visibility */
+  
   border-radius: 8px;
   font-size: 14px;
   background: #FFFFFF;
@@ -2874,7 +2812,7 @@ html {
   overflow: hidden;
   max-width: 100%;
   appearance: auto;
-  /* ensure native chevron is visible but box doesn't break */
+  
 }
 
 .contact-form-exact label {
@@ -2899,7 +2837,7 @@ html {
   color: var(--text-muted-exact);
 }
 
-/* FOOTER EXACT */
+
 .footer-exact {
   background: #F3E8FF;
   padding: 60px 5% 20px;
@@ -2983,14 +2921,12 @@ html {
   height: 18px;
 }
 
-/* =========================================
-   ANIMATED FALLING LEAVES
-   ========================================= */
+
 
 .animated-tree-container {
   position: relative;
   overflow: hidden;
-  /* optional, to prevent leaves from appearing outside */
+  
 }
 
 .animated-tree-img {
@@ -3015,7 +2951,7 @@ html {
   width: 18px;
   height: 18px;
   color: #9333EA;
-  /* Light purple for leaves */
+  
   z-index: 2;
   opacity: 0;
   animation: fall linear infinite;
@@ -3052,7 +2988,7 @@ html {
   }
 }
 
-/* Individual leaf positioning and timing */
+
 .leaf-1 {
   left: 10%;
   animation-duration: 4s;
@@ -3159,7 +3095,7 @@ html {
 }
 
 
-/* Visually crop the tree from the full page screenshot */
+
 .animated-tree-img {
   width: 500px;
   height: 550px;
@@ -3167,7 +3103,7 @@ html {
   object-position: right top;
 }
 
-/* Isolated tree animation */
+
 .isolated-tree-img {
   width: 100%;
   height: auto;
@@ -3176,24 +3112,24 @@ html {
   animation: tree-sway 6s ease-in-out infinite alternate;
 }
 
-/* Fix for blended and not blurred isolated tree */
+
 .isolated-tree-img {
   max-width: 600px !important;
-  /* Prevent stretching and blurring */
+  
   width: auto !important;
   height: auto !important;
   mix-blend-mode: multiply;
-  /* Blends the white background seamlessly */
+  
 }
 
-/* Improved Swaying Animation */
+
 .isolated-tree-img {
   max-width: 600px !important;
   width: 100% !important;
   height: auto !important;
   mix-blend-mode: multiply;
   transform-origin: bottom center !important;
-  /* Ground the trunk */
+  
   animation: tree-sway-realistic 4s ease-in-out infinite alternate !important;
 }
 
@@ -3209,16 +3145,16 @@ html {
 
 .hero-image-exact {
   align-items: flex-end !important;
-  /* Align the tree exactly to the bottom line */
+  
 }
 
-/* Blend tree perfectly to hide edges */
+
 .isolated-tree-img {
   max-width: 600px !important;
   width: 100% !important;
   height: auto !important;
   mix-blend-mode: darken !important;
-  /* Forces white to become completely transparent */
+  
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 70%) !important;
   mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0) 70%) !important;
   transform-origin: bottom center !important;
@@ -3239,9 +3175,7 @@ html {
   align-items: center !important;
 }
 
-/* =========================================
-   REALISTIC FALLING LEAVES (3D)
-   ========================================= */
+
 
 .real-tree-container {
   position: relative;
@@ -3266,7 +3200,7 @@ html {
   transform-origin: center;
 }
 
-/* Layer variations for Depth of Field */
+
 .leaf-layer-1 {
   width: 10px;
   height: 10px;
@@ -3290,7 +3224,7 @@ html {
   z-index: 7;
 }
 
-/* 3D Spin and Drift */
+
 @keyframes realistic-fall {
   0% {
     top: 5%;
@@ -3475,7 +3409,7 @@ html {
   animation-delay: 7.4s;
 }
 
-/* Remove masking to prevent blurry edges and prevent stretching */
+
 .isolated-tree-img {
   -webkit-mask-image: none !important;
   mask-image: none !important;
@@ -3483,9 +3417,7 @@ html {
   max-width: 100% !important;
 }
 
-/* =========================================
-   ANIMATED SVG TREE
-   ========================================= */
+
 
 .animated-svg-tree-container {
   position: relative;
@@ -3501,10 +3433,10 @@ html {
 
 .tree-branch {
   transform-origin: 0px -150px;
-  /* Pivot from the trunk joint */
+  
 }
 
-/* Branch specific animations */
+
 .branch-left {
   animation: branch-sway-left 7s ease-in-out infinite alternate;
 }
@@ -3547,7 +3479,7 @@ html {
   }
 }
 
-/* Falling Leaves Wrapper */
+
 .falling-leaves-wrapper {
   position: absolute;
   top: 0;
@@ -3591,7 +3523,7 @@ html {
   }
 }
 
-/* Make the tree massive and perfectly blended */
+
 .hero-image-exact {
   align-items: center !important;
   position: relative;
@@ -3601,25 +3533,25 @@ html {
 .isolated-tree-img {
   max-width: none !important;
   width: 135% !important;
-  /* Make it massive, stretching past its container */
+  
   height: auto !important;
   margin-right: -20%;
-  /* Bleed off the right edge of the page */
+  
   margin-top: -5%;
   margin-bottom: -10%;
-  /* Bleed downward into the next section slightly */
+  
 
-  /* Perfect blending */
+  
   mix-blend-mode: darken !important;
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0) 75%) !important;
   mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 55%, rgba(0, 0, 0, 0) 75%) !important;
 
-  /* Sway animation */
+  
   transform-origin: bottom center !important;
   animation: tree-sway-realistic 6s ease-in-out infinite alternate !important;
 }
 
-/* --- DARK THEME HERO OVERRIDES --- */
+
 
 .hero-exact {
   background: #040206 !important;
@@ -3670,9 +3602,7 @@ html {
   z-index: 20;
 }
 
-/* =========================================
-   RESPONSIVE OVERRIDES
-   ========================================= */
+
 
 @media (max-width: 1024px) {
   .hero-main-content {
@@ -3694,7 +3624,7 @@ html {
 
 @media (max-width: 768px) {
 
-  /* Header */
+  
   .header-exact {
     flex-wrap: wrap;
     padding: 14px 20px;
@@ -3748,9 +3678,9 @@ html {
     color: var(--white) !important;
   }
 
-  /* Hero Section Overrides */
+  
 
-  /* Hero Section Responsive Mobile Layout */
+  
   .hero-section-container {
     position: relative !important;
     min-height: 640px !important;
@@ -3857,7 +3787,7 @@ html {
     }
   }
 
-  /* Stats and Services Grids */
+  
   .stats-grid-exact {
     grid-template-columns: 1fr;
     gap: 20px;
@@ -3962,7 +3892,7 @@ html {
     justify-content: center;
   }
 
-  /* General structural stacking */
+  
   .services-split-exact,
   .advantage-grid-exact,
   .how-grid-exact,
@@ -3972,7 +3902,7 @@ html {
     gap: 40px !important;
   }
 
-  /* Grid specific stacking */
+  
   .advantage-cards-exact {
     gap: 20px;
   }
@@ -3986,20 +3916,20 @@ html {
     gap: 30px;
   }
 
-  /* Stats banner borders */
+  
   .stat-item-exact {
     text-align: center;
     align-items: center;
   }
 
-  /* Image adjustments */
+  
   .advantage-image-exact {
     width: 100% !important;
     height: auto !important;
     aspect-ratio: 1 !important;
   }
 
-  /* How it works */
+  
   .how-step-exact {
     text-align: center;
     margin-bottom: 30px;
@@ -4009,7 +3939,7 @@ html {
     display: none !important;
   }
 
-  /* Form and footer */
+  
   .contact-form-exact .form-row-exact {
     flex-direction: column !important;
     gap: 16px !important;
@@ -4022,9 +3952,7 @@ html {
   }
 }
 
-/* =========================================
-   DECORATIVE LEAVES RESPONSIVE SIZING
-   ========================================= */
+
 .decorative-leaf-about {
   width: 250px;
   max-width: 300px;
@@ -4121,7 +4049,7 @@ html {
 }
 
 
-/* GLOBAL MOBILE RESPONSIVENESS FIXES */
+
 @media (max-width: 768px) {
 
   .services-grid,
@@ -4142,7 +4070,7 @@ html {
   }
 }
 
-/* Custom Dropdown Styling */
+
 .custom-dropdown-container {
   position: relative;
   width: 100%;
@@ -4220,7 +4148,7 @@ html {
   transform: rotate(180deg);
 }
 
-/* --- Contact CTA Card --- */
+
 .contact-cta-card {
   background-color: #efe6fc;
   border-radius: 24px;

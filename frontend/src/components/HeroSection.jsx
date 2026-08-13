@@ -7,12 +7,12 @@ export default function HeroSection() {
   const video2Ref = useRef(null);
   const activeVideoRef = useRef(1);
   const isFadingRef = useRef(false);
-  const fadeTime = 0.8; // 0.8s makes the transition buttery smooth and invisible
+  const fadeTime = 0.8; 
 
   const blobUrlRef = useRef(null);
 
   useEffect(() => {
-    // 1. Silent Blob Hotswap for slow internet
+    
     fetch(bgVideo)
       .then(res => res.blob())
       .then(blob => {
@@ -24,7 +24,7 @@ export default function HeroSection() {
     const v2 = video2Ref.current;
     if (!v1 || !v2) return;
 
-    // Start initial video
+    
     v1.play().catch(e => console.log('Autoplay prevented:', e));
 
     let animationFrameId;
@@ -41,13 +41,13 @@ export default function HeroSection() {
           
           next.currentTime = 0;
           
-          // CRITICAL FIX: We must wait for the video to actually start decoding frames
-          // before we trigger the CSS fade. Otherwise, it fades in a frozen frame!
+          
+          
           const playPromise = next.play();
           
           if (playPromise !== undefined) {
             playPromise.then(() => {
-              // Video is now fully moving and active. Begin the smooth fade!
+              
               next.style.transition = `opacity ${fadeTime}s ease-in-out`;
               next.style.opacity = 1;
               next.style.zIndex = 2;
@@ -59,7 +59,7 @@ export default function HeroSection() {
                 active.style.transition = 'none';
                 active.style.opacity = 0;
                 
-                // Hot-swap to RAM blob for zero network buffering on future loops
+                
                 if (blobUrlRef.current && !active.src.startsWith('blob:')) {
                   active.src = blobUrlRef.current;
                   active.load();
@@ -71,7 +71,7 @@ export default function HeroSection() {
 
             }).catch(e => {
               console.log(e);
-              isFadingRef.current = false; // Reset if play fails
+              isFadingRef.current = false; 
             });
           }
         }
@@ -87,7 +87,7 @@ export default function HeroSection() {
   return (
     <div className="hero-section-container" style={{ position: 'relative', overflow: 'hidden', backgroundColor: '#ffffff', color: '#111827', minHeight: '620px', display: 'flex', alignItems: 'center' }}>
       
-      {/* Background Video Layer */}
+      {}
       <div className="hero-video-layer" style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, zIndex: 0, backgroundColor: '#ffffff', overflow: 'hidden' }}>
         <video 
           ref={video1Ref}

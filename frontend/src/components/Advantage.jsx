@@ -5,7 +5,7 @@ import WHY_CHOOSE_US from '../data/whyChooseUs';
 const Advantage = () => {
   return (
     <section className="advantage-exact container" id="solutions" style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Right Corner Decorative Watercolor Leaves */}
+      {}
       <img
         src="/watercolor_leaves.png"
         alt="Decorative Watercolor Leaves Right"

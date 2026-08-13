@@ -11,17 +11,14 @@
 
 .falling-element {
   position: absolute;
-  top: -10%; /* Start above parent */
-  animation-name: fall-down-screen;
+  top: -10%;   animation-name: fall-down-screen;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
-  animation-duration: var(--anim-dur, 15s); /* Fallback */
-}
+  animation-duration: var(--anim-dur, 15s); }
 
 @media (min-width: 768px) {
   .falling-element {
-    /* Desktop containers are shorter, so we make the animation duration faster (40% of mobile duration) to maintain the same falling speed effect */
-    animation-duration: calc(var(--anim-dur, 15s) * 0.4);
+        animation-duration: calc(var(--anim-dur, 15s) * 0.4);
   }
 }
 

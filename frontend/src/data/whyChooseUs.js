@@ -1,11 +1,11 @@
-// Single source of truth for the "Why Choose NEXA24" cards.
-//
-// Previously this content was duplicated in three different places with
-// three different sets of cards: Advantage.jsx (Home page) had its own
-// hardcoded 4 cards, ServiceDetail.jsx had yet another hardcoded set, and
-// AboutUs.jsx had its own separate 5-card list. This is the actual content
-// (the AboutUs 5-card version) — every page now pulls from here, so editing
-// one place updates the "Why Choose Us" cards everywhere they're shown.
+
+
+
+
+
+
+
+
 import { Clock, Award, ShieldCheck, HeartHandshake, Layers } from "lucide-react";
 
 const WHY_CHOOSE_US = [

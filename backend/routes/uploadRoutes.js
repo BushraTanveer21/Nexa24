@@ -6,8 +6,8 @@ import protect from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// Keep the file in memory (not written to disk) and cap size at 5MB —
-// plenty for a service/testimonial photo, small enough to stop abuse.
+
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -21,7 +21,7 @@ const upload = multer({
 
 const uploadVideoLimit = multer({
   storage: multer.memoryStorage(),
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for videos
+  limits: { fileSize: 50 * 1024 * 1024 }, 
   fileFilter: (req, file, cb) => {
     if (!file.mimetype.startsWith("video/")) {
       return cb(new Error("Only video files are allowed"));
@@ -30,7 +30,7 @@ const uploadVideoLimit = multer({
   },
 });
 
-// Wrap routes with error handling for Multer size limit / type errors
+
 const handleUpload = (multerMiddleware) => (req, res, next) => {
   multerMiddleware(req, res, (err) => {
     if (err instanceof multer.MulterError) {

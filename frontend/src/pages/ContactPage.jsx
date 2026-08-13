@@ -34,7 +34,7 @@ export default function ContactPage() {
     } else {
       window.scrollTo(0, 0);
     }
-    // Fetch dynamic services
+    
     const fetchServices = async () => {
       try {
         const res = await fetch(`${API_URL}/api/services`);
@@ -97,15 +97,15 @@ export default function ContactPage() {
 
   return (
     <div className="main-wrapper">
-      {/* Decorative leaf branch top-left */}
+      {}
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-tl" />
-      {/* Removed the middle-right branch from here to move it above the form */}
-      {/* Decorative leaf branch bottom-right */}
+      {}
+      {}
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-br" />
 
-      {/* Hero Section */}
+      {}
       <section className="hero-wrap contact-hero-exact">
-        {/* Floating particles for decoration matching the mockup */}
+        {}
         <div className="hero-particles">
           <div className="particle p1"></div>
           <div className="particle p2"></div>
@@ -176,12 +176,12 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Form Section */}
+      {}
       <section className="contact-form-section" style={{ position: 'relative' }}>
-        {/* Background leaf starting from the corner of the page */}
+        {}
         <img src="/image.png" alt="" aria-hidden="true" className="botanical-branch" style={{ position: 'absolute', right: '0px', top: '-120px', width: '280px', transform: 'scaleX(-1) rotate(-15deg)', zIndex: 0, opacity: 0.4 }} />
 
-        {/* Wrapper for Card */}
+        {}
         <div style={{ position: 'relative', width: '100%', height: '100%' }}>
 
           <div className="contact-form-card-exact" style={{ position: 'relative', zIndex: 10, background: '#ffffff', borderRadius: '24px', boxShadow: '0 20px 40px rgba(0,0,0,0.08)', display: 'flex', overflow: 'hidden', minHeight: '600px' }}>
@@ -385,7 +385,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Google Map Section */}
+      {}
       <section className="contact-map-section">
         <div className="map-container">
           <iframe

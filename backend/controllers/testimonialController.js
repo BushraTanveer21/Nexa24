@@ -1,7 +1,7 @@
 import Testimonial from "../models/Testimonial.js";
 import cloudinary from "../config/cloudinary.js";
 
-// Helper function to remove media from Cloudinary
+
 const deleteFromCloudinary = async (url, isVideo = false) => {
   if (!url || !url.includes("cloudinary.com")) return;
   const splitUrl = url.split("/upload/");
@@ -26,15 +26,15 @@ const deleteFromCloudinary = async (url, isVideo = false) => {
   }
 };
 
-// Helper: next order value = current max + 1, so new items go to the end.
+
 const getNextOrder = async () => {
   const last = await Testimonial.findOne().sort({ order: -1 });
   return last ? last.order + 1 : 0;
 };
 
-// ---------- Public ----------
 
-// GET /api/testimonials — used by the /testimonials page
+
+
 export const getTestimonials = async (req, res) => {
   try {
     const testimonials = await Testimonial.find({ isEnabled: true }).sort({ order: 1 });
@@ -44,7 +44,7 @@ export const getTestimonials = async (req, res) => {
   }
 };
 
-// GET /api/testimonials/featured — used by the Home page preview
+
 export const getFeaturedTestimonials = async (req, res) => {
   try {
     const limit = Number(req.query.limit) || 3;
@@ -57,7 +57,7 @@ export const getFeaturedTestimonials = async (req, res) => {
   }
 };
 
-// POST /api/testimonials/submit — public client submission, pending review
+
 export const submitTestimonial = async (req, res) => {
   try {
     const { name, message, videoUrl } = req.body || {};
@@ -70,7 +70,7 @@ export const submitTestimonial = async (req, res) => {
 
     const testimonialData = {
       ...req.body,
-      isEnabled: false, // forced regardless of the model's conditional default — always pending on submit
+      isEnabled: false, 
       isClientSubmitted: true,
       order: await getNextOrder(),
     };
@@ -82,9 +82,9 @@ export const submitTestimonial = async (req, res) => {
   }
 };
 
-// ---------- Admin ----------
 
-// GET /api/admin/testimonials — everything, enabled or not, in order
+
+
 export const getAdminTestimonials = async (req, res) => {
   try {
     const testimonials = await Testimonial.find({}).sort({ order: 1 });
@@ -94,7 +94,7 @@ export const getAdminTestimonials = async (req, res) => {
   }
 };
 
-// POST /api/admin/testimonials — admin adds one directly (already vetted)
+
 export const createTestimonial = async (req, res) => {
   try {
     const { name, message } = req.body || {};
@@ -124,12 +124,12 @@ export const updateTestimonial = async (req, res) => {
     const existing = await Testimonial.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: "Testimonial not found" });
 
-    // If image is being updated or cleared, delete the old Cloudinary image
+    
     if (req.body.image !== undefined && req.body.image !== existing.image) {
       await deleteFromCloudinary(existing.image, false);
     }
 
-    // If videoUrl is being updated or cleared, delete the old Cloudinary video
+    
     if (req.body.videoUrl !== undefined && req.body.videoUrl !== existing.videoUrl) {
       await deleteFromCloudinary(existing.videoUrl, true);
     }
@@ -149,11 +149,11 @@ export const deleteTestimonial = async (req, res) => {
     const testimonial = await Testimonial.findByIdAndDelete(req.params.id);
     if (!testimonial) return res.status(404).json({ message: "Testimonial not found" });
 
-    // Delete image and video from Cloudinary if hosted there
+    
     await deleteFromCloudinary(testimonial.image, false);
     await deleteFromCloudinary(testimonial.videoUrl, true);
 
-    // Re-index remaining testimonials sequentially
+    
     const remaining = await Testimonial.find().sort({ order: 1 });
     const bulkOps = remaining.map((t, index) => ({
       updateOne: {
@@ -171,8 +171,8 @@ export const deleteTestimonial = async (req, res) => {
   }
 };
 
-// PATCH /api/admin/testimonials/:id/approve — admin approves a pending
-// client submission (sets isEnabled true so it shows on /testimonials)
+
+
 export const approveTestimonial = async (req, res) => {
   try {
     const testimonial = await Testimonial.findById(req.params.id);
@@ -187,7 +187,7 @@ export const approveTestimonial = async (req, res) => {
   }
 };
 
-// PATCH /api/admin/testimonials/:id/toggle-featured
+
 export const toggleFeatured = async (req, res) => {
   try {
     const testimonial = await Testimonial.findById(req.params.id);
@@ -202,12 +202,12 @@ export const toggleFeatured = async (req, res) => {
   }
 };
 
-// PATCH /api/admin/testimonials/:id/order
-// Body: { order: <desired index, 0-based> }
-// This is what the admin panel's editable "Order" number input should call
-// instead of a plain field update. It moves this testimonial to the
-// requested position and re-indexes every other testimonial around it, so
-// two rows can never end up sharing the same order value.
+
+
+
+
+
+
 export const setTestimonialOrder = async (req, res) => {
   try {
     const { order: requestedOrder } = req.body;
@@ -224,7 +224,7 @@ export const setTestimonialOrder = async (req, res) => {
       return res.json(all);
     }
 
-    // Step 1: Perform pairwise swap in memory
+    
     const updatedAll = all.map(t => {
       if (t._id.toString() === req.params.id) {
         return { ...t.toObject(), order: requestedOrder };
@@ -235,10 +235,10 @@ export const setTestimonialOrder = async (req, res) => {
       return t.toObject();
     });
 
-    // Step 2: Re-sort the mapped array by order to maintain sequential placement
+    
     updatedAll.sort((a, b) => a.order - b.order);
 
-    // Step 3: Re-index 0, 1, 2, 3... to scrub out any existing duplicate bugs (like two 4's)
+    
     const bulkOps = updatedAll.map((t, index) => ({
       updateOne: { filter: { _id: t._id }, update: { order: index } }
     }));
@@ -252,9 +252,9 @@ export const setTestimonialOrder = async (req, res) => {
   }
 };
 
-// PATCH /api/admin/testimonials/reorder
-// Body: { order: [id1, id2, id3, ...] } — full list of IDs in new order,
-// sent whenever the admin drags-and-drops testimonials into a new sequence.
+
+
+
 export const reorderTestimonials = async (req, res) => {
   try {
     const { order } = req.body;

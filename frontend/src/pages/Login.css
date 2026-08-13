@@ -1,4 +1,4 @@
-/* NEXA24 Healthcare Admin Login Styles - Exact Mockup Replica */
+
 
 .login-page-wrapper {
   min-height: 100vh;
@@ -16,7 +16,7 @@
   box-sizing: border-box;
 }
 
-/* Wavy Background Graphic Overlays */
+
 .bg-shape-wave-left {
   position: absolute;
   top: 0;
@@ -39,7 +39,7 @@
   z-index: 0;
 }
 
-/* Botanical Watercolor Leaf Branches (Minimal & Elegant) */
+
 .botanical-branch {
   position: absolute;
   pointer-events: none;
@@ -69,7 +69,7 @@
   transform: rotate(180deg);
 }
 
-/* Floating Leaf Accents */
+
 .floating-leaf {
   position: absolute;
   width: 24px;
@@ -104,7 +104,7 @@
   }
 }
 
-/* Main Card Wrapper */
+
 .login-card-container {
   display: flex;
   flex-direction: column;
@@ -114,7 +114,7 @@
   max-width: 530px;
 }
 
-/* Floating White Card */
+
 .login-card {
   width: 100%;
   background: #ffffff;
@@ -130,7 +130,7 @@
   box-sizing: border-box;
 }
 
-/* Logo Section */
+
 .login-logo-wrapper {
   display: flex;
   justify-content: center;
@@ -144,7 +144,7 @@
   object-fit: contain;
 }
 
-/* Header Text */
+
 .login-card-header {
   text-align: center;
   margin-bottom: 1.4rem;
@@ -178,7 +178,7 @@
   margin: 0;
 }
 
-/* Alerts */
+
 .alert-box {
   width: 100%;
   display: flex;
@@ -213,7 +213,7 @@
   }
 }
 
-/* Form Layout */
+
 .login-card-form {
   width: 100%;
   display: flex;
@@ -295,7 +295,7 @@
   color: #64748b;
 }
 
-/* Checkbox & Forgot Password Row */
+
 .form-options-row {
   display: flex;
   align-items: center;
@@ -343,7 +343,7 @@
   font-weight: bold;
 }
 
-/* Sign In Button */
+
 .btn-signin-primary {
   width: 100%;
   padding: 0.9rem;
@@ -392,7 +392,7 @@
   }
 }
 
-/* OR Divider */
+
 .card-divider-or {
   width: 100%;
   display: flex;
@@ -415,7 +415,7 @@
   padding: 0 1rem;
 }
 
-/* Security Info Notice Box */
+
 .security-info-box {
   width: 100%;
   display: flex;
@@ -443,7 +443,7 @@
   margin: 0;
 }
 
-/* Footer Copyright */
+
 .login-card-footer {
   margin-top: 1.7rem;
   text-align: center;
@@ -457,7 +457,7 @@
   font-weight: 500;
 }
 
-/* Responsive Scaling */
+
 @media (max-width: 640px) {
   .login-page-wrapper {
     padding: 1.5rem 1rem;

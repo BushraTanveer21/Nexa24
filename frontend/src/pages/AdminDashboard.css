@@ -1,6 +1,6 @@
-/* NEXA24 EXACT ADMIN DASHBOARD MOCKUP STYLING */
 
-/* Base Page Layout */
+
+
 .nexa-dashboard-page {
   display: flex;
   min-height: 100vh;
@@ -12,7 +12,7 @@
   overflow-x: hidden;
 }
 
-/* Botanical Watercolor Leaf Branches (Minimal & Elegant) */
+
 .botanical-branch {
   position: absolute;
   pointer-events: none;
@@ -38,7 +38,7 @@
   transform: rotate(180deg);
 }
 
-/* LEFT SIDEBAR */
+
 .nexa-sidebar {
   width: 280px;
   flex-shrink: 0;
@@ -56,8 +56,7 @@
   transition: width 0.25s ease, left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Desktop Collapse/Expand Toggle Button - sits fully inside the sidebar
-   so it never clips or floats outside its bounds on narrow screens */
+
 .sidebar-collapse-toggle {
   position: absolute;
   top: 1.6rem;
@@ -80,7 +79,7 @@
   background: rgba(255, 255, 255, 0.28);
 }
 
-/* COLLAPSED SIDEBAR (desktop only) */
+
 .nexa-sidebar.collapsed {
   width: 88px;
 }
@@ -135,7 +134,7 @@
   z-index: 1;
 }
 
-/* Top End Sidebar Brand Logo Header */
+
 .sidebar-brand {
   padding: 1.8rem 1.5rem 1.4rem 1.5rem;
   z-index: 2;
@@ -245,7 +244,7 @@
   font-weight: 500;
 }
 
-/* MAIN CONTENT AREA */
+
 .nexa-main-content {
   flex: 1;
   min-width: 0;
@@ -261,7 +260,7 @@
   margin-left: 88px;
 }
 
-/* Top Header */
+
 .dash-top-header {
   display: flex;
   align-items: flex-start;
@@ -284,7 +283,7 @@
   font-weight: 500;
 }
 
-/* User Profile */
+
 .admin-profile-container {
   position: relative;
 }
@@ -391,7 +390,7 @@
   background: #fee2e2;
 }
 
-/* STAT CARDS ROW */
+
 .stats-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -497,7 +496,7 @@
   background: #ef4444;
 }
 
-/* SECTIONS & TABLES */
+
 .dash-section-card {
   background: #ffffff;
   border-radius: 20px;
@@ -608,7 +607,7 @@
   background: #94a3b8;
 }
 
-/* DASHBOARD TABS HEADER */
+
 .dash-tabs-header {
   display: flex;
   align-items: center;
@@ -674,9 +673,7 @@
   word-break: break-word;
 }
 
-/* Long descriptions used to expand the whole row to fit; clamp them in the
-   table view so the list stays scannable. Nothing is lost — the admin
-   still edits/sees the full text in the Add/Edit modal. */
+
 .col-description {
   max-width: 340px;
 }
@@ -705,7 +702,7 @@
   font-size: 0.8rem;
 }
 
-/* Order cell */
+
 .order-drag-cell {
   display: inline-flex;
   align-items: center;
@@ -732,7 +729,7 @@
   border-color: #7c3aed;
 }
 
-/* Action Buttons */
+
 .action-btn-group {
   display: flex;
   gap: 0.5rem;
@@ -781,7 +778,7 @@
   background: #e9d5ff;
 }
 
-/* Status Pills */
+
 .status-pill {
   display: inline-flex;
   padding: 0.25rem 0.6rem;
@@ -821,7 +818,7 @@
   color: #475569;
 }
 
-/* Quote Icon Cell */
+
 .quote-icon-cell {
   display: inline-flex;
   color: #5b21b6;
@@ -829,7 +826,7 @@
   font-size: 1.1rem;
 }
 
-/* Toggle Switch */
+
 .toggle-switch {
   position: relative;
   display: inline-block;
@@ -1292,7 +1289,7 @@ input:checked+.slider:before {
   white-space: pre-wrap;
 }
 
-/* Service Image Thumbnail & Upload Styles */
+
 .col-image {
   width: 70px;
   text-align: center;
@@ -1410,7 +1407,7 @@ input:checked+.slider:before {
   background: #fecaca;
 }
 
-/* Profile Settings Form (centered, comfortably large) */
+
 .profile-settings-section {
   max-width: 620px;
   margin: 0 auto;
@@ -1546,7 +1543,7 @@ input:checked+.slider:before {
   }
 }
 
-/* Mobile Responsive Header Bar & Drawer */
+
 .dash-mobile-bar {
   display: none;
   align-items: center;
@@ -1600,7 +1597,7 @@ input:checked+.slider:before {
   z-index: 25;
 }
 
-/* Responsive Breakpoints */
+
 @media (max-width: 1200px) {
   .two-cards-grid {
     grid-template-columns: 1fr;

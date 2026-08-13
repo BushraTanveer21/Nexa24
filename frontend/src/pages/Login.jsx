@@ -47,7 +47,7 @@ export default function Login() {
         throw new Error(data.message || "Invalid credentials. Please try again.");
       }
 
-      // Save Auth Token & User info
+      
       if (rememberMe) {
         localStorage.setItem("nexa_token", data.token);
         localStorage.setItem("nexa_user", JSON.stringify(data));
@@ -75,27 +75,27 @@ export default function Login() {
 
   return (
     <div className="login-page-wrapper">
-      {/* Background Decorative Abstract Shapes */}
+      {}
       <div className="bg-shape-wave-left"></div>
       <div className="bg-shape-wave-right"></div>
 
-      {/* Botanical Watercolor Branches & Leaves */}
+      {}
       <img src={branchTL} alt="Botanical Branch Top Left" className="botanical-branch branch-top-left" />
       <img src={branchTL} alt="Botanical Branch Bottom Right" className="botanical-branch branch-bottom-right" />
 
-      {/* Floating accent leaves */}
+      {}
       <div className="floating-leaf leaf-1"></div>
       <div className="floating-leaf leaf-2"></div>
 
-      {/* Main Single Centered Card */}
+      {}
       <div className="login-card-container">
         <div className="login-card">
-          {/* Logo Header */}
+          {}
           <div className="login-logo-wrapper">
             <img src={nexaLogo} alt="NEXA24 Healthcare Logo" className="login-brand-logo" />
           </div>
 
-          {/* Heading and Subtitles */}
+          {}
           <div className="login-card-header">
             <h1 className="login-main-heading">Welcome Back</h1>
             <p className="login-subheading-bold">
@@ -106,7 +106,7 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Alert Banners */}
+          {}
           {errorMsg && (
             <div className="alert-box error">
               <AlertCircle className="alert-icon" size={18} />
@@ -121,7 +121,7 @@ export default function Login() {
             </div>
           )}
 
-          {/* Login Form */}
+          {}
           <form onSubmit={handleLogin} className="login-card-form" autoComplete="off">
             <div className="form-field-group">
               <label htmlFor="email">Email Address</label>
@@ -182,7 +182,7 @@ export default function Login() {
             </button>
           </form>
 
-          {/* Security Banner Box */}
+          {}
           <div className="security-info-box">
             <Shield className="security-shield-icon" size={20} />
             <p>
@@ -191,7 +191,7 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Footer Copyright */}
+        {}
         <footer className="login-card-footer">
           <p>© 2026 NEXA24 HEALTHCARE. All Rights Reserved.</p>
         </footer>

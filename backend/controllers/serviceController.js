@@ -2,8 +2,7 @@ import Service from "../models/Service.js";
 
 import cloudinary from "../config/cloudinary.js";
 
-// Fields clients are allowed to set. Keeps req.body from mass-assigning
-// anything else that gets added to the schema later.
+
 const ALLOWED_FIELDS = [
   "title",
   "description",
@@ -21,8 +20,8 @@ const pickAllowed = (body = {}) =>
     return acc;
   }, {});
 
-// Safely delete an image from Cloudinary. Never throws — a failed cleanup
-// shouldn't block the actual service create/update/delete from succeeding.
+
+
 const destroyCloudinaryImage = async (publicId) => {
   if (!publicId) return;
   try {
@@ -32,7 +31,7 @@ const destroyCloudinaryImage = async (publicId) => {
   }
 };
 
-// Public — Home & Services page. Only active services.
+
 export const getServices = async (req, res) => {
   try {
     const services = await Service.find({ isActive: true }).sort({ order: 1 });
@@ -42,8 +41,8 @@ export const getServices = async (req, res) => {
   }
 };
 
-// Admin only — returns ALL services regardless of isActive, so disabled
-// services stay visible/editable in the dashboard instead of disappearing.
+
+
 export const getAdminServices = async (req, res) => {
   try {
     const services = await Service.find().sort({ order: 1 });
@@ -65,9 +64,9 @@ export const createService = async (req, res) => {
 
     const data = pickAllowed(req.body);
 
-    // If the requested order is already taken by another service, that
-    // service didn't get bumped to make room — push it to the end of the
-    // list (next available slot) so both services end up with unique orders.
+    
+    
+    
     if (data.order !== undefined) {
       const desiredOrder = Number(data.order);
       const conflict = await Service.findOne({ order: desiredOrder });
@@ -100,18 +99,18 @@ export const updateService = async (req, res) => {
       return res.status(400).json({ message: "Service description cannot be empty" });
     }
 
-    // Grab the existing doc first so we know the OLD image's public_id
-    // before it gets overwritten — needed to clean up the old upload
-    // whenever the admin replaces it with a new one.
+    
+    
+    
     const existing = await Service.findById(req.params.id);
     if (!existing) return res.status(404).json({ message: "Service not found" });
 
     const updates = pickAllowed(req.body);
 
-    // Order swap: if this service is moving to an order another service
-    // already holds, give that other service the order we're vacating —
-    // so the two effectively swap places instead of ending up with a
-    // duplicate order number.
+    
+    
+    
+    
     if (updates.order !== undefined) {
       const desiredOrder = Number(updates.order);
       if (desiredOrder !== existing.order) {
@@ -151,8 +150,8 @@ export const deleteService = async (req, res) => {
     const service = await Service.findByIdAndDelete(req.params.id);
     if (!service) return res.status(404).json({ message: "Service not found" });
 
-    // Clean up the associated Cloudinary upload so removing a service
-    // doesn't leave an orphaned image behind.
+    
+    
     await destroyCloudinaryImage(service.imagePublicId);
 
     res.json({ message: "Service deleted" });

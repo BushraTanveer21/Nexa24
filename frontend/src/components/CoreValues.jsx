@@ -3,7 +3,7 @@ import React from 'react';
 const CoreValues = () => {
   return (
     <section id="how-it-works" className="how-it-works-exact container" style={{ position: 'relative', overflow: 'hidden' }}>
-      {/* Left Corner Decorative Watercolor Leaves */}
+      {}
       <img 
         src="/watercolor_leaves.png" 
         alt="Decorative Watercolor Leaves Left" 

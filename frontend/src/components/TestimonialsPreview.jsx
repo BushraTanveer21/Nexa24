@@ -34,7 +34,7 @@ const InteractiveVideoPlayer = ({ url }) => {
   if (!url || typeof url !== 'string') return null;
   const trimmed = url.trim();
 
-  // Validate URL format
+  
   if (!/^(https?:\/\/|\/|blob:)/i.test(trimmed)) {
     return null;
   }
@@ -211,13 +211,13 @@ const TestimonialsPreview = () => {
         }
         const data = await response.json();
         
-        // Filter enabled testimonials
+        
         const activeTestimonials = data.filter(t => t.isEnabled !== false);
         
-        // Sort by best rating first (descending)
+        
         activeTestimonials.sort((a, b) => (b.rating || 5) - (a.rating || 5));
         
-        // Take the top 3
+        
         setTestimonials(activeTestimonials.slice(0, 3));
       } catch {
         setTestimonials([]);
@@ -229,7 +229,7 @@ const TestimonialsPreview = () => {
     fetchTestimonials();
   }, [API_URL]);
 
-  // Determine what to display in the grid
+  
   const displayCards = testimonials.length > 0 
     ? testimonials 
     : [
@@ -240,7 +240,7 @@ const TestimonialsPreview = () => {
 
   return (
     <section style={{ padding: '80px 20px', backgroundColor: '#F3E8FF', position: 'relative', overflow: 'hidden' }}>
-      {/* Left Corner Decorative Watercolor Leaves */}
+      {}
       <img 
         src="/watercolor_leaves.png" 
         alt="Decorative Watercolor Leaves Left" 

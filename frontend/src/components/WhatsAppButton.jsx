@@ -8,7 +8,7 @@ const WhatsAppButton = () => {
   const isAdminPage = location.pathname.startsWith('/admin');
 
   if (isAdminPage) return null;
-  // Replace with the actual phone number you want to use
+  
   const phoneNumber = "1234567890"; 
   const message = encodeURIComponent("Hello NEXA24! I'm interested in your services.");
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;

@@ -4,8 +4,8 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import nexaLogo from "../assets/nexa24-logo.png";
 
-// Home ko bhi enabled: false kar diya — ab woh sirf text ki tarah dikhega,
-// click nahi karega (logo pe click kar ke "/" pe jaya ja sakta hai).
+
+
 const LINKS = [
   { id: "home", to: "/", label: "HOME", enabled: true },
   { id: "about", to: "/about", label: "ABOUT US", enabled: true },
@@ -16,7 +16,7 @@ const LINKS = [
 
 const GET_STARTED_TARGET = "/contact#contact-form";
 
-// ===== Compact drawer styles =====
+
 const drawerStyle = {
   position: "fixed",
   top: 0,

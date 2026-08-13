@@ -10,7 +10,7 @@ const seedAdmin = async () => {
   try {
     const anyAdminExists = await Admin.exists({});
     if (anyAdminExists) {
-      return; // Real admin account(s) already exist — never touch them.
+      return; 
     }
 
     const normalizedEmail = defaultAdmin.email.toLowerCase().trim();

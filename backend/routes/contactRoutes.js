@@ -9,9 +9,9 @@ import protect from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/", submitContact); // public - visitor submits form
-router.get("/", protect, getContacts); // admin only - view inquiries
-router.put("/:id", protect, updateContact); // admin only - update status
-router.delete("/:id", protect, deleteContact); // admin only
+router.post("/", submitContact); 
+router.get("/", protect, getContacts); 
+router.put("/:id", protect, updateContact); 
+router.delete("/:id", protect, deleteContact); 
 
 export default router;

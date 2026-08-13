@@ -11,17 +11,17 @@ export default function FallingPetals() {
     const newElements = Array.from({ length: totalPetals }).map((_, i) => {
       const type = Math.floor(Math.random() * 3);
       
-      // randomize values but perfectly balance horizontally
+      
       const segmentWidth = 100 / totalPetals;
       const left = (i * segmentWidth) + (Math.random() * segmentWidth);
       
-      const animDuration = 10 + Math.random() * 15; // 10s to 25s fall
-      const animDelay = -Math.random() * 25; // spread them out initially
+      const animDuration = 10 + Math.random() * 15; 
+      const animDelay = -Math.random() * 25; 
       
-      // Small size to match the reference image (8px to 16px)
+      
       const size = 8 + Math.random() * 8; 
       
-      const swayDuration = 2 + Math.random() * 3; // 2s to 5s sway
+      const swayDuration = 2 + Math.random() * 3; 
       const swayDelay = -Math.random() * 3;
       
       return {
@@ -51,7 +51,7 @@ export default function FallingPetals() {
       {elements.map((el) => {
         let SvgIcon = null;
         if (el.type === 0) {
-          // Flower 1 (Deep Purple)
+          
           SvgIcon = (
             <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', opacity: 0.9 }}>
               <g fill="#7E22CE">
@@ -65,7 +65,7 @@ export default function FallingPetals() {
             </svg>
           );
         } else if (el.type === 1) {
-          // Flower 2 (Medium Purple)
+          
           SvgIcon = (
             <svg viewBox="0 0 100 100" style={{ width: '100%', height: '100%', opacity: 0.9 }}>
               <g fill="#9333EA">
@@ -79,7 +79,7 @@ export default function FallingPetals() {
             </svg>
           );
         } else {
-          // Leaf (Lighter Purple)
+          
           SvgIcon = (
             <svg viewBox="0 0 100 100" style={{ fill: '#A855F7', opacity: 0.8, width: '100%', height: '100%' }}>
               <path d="M10,90 C10,90 30,20 90,10 C90,10 70,80 10,90 Z" />

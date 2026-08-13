@@ -19,9 +19,9 @@ function ScrollAnimations() {
   const location = useLocation();
 
   useEffect(() => {
-    // Scroll to top on route change, unless the URL has a hash target
-    // (e.g. "Contact Us" / "Schedule a Consultation" buttons linking to
-    // /contact#contact-form) — in that case scroll to that section instead.
+    
+    
+    
     if (location.hash) {
       const scrollToHash = () => {
         const el = document.querySelector(location.hash);
@@ -31,8 +31,8 @@ function ScrollAnimations() {
         }
         return false;
       };
-      // Content (esp. on Contact page) may render slightly after route
-      // change, so retry briefly instead of giving up on the first try.
+      
+      
       if (!scrollToHash()) {
         const retry = setTimeout(scrollToHash, 150);
         return () => clearTimeout(retry);
@@ -44,11 +44,11 @@ function ScrollAnimations() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // No unobserve, and the class is removed when the element leaves
-          // the viewport (not just added once) — so every element replays
-          // its reveal animation each time it's scrolled into view again,
-          // whether scrolling down past it or back up to it, instead of
-          // only animating the first time it's ever seen.
+          
+          
+          
+          
+          
           if (entry.isIntersecting) {
             entry.target.classList.add('in-view');
           } else {
@@ -100,7 +100,7 @@ function ScrollAnimations() {
         observer.observe(el);
       });
 
-      // Catch-all: ensure any element manually given the 'reveal' class in JSX is observed!
+      
       document.querySelectorAll('.reveal').forEach((el) => {
         observer.observe(el);
       });
@@ -111,7 +111,7 @@ function ScrollAnimations() {
     const timer = setTimeout(() => {
       applyAnimations();
       
-      // Watch for dynamically loaded content (e.g., Client Stories)
+      
       mutationObserver = new MutationObserver(() => {
         applyAnimations();
       });
@@ -139,7 +139,7 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/testimonial" element={<TestimonialPage />} />
 
-            {/*  routes */}
+            {}
             <Route path="/services" element={<Services />} />
             <Route path="/services/:slug" element={<ServiceDetail />} />
             <Route path="/about" element={<AboutUs />} />

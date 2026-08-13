@@ -20,7 +20,7 @@ import { resolveIcon } from "../utils/iconMap";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-// Detailed service definitions matching the mockup design
+
 const SERVICE_DETAILS = {
   "virtual-assistance-services": {
     eyebrow: "VIRTUAL ASSISTANCE SERVICES",
@@ -158,8 +158,8 @@ const SERVICE_DETAILS = {
   },
 };
 
-// Fallback generator for dynamically added backend services (used when the
-// slug isn't one of the 5 hand-designed entries above)
+
+
 function buildFallbackServiceData(backendService) {
   const name = backendService?.title || backendService?.name || "Healthcare Service";
   return {
@@ -191,19 +191,19 @@ function buildFallbackServiceData(backendService) {
   };
 }
 
-// Builds the final data used to render the page. Starts from either the
-// hand-designed content (for the 5 core services) or the generic fallback
-// (for any service added later from the admin panel), then layers the
-// real backend title/description/benefits on top — so nothing on the page
-// stays hardcoded once the admin has entered the real data.
+
+
+
+
+
 function getServiceData(slug, backendService) {
   const base = SERVICE_DETAILS[slug]
     ? { ...SERVICE_DETAILS[slug] }
     : buildFallbackServiceData(backendService);
 
-  // Title, eyebrow, and description now always come from the real service
-  // record in the DB — not the hardcoded SERVICE_DETAILS copy. Eyebrow is
-  // just the title in caps, so there's no separate field to keep in sync.
+  
+  
+  
   if (backendService?.title?.trim()) {
     base.title = backendService.title.trim();
     base.eyebrow = backendService.title.trim().toUpperCase();
@@ -212,11 +212,11 @@ function getServiceData(slug, backendService) {
     base.description = backendService.description.trim();
   }
 
-  // Benefits entered in the admin dashboard drive BOTH the pill row under the
-  // title AND the "What Our ... Handle" cards further down the page — they
-  // used to only feed the pills, so anything an admin added never showed up
-  // in the cards below. Building both from the same array also keeps them in
-  // the same order, so a pill and its matching card share an index.
+  
+  
+  
+  
+  
   if (Array.isArray(backendService?.benefits) && backendService.benefits.length > 0) {
     const validBenefits = backendService.benefits.filter((b) => b?.label?.trim());
 
@@ -235,13 +235,13 @@ function getServiceData(slug, backendService) {
   return base;
 }
 
-// DOM id for a "What We Handle" card, keyed by its POSITION in the list
-// (not its text). Badges and handles are always built in the same order —
-// pill #1 pairs with card #1, pill #2 with card #2, etc. — so matching by
-// index works even when a badge's short label doesn't exactly match its
-// card's longer title (e.g. "Claims Submission" pill vs "Claims Submission
-// & Follow-up" card). This also means any newly added service/benefit pair
-// just works automatically, since it's positional, not text-based.
+
+
+
+
+
+
+
 const handleId = (idx) => `handle-${idx}`;
 
 export default function ServiceDetail() {
@@ -249,10 +249,10 @@ export default function ServiceDetail() {
   const [backendService, setBackendService] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Clicking a purple benefit pill just scrolls the page down to its
-  // matching card (same position) in "What Our ... Handle" — nothing else.
-  // scroll-margin-top on .handle-card (App.css) keeps the card clear of the
-  // fixed header once it lands.
+  
+  
+  
+  
   const scrollToHandle = (idx) => {
     const el = document.getElementById(handleId(idx));
     if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -287,19 +287,19 @@ export default function ServiceDetail() {
   }, [slug]);
 
   // A slug is only "real" if it's one of the 5 hand-designed services OR it
-  // matched an actual service record from the backend. Anything else (a
-  // mistyped/old/bookmarked URL, or a slug that was never properly built
-  // with slugify()) used to silently render fake "Healthcare Service"
-  // placeholder content via buildFallbackServiceData — this made a broken
-  // link look like a real page instead of telling the visitor it doesn't
-  // exist.
+  
+  
+  
+  
+  
+  
   const isKnownSlug = Boolean(SERVICE_DETAILS[slug]);
   const notFound = !loading && !isKnownSlug && !backendService;
 
   const data = getServiceData(slug, backendService);
-  // Prefer the real image uploaded in the admin panel (Cloudinary URL) over
-  // the generic stock photo, when one has actually been uploaded for this
-  // service.
+  
+  
+  
   if (backendService?.image) {
     data.heroImage = backendService.image;
   }
@@ -338,12 +338,12 @@ export default function ServiceDetail() {
 
   return (
     <div className="main-wrapper">
-      {/* Botanical Background Accent Leaf Branches */}
+      {}
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-tl" />
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-mr" />
       <img src={branchTL} alt="" aria-hidden="true" className="botanical-branch hero-branch-br" />
 
-      {/* ===== HERO SECTION ===== */}
+      {}
       <section className="hero-wrap service-detail-hero">
         <div className="hero-inner">
           <div className="hero-content reveal">
@@ -373,7 +373,7 @@ export default function ServiceDetail() {
             )}
           </div>
 
-          {/* Hero Visual — professional framed photo, full image visible */}
+          {}
           <div className="detail-hero-visual reveal">
             {!loading && (
               <div className="detail-photo-wrapper">
@@ -384,9 +384,7 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {/* ===== WHAT WE HANDLE SECTION =====
-          Only rendered once the admin has added real benefits for this
-          service — no hardcoded fallback content is shown. */}
+      {}
       {data.handles && data.handles.length > 0 && (
         <section className="services-section">
           <h2 className="section-heading text-center reveal">{data.handlesHeading}</h2>
@@ -413,7 +411,7 @@ export default function ServiceDetail() {
         </section>
       )}
 
-      {/* ===== OUR SIMPLE PROCESS SECTION ===== */}
+      {}
       <section className="how-section">
         <h2 className="section-heading text-center reveal">Our Simple Process</h2>
 
@@ -440,10 +438,7 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {/* ===== WHY PRACTICES CHOOSE NEXA24 SECTION =====
-          Reuses the exact same cards shown on the About Us / Home page
-          (frontend/src/data/whyChooseUs.js) instead of a separate,
-          per-service hardcoded list — one place to edit, shown everywhere. */}
+      {}
       <section className="why-section">
         <h2 className="section-heading text-center reveal">Why Choose NEXA24</h2>
 
@@ -466,7 +461,7 @@ export default function ServiceDetail() {
         </div>
       </section>
 
-      {/* ===== CALL TO ACTION STRIP ===== */}
+      {}
       <section id="get-started" className="cta-section">
         <div className="cta-strip reveal">
           <div className="cta-left">
